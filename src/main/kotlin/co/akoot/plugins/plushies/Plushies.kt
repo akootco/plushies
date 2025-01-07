@@ -1,6 +1,7 @@
 package co.akoot.plugins.plushies
 
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.plushies.commands.*
 
 class Plushies : FoxPlugin("plushies") {
 
@@ -10,5 +11,18 @@ class Plushies : FoxPlugin("plushies") {
 
     override fun unload() {
         logger.info(":i_sleep:")
+    }
+
+    override fun registerCommands() {
+        registerCommand(MaceCommand(this))
+        registerCommand(EditBookCommand(this))
+        registerCommand(LaysCommand(this))
+        registerCommand(AICommand(this))
+    }
+
+    override fun registerConfigs() {
+        // this is the only way i was able to get the file to load correctly
+        registerConfig("lays")
+        registerConfig("ai")
     }
 }
