@@ -3,7 +3,7 @@ version: '${version}'
 main: '${group}.${name}'
 api-version: 1.20
 prefix: '${name}'
-authors: [ Akoot_ ]
-description: Food plugin
+authors: [ IndiaPaleAle ]
+description: Custom Items
 website: 'https://akoot.co/plugins/${name}'
 softdepend: [ 'BlueFox' ]
