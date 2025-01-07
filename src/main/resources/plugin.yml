@@ -1,0 +1,9 @@
+name: '${name}'
+version: '${version}'
+main: '${group}.${name}'
+api-version: 1.20
+prefix: '${name}'
+authors: [ Akoot_ ]
+description: Food plugin
+website: 'https://akoot.co/plugins/${name}'
+softdepend: [ 'BlueFox' ]
