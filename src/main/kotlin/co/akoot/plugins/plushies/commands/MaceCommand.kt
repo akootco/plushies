@@ -2,10 +2,11 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
-import org.bukkit.Material
+import co.akoot.plugins.plushies.util.Item
 import org.bukkit.command.CommandSender
+import org.bukkit.Material
 
-class MaceCommand(plugin: FoxPlugin) : FoxCommand(plugin, "mace") {
+class MaceCommand(plugin: FoxPlugin) : FoxCommand(plugin, "mace", description = "Changes the mace to use a 3D model") {
 
     override fun onTabComplete(sender: CommandSender, args: Array<out String>): MutableList<String> {
         return mutableListOf()
@@ -15,15 +16,19 @@ class MaceCommand(plugin: FoxPlugin) : FoxCommand(plugin, "mace") {
         val p = playerCheck(sender) ?: return false
 
         val item = p.inventory.itemInMainHand
-        val meta = item.itemMeta
-
-        if (item.type != Material.MACE || meta == null) {
+        // i might change this to work for any tool
+        // will need to find/make 3D models first
+        if (item.type != Material.MACE) {
             sendError(p, "You need to be holding a mace")
             return false
         }
 
-        meta.setCustomModelData(999)
-        item.setItemMeta(meta)
+        p.inventory.setItemInMainHand(
+            Item.builder(item)
+                .customModelData(999.0f)
+                .build()
+        )
+
         return true
     }
 }

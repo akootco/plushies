@@ -58,7 +58,7 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
     private fun response(sender: CommandSender): Boolean {
         if (responses.isEmpty()) return sendError(sender, "No responses found!")
         Bukkit.getServer().sendMessage(
-            (Txt("") // putting a hover on the start shows it for the whole message?
+            (Txt() // putting a hover on the start shows it for the whole message?
                     + Txt("[AI]").color(MONTH_COLOR).hover("Ä_v1.0-alpha") // need to put it here I guess
                     + Txt(" Akoot.AI ").color("player")
                     + Txt("» " + responses.random()).color("text")).c
@@ -69,14 +69,14 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
     private fun removeResponse(response: String): Result<Boolean> {
         return if (!responses.remove(response)) { // does it exist?
             Result.fail(
-                (Txt("")
+                (Txt()
                         + Txt(response).color("accent")
                         + Txt(" not found!")).color("error_text").c
             )
         } else {
             laysConfig.set("responses", responses) // not anymore!
             Result.success(
-                (Txt("")
+                (Txt()
                         + Txt(response).color("accent")
                         + Txt(" was removed!")).color("text").c
             )
@@ -87,7 +87,7 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
         return if (responses.contains(response)) {
             // easily bypassed but oh well, that is what permissions are for.
             Result.fail(
-                (Txt("")
+                (Txt()
                         + Txt(response).color("accent")
                         + Txt(" already exists!")).color("error_text").c
             )
@@ -95,7 +95,7 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
             responses.add(response)
             laysConfig.set("responses", responses)
             Result.success(
-                (Txt("")
+                (Txt()
                         + Txt(response).color("accent")
                         + Txt(" has been added!")).color("text").c
             )
