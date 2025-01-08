@@ -4,7 +4,7 @@ import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.util.Txt
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
-import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.NamespacedKey
 import org.bukkit.command.CommandSender
 
 class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
@@ -29,16 +29,22 @@ class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
         // but most importantly, check if they are cool enough
         val smite = args.getOrNull(0) == "smite" && hasPermission(sender, "all")
 
-        ItemBuilder.builder(item)
-            .throwable(smite) // cool stuff!
-            .build()
+        val key = NamespacedKey("plushies", "throwable")
+        val isThrowable = item.persistentDataContainer.has(key)
 
-        p.sendMessage((Txt()
-                + Txt(item.type.name.lowercase().replace("_", " ")).color("accent")
-                + Txt(" is now throwable")
-                + Txt(if (smite) " (lightning)" else "").color(NamedTextColor.GRAY)
-                ).c)
+        if (isThrowable) {
+            ItemBuilder.builder(item).removepdc(key).build()
+        } else {
+            ItemBuilder.builder(item).throwable(smite).build()
+        }
 
+        val msg = if (isThrowable) {
+            " is no longer throwable"
+        } else {
+            " is now throwable" +
+                    if (smite) " (lightning)" else ""
+        }
+        p.sendMessage((Txt(item.type.name.lowercase().replace("_", " ")) + Txt(msg).color("accent")).c)
         return true
     }
 }
