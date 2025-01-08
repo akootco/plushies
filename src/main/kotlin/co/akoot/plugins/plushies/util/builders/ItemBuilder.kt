@@ -1,5 +1,6 @@
 package co.akoot.plugins.plushies.util.builders
 
+import co.akoot.plugins.bluefox.util.Txt
 import com.destroystokyo.paper.profile.ProfileProperty
 import io.papermc.paper.datacomponent.DataComponentType
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -74,6 +75,12 @@ class ItemBuilder private constructor(private val itemStack: ItemStack) {
         return this
     }
 
+    fun filler(): ItemBuilder {
+        itemName(Txt().c)
+        hideTooltip()
+        return this
+    }
+
     /**
      * Adds an enchantment glint to the item without requiring an enchantment.
      *
@@ -102,11 +109,6 @@ class ItemBuilder private constructor(private val itemStack: ItemStack) {
     fun itemModel(namespace: String, id: String): ItemBuilder {
         val model = NamespacedKey(namespace, id)
         itemStack.setData(DataComponentTypes.ITEM_MODEL, model)
-        return this
-    }
-
-    fun noShow(): ItemBuilder {
-        itemStack.setData(DataComponentTypes.ITEM_MODEL, NamespacedKey.minecraft("empty"))
         return this
     }
 
