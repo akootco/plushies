@@ -2,7 +2,7 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
-import co.akoot.plugins.plushies.util.Item
+import co.akoot.plugins.plushies.util.ItemBuilder
 import org.bukkit.command.CommandSender
 import org.bukkit.Material
 
@@ -23,11 +23,9 @@ class MaceCommand(plugin: FoxPlugin) : FoxCommand(plugin, "mace", description = 
             return false
         }
 
-        p.inventory.setItemInMainHand(
-            Item.builder(item)
-                .customModelData(999.0f)
-                .build()
-        )
+        ItemBuilder.builder(item)
+            .customModelData(999.0f)
+            .build()
 
         return true
     }

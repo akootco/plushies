@@ -3,7 +3,7 @@ package co.akoot.plugins.plushies.commands
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.util.Txt
-import co.akoot.plugins.plushies.util.Item
+import co.akoot.plugins.plushies.util.ItemBuilder
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.command.CommandSender
 
@@ -29,11 +29,9 @@ class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
         // but most importantly, check if they are cool enough
         val smite = args.getOrNull(0) == "smite" && hasPermission(sender, "all")
 
-        p.inventory.setItemInMainHand(
-            Item.builder(item)
-                .throwable(smite) // cool stuff!
-                .build()
-        )
+        ItemBuilder.builder(item)
+            .throwable(smite) // cool stuff!
+            .build()
 
         p.sendMessage((Txt()
                 + Txt(item.type.name.lowercase().replace("_", " ")).color("accent")
