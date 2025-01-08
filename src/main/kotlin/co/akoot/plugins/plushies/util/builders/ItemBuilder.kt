@@ -1,4 +1,4 @@
-package co.akoot.plugins.plushies.util
+package co.akoot.plugins.plushies.util.builders
 
 import com.destroystokyo.paper.profile.ProfileProperty
 import io.papermc.paper.datacomponent.DataComponentType
@@ -7,8 +7,7 @@ import io.papermc.paper.datacomponent.item.*
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.tag.TagKey
-import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.util.TriState
 import org.bukkit.*
 import org.bukkit.block.BlockType
@@ -63,15 +62,11 @@ class ItemBuilder private constructor(private val itemStack: ItemStack) {
      * This can include Minecraft color and formatting codes (e.g., `&a` for green, `&l` for bold).
      * @return      The updated item with the applied lore.
      */
-    fun lore(lore: List<String?>?): ItemBuilder {
+    fun lore(lore: List<Component>?): ItemBuilder {
         if (!lore.isNullOrEmpty()) {
             val loreBuilder = ItemLore.lore()
             for (line in lore) {
-                loreBuilder.addLine(
-                    LegacyComponentSerializer.legacyAmpersand()
-                        .deserialize(line!!)
-                        .decoration(TextDecoration.ITALIC, false)
-                )
+                loreBuilder.addLine(line)
             }
             val finalLore = loreBuilder.build()
             itemStack.setData(DataComponentTypes.LORE, finalLore)
@@ -107,6 +102,11 @@ class ItemBuilder private constructor(private val itemStack: ItemStack) {
     fun itemModel(namespace: String, id: String): ItemBuilder {
         val model = NamespacedKey(namespace, id)
         itemStack.setData(DataComponentTypes.ITEM_MODEL, model)
+        return this
+    }
+
+    fun noShow(): ItemBuilder {
+        itemStack.setData(DataComponentTypes.ITEM_MODEL, NamespacedKey.minecraft("empty"))
         return this
     }
 
@@ -268,18 +268,15 @@ class ItemBuilder private constructor(private val itemStack: ItemStack) {
      * - Can't be changed or removed in Anvil.
      * - Does not show labels where applicable (for example: banner markers, names in item frames)
      *
-     * @param name The name to set on the item. This can include Minecraft color and formatting codes (e.g., `&a` for green, `&l` for bold).
+     * @param name The name to set on the item.
      * @return The updated `Item` with the specified name applied.
      */
-    fun itemName(name: String): ItemBuilder {
+    fun itemName(name: Component): ItemBuilder {
         if (itemStack.type.name.endsWith("_HEAD")) {
-            itemStack.setData(
-                DataComponentTypes.CUSTOM_NAME,
-                LegacyComponentSerializer.legacyAmpersand().deserialize(name).decoration(TextDecoration.ITALIC, false)
-            )
-            return this
+            itemStack.setData(DataComponentTypes.CUSTOM_NAME, name)
+        } else {
+            itemStack.setData(DataComponentTypes.ITEM_NAME, name)
         }
-        itemStack.setData(DataComponentTypes.ITEM_NAME, LegacyComponentSerializer.legacyAmpersand().deserialize(name))
         return this
     }
 

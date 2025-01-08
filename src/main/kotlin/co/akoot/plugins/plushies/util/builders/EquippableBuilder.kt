@@ -1,4 +1,4 @@
-package co.akoot.plugins.plushies.util
+package co.akoot.plugins.plushies.util.builders
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.*

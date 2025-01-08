@@ -1,4 +1,4 @@
-package co.akoot.plugins.plushies.util
+package co.akoot.plugins.plushies.util.builders
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.*
@@ -58,7 +58,7 @@ class FoodBuilder private constructor(private val itemStack: ItemStack) {
     /**
      * Disables crumb particles while eating the item.
      */
-    fun noCrumbs(): FoodBuilder{
+    fun noCrumbs(): FoodBuilder {
         cBuilder.hasConsumeParticles(false)
         return this
     }

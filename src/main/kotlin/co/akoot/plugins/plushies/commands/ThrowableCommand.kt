@@ -3,7 +3,7 @@ package co.akoot.plugins.plushies.commands
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.util.Txt
-import co.akoot.plugins.plushies.util.ItemBuilder
+import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.command.CommandSender
 
