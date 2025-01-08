@@ -1,6 +1,7 @@
 package co.akoot.plugins.plushies.util
 
 import com.destroystokyo.paper.profile.ProfileProperty
+import io.papermc.paper.datacomponent.DataComponentType
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.*
 import io.papermc.paper.registry.RegistryAccess
@@ -14,6 +15,7 @@ import org.bukkit.block.BlockType
 import org.bukkit.damage.DamageType
 import org.bukkit.inventory.ItemRarity
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -29,13 +31,12 @@ import java.util.*
  *
  * @param amount The number of items in the stack. Defaults to 1.
  */
-class Item private constructor(private val itemStack: ItemStack, amount: Int = 1) {
+class ItemBuilder private constructor(private val itemStack: ItemStack) {
     private val container: PersistentDataContainer?
+    private val meta: ItemMeta? = itemStack.itemMeta
 
     init {
-        val itemMeta = itemStack.itemMeta
-        itemStack.amount = amount
-        this.container = itemMeta?.persistentDataContainer
+        container = meta?.persistentDataContainer
     }
 
     /**
@@ -47,7 +48,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * @param model  Optional. The string representing the model to be added.
      * @return       The updated item with the applied custom model data.
      */
-    fun customModelData(float: Float, color: Color? = null, model: String? = null): Item {
+    fun customModelData(float: Float, color: Color? = null, model: String? = null): ItemBuilder {
         val customModelDataBuilder = CustomModelData.customModelData().addFloat(float)
         color?.let { customModelDataBuilder.addColor(it) }
         model?.let { customModelDataBuilder.addString(it) }
@@ -62,7 +63,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * This can include Minecraft color and formatting codes (e.g., `&a` for green, `&l` for bold).
      * @return      The updated item with the applied lore.
      */
-    fun lore(lore: List<String?>?): Item {
+    fun lore(lore: List<String?>?): ItemBuilder {
         if (!lore.isNullOrEmpty()) {
             val loreBuilder = ItemLore.lore()
             for (line in lore) {
@@ -83,8 +84,13 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      *
      * @return The updated item with the enchantment glint applied.
      */
-    fun glint(): Item {
+    fun glint(): ItemBuilder {
         itemStack.setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
+        return this
+    }
+
+    fun remData(dataType: DataComponentType): ItemBuilder {
+        itemStack.unsetData(dataType)
         return this
     }
 
@@ -98,7 +104,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * @param id The model ID.
      * @return the updated `Item`.
      */
-    fun itemModel(namespace: String, id: String): Item {
+    fun itemModel(namespace: String, id: String): ItemBuilder {
         val model = NamespacedKey(namespace, id)
         itemStack.setData(DataComponentTypes.ITEM_MODEL, model)
         return this
@@ -115,7 +121,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * @param id the tooltip ID
      * @return the updated `Item` instance
      */
-    fun tooltipStyle(namespace: String, id: String): Item {
+    fun tooltipStyle(namespace: String, id: String): ItemBuilder {
         val model = NamespacedKey(namespace, id)
         itemStack.setData(DataComponentTypes.TOOLTIP_STYLE, model)
         return this
@@ -126,7 +132,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      *
      * @return The modified `Item` instance.
      */
-    fun deathProtection(): Item {
+    fun deathProtection(): ItemBuilder {
         itemStack.setData(DataComponentTypes.DEATH_PROTECTION, DeathProtection.deathProtection().build())
         return this
     }
@@ -137,7 +143,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * @param song
      * @return
      */
-    fun jukeboxSong(song: JukeboxSong): Item {
+    fun jukeboxSong(song: JukeboxSong): ItemBuilder {
         itemStack.setData(DataComponentTypes.JUKEBOX_PLAYABLE, JukeboxPlayable.jukeboxPlayable(song))
         return this
     }
@@ -148,7 +154,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * @param instrument
      * @return
      */
-    fun instrument(instrument: MusicInstrument): Item {
+    fun instrument(instrument: MusicInstrument): ItemBuilder {
         if (itemStack.type != Material.GOAT_HORN) return this
 
         itemStack.setData(DataComponentTypes.INSTRUMENT, instrument)
@@ -161,7 +167,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * @param durability
      * @return
      */
-    fun maxDurability(durability: Int): Item {
+    fun maxDurability(durability: Int): ItemBuilder {
         itemStack.setData(DataComponentTypes.MAX_DAMAGE, durability)
         return this
     }
@@ -174,7 +180,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * @param damageType The tag for the damage types this item is immune to, such as `DamageTypeTagKeys.IS_FIRE`.
      * @return The modified `Item` instance.
      */
-    fun damageResistance(damageType: TagKey<DamageType>): Item {
+    fun damageResistance(damageType: TagKey<DamageType>): ItemBuilder {
         itemStack.setData(DataComponentTypes.DAMAGE_RESISTANT, DamageResistant.damageResistant(damageType))
         return this
     }
@@ -186,7 +192,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * @param miningSpeed The mining speed. Default is `1.0F` (relative to the item type).
      * @return The modified `Item` with the new tool behavior.
      */
-    fun setTool(blockTagKey: TagKey<BlockType>, miningSpeed: Float = 1.0F): Item {
+    fun setTool(blockTagKey: TagKey<BlockType>, miningSpeed: Float = 1.0F): ItemBuilder {
         val tool = Tool.tool()
 
         val blockTag = RegistryAccess.registryAccess()
@@ -213,7 +219,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      *
      * @return The modified `Item`  with the unbreakable property applied.
      */
-    fun unbreakable(shownInTooltip: Boolean? = true): Item {
+    fun unbreakable(shownInTooltip: Boolean? = true): ItemBuilder {
         val tooltipBuilder = Unbreakable.unbreakable()
         shownInTooltip?.let { tooltipBuilder.showInTooltip(it) }
         itemStack.setData(DataComponentTypes.UNBREAKABLE, tooltipBuilder.build())
@@ -225,7 +231,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      *
      * @return
      */
-    fun hideTooltip(): Item {
+    fun hideTooltip(): ItemBuilder {
         itemStack.setData(DataComponentTypes.HIDE_TOOLTIP)
         return this
     }
@@ -237,7 +243,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * @param item  The `ItemStack` that will remain after the item is consumed or used.
      * @return      The updated `Item` instance with the "use remainder" property applied.
      */
-    fun useRemainder(item: ItemStack): Item {
+    fun useRemainder(item: ItemStack): ItemBuilder {
         itemStack.setData(DataComponentTypes.USE_REMAINDER, UseRemainder.useRemainder(item))
         return this
     }
@@ -248,7 +254,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * @param stackSize  The max number of items that can be stacked together.
      * @return           The updated `Item` with the specified stack size applied.
      */
-    fun stackSize(stackSize: Int): Item {
+    fun stackSize(stackSize: Int): ItemBuilder {
         itemStack.setData(DataComponentTypes.MAX_STACK_SIZE, stackSize)
         return this
     }
@@ -265,7 +271,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * @param name The name to set on the item. This can include Minecraft color and formatting codes (e.g., `&a` for green, `&l` for bold).
      * @return The updated `Item` with the specified name applied.
      */
-    fun itemName(name: String): Item {
+    fun itemName(name: String): ItemBuilder {
         if (itemStack.type.name.endsWith("_HEAD")) {
             itemStack.setData(
                 DataComponentTypes.CUSTOM_NAME,
@@ -283,7 +289,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * @param cooldown the duration in seconds; must be positive
      * @return The updated `Item` with the cooldown applied.
      */
-    fun cooldown(cooldown: Float = 10.0f): Item {
+    fun cooldown(cooldown: Float = 10.0f): ItemBuilder {
         if (cooldown > 0) {
             itemStack.setData(DataComponentTypes.USE_COOLDOWN, UseCooldown.useCooldown(cooldown))
         }
@@ -299,10 +305,10 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      *
      * @return The updated `Item` with the texture applied.
      */
-    fun headTexture(textureId: String): Item {
+    fun headTexture(textureId: String): ItemBuilder {
         if (!itemStack.type.name.endsWith("_HEAD")) return this
 
-        val headMeta = itemStack.itemMeta as SkullMeta
+        val headMeta = meta as SkullMeta
         val profile = Bukkit.createProfile(UUID.fromString("f592cd5e-ca73-4612-a962-9f3ec57dc108"), "")
         val textureUrl = "http://textures.minecraft.net/texture/$textureId"
         val json = "{\"textures\":{\"SKIN\":{\"url\":\"$textureUrl\"}}}"
@@ -319,7 +325,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * @param rarity The rarity of the item.
      * @return The updated `Item` with the specified rarity applied.
      */
-    fun rarity(rarity: ItemRarity): Item {
+    fun rarity(rarity: ItemRarity): ItemBuilder {
         itemStack.setData(DataComponentTypes.RARITY, rarity)
         return this
     }
@@ -330,7 +336,7 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * @param smite If `true`, the item will summon lightning when it hits an entity.
      * @return The updated `Item` with the throwable behavior applied.
      */
-    fun throwable(smite: Boolean = false): Item {
+    fun throwable(smite: Boolean = false): ItemBuilder {
         val type = if (smite) "smite" else "default"
         pdc(NamespacedKey("plushies", "throwable"), type)
         return this
@@ -343,19 +349,19 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
      * @param value The value to store.
      * @return The updated `Item` with the persistent data applied.
      */
-    fun pdc(key: NamespacedKey, value: Any): Item {
-        val meta = itemStack.itemMeta ?: return this
-
-        val container = meta.persistentDataContainer
+    fun pdc(key: NamespacedKey, value: Any = ""): ItemBuilder {
 
         when (value) {
-            is String -> container.set(key, PersistentDataType.STRING, value)
-            is Boolean -> container.set(key, PersistentDataType.BOOLEAN, value)
-            is Long -> container.set(key, PersistentDataType.LONG, value)
-            is Float -> container.set(key, PersistentDataType.FLOAT, value)
-            is Int -> container.set(key, PersistentDataType.INTEGER, value)
+            is String -> container?.set(key, PersistentDataType.STRING, value)
+            is Boolean -> container?.set(key, PersistentDataType.BOOLEAN, value)
         }
 
+        itemStack.setItemMeta(meta)
+        return this
+    }
+
+    fun removepdc(key: NamespacedKey): ItemBuilder {
+        container?.remove(key)
         itemStack.setItemMeta(meta)
         return this
     }
@@ -370,8 +376,8 @@ class Item private constructor(private val itemStack: ItemStack, amount: Int = 1
     }
 
     companion object {
-        fun builder(itemStack: ItemStack, amount: Int = 1): Item {
-            return Item(itemStack, amount)
+        fun builder(itemStack: ItemStack): ItemBuilder {
+            return ItemBuilder(itemStack)
         }
     }
 }
