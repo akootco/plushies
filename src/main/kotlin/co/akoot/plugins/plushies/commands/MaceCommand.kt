@@ -24,7 +24,7 @@ class MaceCommand(plugin: FoxPlugin) : FoxCommand(plugin, "mace", description = 
         }
 
         ItemBuilder.builder(item)
-            .customModelData(999.0f)
+            .customModelData(999)
             .build()
 
         return true

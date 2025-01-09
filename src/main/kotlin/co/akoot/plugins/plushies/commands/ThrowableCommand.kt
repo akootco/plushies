@@ -23,6 +23,9 @@ class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
         if (!hasPermission(sender, "all") && !item.type.name.endsWith("_AXE")) {
             sendError(p, "You need to be holding an axe")
             return false
+        } else if (item.isEmpty) {
+            sendError(p, "You can't throw [AIR], check out wind charges.")
+            return false
         }
 
         // Only add lightning effect if the player asked for it
@@ -31,20 +34,12 @@ class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
 
         val key = NamespacedKey("plushies", "throwable")
         val isThrowable = item.persistentDataContainer.has(key)
+        val b = ItemBuilder.builder(item)
 
-        if (isThrowable) {
-            ItemBuilder.builder(item).removepdc(key).build()
-        } else {
-            ItemBuilder.builder(item).throwable(smite).build()
-        }
+        if (isThrowable) b.removepdc(key).build() else b.throwable(smite).build()
 
-        val msg = if (isThrowable) {
-            " is no longer throwable"
-        } else {
-            " is now throwable" +
-                    if (smite) " (lightning)" else ""
-        }
-        p.sendMessage((Txt(item.type.name.lowercase().replace("_", " ")) + Txt(msg).color("accent")).c)
+        p.sendMessage((Txt(item.type.name.lowercase().replace("_", " ")).color("accent")
+                + Txt(" is ${if (isThrowable) "now" else "no longer"} throwable").color("text")).c)
         return true
     }
 }

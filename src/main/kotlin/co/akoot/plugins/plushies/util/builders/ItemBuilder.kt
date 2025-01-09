@@ -42,14 +42,14 @@ class ItemBuilder private constructor(private val itemStack: ItemStack) {
     /**
      * Creates custom model data for an item, allowing optional parameters for color and model.
      *
-     * @param float  Required. The threshold value used by the texture pack to determine
+     * @param int  Required. The Int used by the texture pack to determine
      *               if the item should have a different texture or model.
      * @param color  Optional. The color to be added to the custom model data.
      * @param model  Optional. The string representing the model to be added.
      * @return       The updated item with the applied custom model data.
      */
-    fun customModelData(float: Float, color: Color? = null, model: String? = null): ItemBuilder {
-        val customModelDataBuilder = CustomModelData.customModelData().addFloat(float)
+    fun customModelData(int: Int, color: Color? = null, model: String? = null): ItemBuilder {
+        val customModelDataBuilder = CustomModelData.customModelData().addFloat(int.toFloat())
         color?.let { customModelDataBuilder.addColor(it) }
         model?.let { customModelDataBuilder.addString(it) }
         itemStack.setData(DataComponentTypes.CUSTOM_MODEL_DATA, customModelDataBuilder.build())
