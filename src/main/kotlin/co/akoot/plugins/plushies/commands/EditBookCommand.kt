@@ -3,6 +3,7 @@ package co.akoot.plugins.plushies.commands
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.util.Txt
+import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.inventory.ItemStack
@@ -20,7 +21,7 @@ class EditBookCommand(plugin: FoxPlugin) :
 
         val item = p.inventory.itemInMainHand
 
-        if (item.type != Material.WRITTEN_BOOK || item.itemMeta !is BookMeta) {
+        if (p.inventory.itemInMainHand.type != Material.WRITTEN_BOOK) {
             sendError(p, "You need to be holding a written book!")
             return false
         }
@@ -36,18 +37,10 @@ class EditBookCommand(plugin: FoxPlugin) :
             return false
         }
 
-        // create the new book
-        val newBook = ItemStack(Material.WRITABLE_BOOK)
-        val nbMeta = newBook.itemMeta as BookMeta
+        p.inventory.setItemInMainHand(ItemBuilder.builder(ItemStack(Material.WRITABLE_BOOK))
+            .copyOfBook(item)
+            .build())
 
-        // copy each page to it
-        for (pages in listOf(bookMeta.pages())) {
-            nbMeta.pages(pages)
-        }
-
-        // win
-        newBook.setItemMeta(nbMeta)
-        p.inventory.setItemInMainHand(newBook)
         return true
     }
 }

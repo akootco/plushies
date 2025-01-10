@@ -9,12 +9,14 @@ import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.tag.TagKey
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.kyori.adventure.util.TriState
 import org.bukkit.*
 import org.bukkit.block.BlockType
 import org.bukkit.damage.DamageType
 import org.bukkit.inventory.ItemRarity
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.persistence.PersistentDataContainer
@@ -31,7 +33,7 @@ import java.util.*
  *
  * @param amount The number of items in the stack. Defaults to 1.
  */
-class ItemBuilder private constructor(private val itemStack: ItemStack) {
+class ItemBuilder private constructor(private var itemStack: ItemStack) {
     private val container: PersistentDataContainer?
     private val meta: ItemMeta? = itemStack.itemMeta
 
@@ -121,6 +123,67 @@ class ItemBuilder private constructor(private val itemStack: ItemStack) {
     fun tooltipStyle(namespace: String, id: String): ItemBuilder {
         val model = NamespacedKey(namespace, id)
         itemStack.setData(DataComponentTypes.TOOLTIP_STYLE, model)
+        return this
+    }
+
+    /**
+     * Written book
+     *
+     * @param title
+     * @param author
+     * @param pages
+     * @return
+     */
+    fun writtenBook(title: String, author: String, pages: MutableList<Component>): ItemBuilder {
+        itemStack.setData(DataComponentTypes.WRITTEN_BOOK_CONTENT,
+            WrittenBookContent.writtenBookContent("", "")
+                .title(title)
+                .author(author)
+                .addPages(pages)
+                .build()
+        )
+        return this
+    }
+
+    /**
+     * Writable book
+     *
+     * @param pages
+     * @return
+     */
+
+    fun writableBook(pages: MutableList<String>): ItemBuilder {
+        itemStack.setData(DataComponentTypes.WRITABLE_BOOK_CONTENT,
+            WritableBookContent.writeableBookContent()
+                .addPages(pages)
+                .build()
+        )
+        return this
+    }
+
+    /**
+     * Copies data of the item to the builder's item.
+     *
+     * @param itemStack The item to copy.
+     * @return The modified `Item` instance.
+     */
+    fun copyOf(itemStack: ItemStack): ItemBuilder {
+        this.itemStack.itemMeta = itemStack.itemMeta
+        return this
+    }
+
+    /**
+     * Copies data of the book to the builder's item.
+     *
+     * @param book The source book.
+     * @return The modified `Item` instance.
+     */
+    fun copyOfBook(book: ItemStack): ItemBuilder {
+        val bookMeta = book.itemMeta as? BookMeta ?: return this
+        val pages: MutableList<String> = bookMeta.pages().map { page ->
+            PlainTextComponentSerializer.plainText().serialize(page)
+        }.toMutableList()
+        writableBook(pages)
         return this
     }
 

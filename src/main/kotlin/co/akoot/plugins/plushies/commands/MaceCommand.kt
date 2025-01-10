@@ -3,6 +3,7 @@ package co.akoot.plugins.plushies.commands
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.command.CommandSender
 import org.bukkit.Material
 
@@ -23,9 +24,15 @@ class MaceCommand(plugin: FoxPlugin) : FoxCommand(plugin, "mace", description = 
             return false
         }
 
-        ItemBuilder.builder(item)
-            .customModelData(999)
-            .build()
+        if (item.itemMeta.hasCustomModelData()) {
+            ItemBuilder.builder(item)
+                .customModelData(999)
+                .build()
+        } else {
+            ItemBuilder.builder(item)
+                .unsetData(DataComponentTypes.CUSTOM_MODEL_DATA)
+                .build()
+        }
 
         return true
     }
