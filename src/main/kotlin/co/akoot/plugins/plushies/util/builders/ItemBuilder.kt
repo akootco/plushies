@@ -12,8 +12,12 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.kyori.adventure.util.TriState
 import org.bukkit.*
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
 import org.bukkit.block.BlockType
 import org.bukkit.damage.DamageType
+import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.ItemRarity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
@@ -90,6 +94,68 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      */
     fun glint(): ItemBuilder {
         itemStack.setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
+        return this
+    }
+
+    /**
+     * Add enchant
+     *
+     * @param enchantment
+     * @param level
+     * @return
+     */
+    fun addEnchant(enchantment: Enchantment, level: Int = 1): ItemBuilder {
+        val enchantments = ItemEnchantments.itemEnchantments()
+        enchantments.add(enchantment, level)
+        itemStack.setData(DataComponentTypes.ENCHANTMENTS, enchantments)
+        return this
+    }
+
+
+    /**
+     * Add list of enchants
+     *
+     * @param enchantmentList
+     * @return
+     */
+    fun addEnchants(enchantmentList: MutableMap<Enchantment,Int>): ItemBuilder {
+        val enchantments = ItemEnchantments.itemEnchantments()
+        enchantments.addAll(enchantmentList)
+        itemStack.setData(DataComponentTypes.ENCHANTMENTS, enchantments)
+        return this
+    }
+
+
+    /**
+     * Dye
+     *
+     * @param color
+     * @param shownInTooltip
+     * @return
+     */
+    fun dye(color: Color, shownInTooltip: Boolean = true): ItemBuilder {
+        val dye = DyedItemColor.dyedItemColor()
+        dye.color(color)
+        dye.showInTooltip(shownInTooltip)
+        itemStack.setData(DataComponentTypes.DYED_COLOR, dye.build())
+        return this
+    }
+
+    /**
+     * Attribute
+     *
+     * @param attribute
+     * @param modifier
+     * @param slot
+     * @param shownInTooltip
+     * @return
+     */
+    fun attribute(attribute: Attribute, modifier: AttributeModifier, slot: EquipmentSlotGroup, shownInTooltip: Boolean = true): ItemBuilder {
+        val att = ItemAttributeModifiers.itemAttributes()
+        att.showInTooltip(shownInTooltip)
+        att.addModifier(attribute, modifier, slot)
+
+        itemStack.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, att.build())
         return this
     }
 
