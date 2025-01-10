@@ -1,9 +1,16 @@
 package co.akoot.plugins.plushies
 
+import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.plushies.Plushies.Configs.pConf
 import co.akoot.plugins.plushies.commands.*
+import co.akoot.plugins.plushies.listeners.GUI
 
 class Plushies : FoxPlugin("plushies") {
+
+    object Configs {
+        lateinit var pConf: FoxConfig
+    }
 
     override fun load() {
         logger.info("welcome back!")
@@ -20,11 +27,16 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(AICommand(this))
         registerCommand(ThrowableCommand(this))
         registerCommand(HatCommand(this))
+        registerCommand(PlushieCommand(this))
+    }
+
+    override fun registerEvents() {
+        registerEventListener(GUI())
     }
 
     override fun registerConfigs() {
-        // this is the only way i was able to get the file to load correctly
-        registerConfig("lays")
+       registerConfig("lays")
         registerConfig("ai")
+        pConf = registerConfig("plushies")
     }
 }

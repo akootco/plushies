@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack
  *
  * @property size The size of the inventory (must be between 9 and 54, and a multiple of 9). Defaults to 27 if invalid.
  * @property holder The holder of the inventory, or null if none.
- * @property isMenu If true, empty slots will be filled with filler items.
+ * @property isMenu If true, unset slots will be filled with filler items.
  * @constructor Create Chest GUI
  */
 class ChestGUI private constructor(private var size: Int, private val holder: InventoryHolder?, private val isMenu: Boolean = false) {
@@ -55,11 +55,26 @@ class ChestGUI private constructor(private var size: Int, private val holder: In
      * @param item
      * @return
      */
-
     fun setItems(range: IntRange, item: ItemStack): ChestGUI {
         for (slot in range) {
             if (items[slot] == null) {
                 setItem(slot, item)
+            }
+        }
+        return this
+    }
+
+    /**
+     * Set items
+     *
+     * @param range
+     * @param itemsList
+     * @return
+     */
+    fun setItems(range: IntRange, itemsList: List<ItemStack>): ChestGUI {
+        range.forEachIndexed { index, slot ->
+            if (this.items[slot] == null && index < itemsList.size) {
+                setItem(slot, itemsList[index])
             }
         }
         return this

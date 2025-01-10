@@ -29,7 +29,7 @@ class HatCommand(plugin: FoxPlugin) : FoxCommand(plugin, "hat") {
         if (item.persistentDataContainer.has(hatKey)) {
             ItemBuilder.builder(item)
                 .removepdc(hatKey)
-                .remData(DataComponentTypes.EQUIPPABLE)
+                .unsetData(DataComponentTypes.EQUIPPABLE)
                 .build()
         } else {
             ItemBuilder.builder(EquippableBuilder.builder(item, EquipmentSlot.HEAD).build())

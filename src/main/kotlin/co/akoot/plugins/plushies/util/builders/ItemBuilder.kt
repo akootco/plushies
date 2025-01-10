@@ -91,11 +91,6 @@ class ItemBuilder private constructor(private val itemStack: ItemStack) {
         return this
     }
 
-    fun remData(dataType: DataComponentType): ItemBuilder {
-        itemStack.unsetData(dataType)
-        return this
-    }
-
     /**
      * Sets the model for the item.
      *
@@ -132,10 +127,15 @@ class ItemBuilder private constructor(private val itemStack: ItemStack) {
     /**
      * if set, protects the holder from death, similar to a `TOTEM_OF_UNDYING`.
      *
+     * @param shouldProtect If true, add protection (default). If false, remove protection.
      * @return The modified `Item` instance.
      */
-    fun deathProtection(): ItemBuilder {
-        itemStack.setData(DataComponentTypes.DEATH_PROTECTION, DeathProtection.deathProtection().build())
+    fun deathProtection(shouldProtect: Boolean = true): ItemBuilder {
+        if (shouldProtect) {
+            itemStack.setData(DataComponentTypes.DEATH_PROTECTION, DeathProtection.deathProtection().build())
+        } else if (itemStack.type == Material.TOTEM_OF_UNDYING){
+            unsetData(DataComponentTypes.DEATH_PROTECTION)
+        }
         return this
     }
 
@@ -359,9 +359,26 @@ class ItemBuilder private constructor(private val itemStack: ItemStack) {
         return this
     }
 
+    /**
+     * Removepdc
+     *
+     * @param key
+     * @return
+     */
     fun removepdc(key: NamespacedKey): ItemBuilder {
         container?.remove(key)
         itemStack.setItemMeta(meta)
+        return this
+    }
+
+    /**
+     * Unset data
+     *
+     * @param dataType
+     * @return
+     */
+    fun unsetData(dataType: DataComponentType): ItemBuilder {
+        itemStack.unsetData(dataType)
         return this
     }
 
