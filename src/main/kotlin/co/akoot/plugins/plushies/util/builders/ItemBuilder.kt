@@ -244,12 +244,27 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param book The source book.
      * @return The modified `Item` instance.
      */
+    fun copyToBook(book: ItemStack): ItemBuilder {
+        val bookMeta = book.itemMeta as? BookMeta ?: return this
+        if (book.type == Material.WRITTEN_BOOK) {
+            val pages: MutableList<String> = bookMeta.pages().map { page ->
+                PlainTextComponentSerializer.plainText().serialize(page)
+            }.toMutableList()
+            writableBook(pages)
+        }
+        return this
+    }
+
+    /**
+     * Copies data of the book to the builder's item.
+     *
+     * @param book The source book.
+     * @return The modified `Item` instance.
+     */
     fun copyOfBook(book: ItemStack): ItemBuilder {
         val bookMeta = book.itemMeta as? BookMeta ?: return this
-        val pages: MutableList<String> = bookMeta.pages().map { page ->
-            PlainTextComponentSerializer.plainText().serialize(page)
-        }.toMutableList()
-        writableBook(pages)
+        val pages: MutableList<Component> = bookMeta.pages()
+        bookMeta.title?.let { bookMeta.author?.let { it1 -> writtenBook(it, it1,pages) } }
         return this
     }
 

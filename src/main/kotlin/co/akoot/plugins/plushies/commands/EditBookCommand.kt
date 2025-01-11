@@ -38,7 +38,7 @@ class EditBookCommand(plugin: FoxPlugin) :
         }
 
         p.inventory.setItemInMainHand(ItemBuilder.builder(ItemStack(Material.WRITABLE_BOOK))
-            .copyOfBook(item)
+            .copyToBook(item)
             .build())
 
         return true
