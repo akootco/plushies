@@ -99,29 +99,51 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
 
     /**
      * Add enchant
-     *
+     * - will overrride current enchantments on item
+     * @param enchantment
+     * @param level
+     * @return
+     */
+    fun enchant(enchantment: Enchantment, level: Int = 1): ItemBuilder {
+        val enchant = ItemEnchantments.itemEnchantments()
+        enchant.add(enchantment, level)
+        itemStack.setData(DataComponentTypes.ENCHANTMENTS, enchant)
+        return this
+    }
+
+    /**
+     * Add list of enchants
+     * - will overrride current enchantments on item
+     * @param enchantments
+     * @return
+     */
+    fun enchants(enchantments: MutableMap<Enchantment,Int>): ItemBuilder {
+        val enchants = ItemEnchantments.itemEnchantments()
+        enchants.addAll(enchantments)
+        itemStack.setData(DataComponentTypes.ENCHANTMENTS, enchants)
+        return this
+    }
+
+    /**
+     * Add enchant
+     * - will NOT overrride current enchantments on item
      * @param enchantment
      * @param level
      * @return
      */
     fun addEnchant(enchantment: Enchantment, level: Int = 1): ItemBuilder {
-        val enchantments = ItemEnchantments.itemEnchantments()
-        enchantments.add(enchantment, level)
-        itemStack.setData(DataComponentTypes.ENCHANTMENTS, enchantments)
+        itemStack.addUnsafeEnchantment(enchantment, level)
         return this
     }
 
-
     /**
      * Add list of enchants
-     *
-     * @param enchantmentList
+     * - will NOT overrride current enchantments on item
+     * @param enchantments
      * @return
      */
-    fun addEnchants(enchantmentList: MutableMap<Enchantment,Int>): ItemBuilder {
-        val enchantments = ItemEnchantments.itemEnchantments()
-        enchantments.addAll(enchantmentList)
-        itemStack.setData(DataComponentTypes.ENCHANTMENTS, enchantments)
+    fun addEnchants(enchantments: MutableMap<Enchantment,Int>): ItemBuilder {
+        itemStack.addUnsafeEnchantments(enchantments)
         return this
     }
 

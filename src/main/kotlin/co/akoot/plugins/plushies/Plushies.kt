@@ -29,6 +29,8 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(HatCommand(this))
         registerCommand(PlushieCommand(this))
         registerCommand(BookCommand(this))
+        registerCommand(PresetCommand(this))
+        registerCommand(EnchantCommand(this))
     }
 
     override fun registerEvents() {
