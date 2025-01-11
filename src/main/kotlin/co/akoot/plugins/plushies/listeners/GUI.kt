@@ -1,6 +1,7 @@
 package co.akoot.plugins.plushies.listeners
 
 import co.akoot.plugins.bluefox.util.Txt
+import co.akoot.plugins.plushies.gui.BookMenu
 import co.akoot.plugins.plushies.gui.Plush.home
 import co.akoot.plugins.plushies.gui.Plush.nextPage
 import co.akoot.plugins.plushies.gui.Plush.pMenu
@@ -21,6 +22,7 @@ class GUI : Listener {
     fun onInvClick(event: InventoryClickEvent) {
         val menuItem = event.currentItem
         val p = event.whoClicked
+        val pInv = p.inventory
 
         when (event.clickedInventory?.holder ?: return) {
             is PlushieMenu -> {
@@ -35,18 +37,36 @@ class GUI : Listener {
 
                 if (menuItem?.type == Material.TOTEM_OF_UNDYING && menuItem != pMenu) { // is it a friend?
 
-                    if (p.inventory.itemInMainHand.type != Material.TOTEM_OF_UNDYING) { // HEY! no hacking!
+                    if (pInv.itemInMainHand.type != Material.TOTEM_OF_UNDYING) { // HEY! no hacking!
                         p.sendMessage(Txt("You must be holding a totem!").color("error_accent").c)
+                    } else if (p.gameMode == GameMode.CREATIVE) { // okay, alright. i didn't mean it
+                        pInv.addItem(ItemBuilder.builder(menuItem).build())
+                    } else {
+                        pInv.setItemInMainHand(ItemBuilder.builder(menuItem).build())
+                        p.sendMessage(
+                            plushMsg(
+                                PlainTextComponentSerializer.plainText().serialize(menuItem.effectiveName())
+                            ).c
+                        )
+                    }
+                }
+                event.isCancelled = true
+            }
+
+            is BookMenu -> {
+
+                val pItem = pInv.itemInMainHand
+                val book = Material.WRITTEN_BOOK
+                if (menuItem?.type == book) { // is it a book?
+
+                    if (pItem.type != book) { // HEY! no hacking!
+                        p.sendMessage(Txt("You must be holding a written book!").color("error_accent").c)
                     }
 
-                    else if (p.gameMode == GameMode.CREATIVE) { // okay, alright. i didn't mean it
-                        p.inventory.addItem(ItemBuilder.builder(menuItem).build())
-                    }
+                    pInv.setItemInMainHand(ItemBuilder.builder(pItem)
+                        .customModelData(menuItem.itemMeta.customModelData)
+                        .build())
 
-                    else {
-                        p.inventory.setItemInMainHand(ItemBuilder.builder(menuItem).build())
-                        p.sendMessage(plushMsg(PlainTextComponentSerializer.plainText().serialize(menuItem.effectiveName())).c)
-                    }
                 }
                 event.isCancelled = true
             }
