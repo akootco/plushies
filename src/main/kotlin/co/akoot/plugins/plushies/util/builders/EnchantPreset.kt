@@ -141,14 +141,15 @@ class EnchantPreset private constructor(private val itemStack: ItemStack) {
      */
     fun boots(frostWalker: Boolean = false): EnchantPreset {
         ItemBuilder.builder(itemStack).enchants(mutableMapOf(
-            Enchantment.DEPTH_STRIDER to 3,
             Enchantment.FEATHER_FALLING to 4,
             Enchantment.PROTECTION to 4,
             Enchantment.SOUL_SPEED to 4,
         ).apply {
-            mendUnbrk
+            putAll(mendUnbrk)
             if (frostWalker) {
                 put(Enchantment.FROST_WALKER, 2)
+            } else {
+                put(Enchantment.DEPTH_STRIDER, 3)
             }
         }).build()
 

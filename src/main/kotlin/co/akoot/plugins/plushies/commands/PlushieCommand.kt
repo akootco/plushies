@@ -53,7 +53,7 @@ class PlushieCommand(plugin: FoxPlugin) : FoxCommand(plugin, "plushie", aliases 
             }
 
             // swap the totem with the super cool new plushie
-            p.inventory.setItemInMainHand(createPlushie(plushName, plushie.second))
+            p.inventory.setItemInMainHand(createPlushie(plushName, if (args.getOrNull(1) == "statue") plushie.second + 1 else plushie.second))
             p.sendMessage(plushMsg(plushName).c)
             true
 

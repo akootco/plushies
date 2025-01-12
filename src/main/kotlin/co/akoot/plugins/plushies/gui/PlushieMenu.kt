@@ -12,7 +12,7 @@ import co.akoot.plugins.plushies.util.builders.ChestGUI
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
-class PlushieMenu(isStatue: Boolean = false, page: Int = 1) : InventoryHolder {
+class PlushieMenu(private val isStatue: Boolean = false, private val page: Int = 1) : InventoryHolder {
 
     private val mainMenu: Inventory = ChestGUI.builder(9,this, true)
         .title((Txt("Plushies").color(randomColor(brightness = 0.6f))).c)
@@ -34,5 +34,17 @@ class PlushieMenu(isStatue: Boolean = false, page: Int = 1) : InventoryHolder {
 
     fun mainMenu(): Inventory {
         return this.mainMenu
+    }
+
+    fun nextPage(): PlushieMenu {
+        return PlushieMenu(isStatue, page + 1)
+    }
+
+    fun isStatue(): Boolean {
+        return isStatue
+    }
+
+    fun prevPage(): PlushieMenu {
+        return PlushieMenu(isStatue, if (page > 1) page - 1 else 1)
     }
 }
