@@ -9,6 +9,7 @@ import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.tag.TagKey
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.kyori.adventure.util.TriState
 import org.bukkit.*
@@ -440,8 +441,8 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @return The updated `Item` with the specified name applied.
      */
     fun itemName(name: Component): ItemBuilder {
-        if (itemStack.type.name.endsWith("_HEAD")) {
-            itemStack.setData(DataComponentTypes.CUSTOM_NAME, name)
+        if (itemStack.type.name.endsWith("_HEAD") || itemStack.type == Material.WRITTEN_BOOK) {
+            itemStack.setData(DataComponentTypes.CUSTOM_NAME, name.decoration(TextDecoration.ITALIC, false))
         } else {
             itemStack.setData(DataComponentTypes.ITEM_NAME, name)
         }

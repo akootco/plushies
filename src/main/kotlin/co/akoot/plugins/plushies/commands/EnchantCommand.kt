@@ -6,7 +6,6 @@ import co.akoot.plugins.bluefox.util.Txt
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
-import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.command.CommandSender
@@ -31,7 +30,7 @@ class EnchantCommand(plugin: FoxPlugin) : FoxCommand(plugin, "enchant") {
         val p = playerCheck(sender) ?: return false
 
         if (args.isEmpty()) {
-            p.sendMessage(Txt("/$name", NamedTextColor.RED)
+            p.sendMessage(Txt("/$name", "error_accent")
                 .plus(Txt(" <enchantment>", "accent")
                     .plus(Txt(" <level>","number"))).c)
             return true

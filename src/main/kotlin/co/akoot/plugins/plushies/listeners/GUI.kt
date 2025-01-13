@@ -59,12 +59,13 @@ class GUI : Listener {
                 if (menuItem?.type == book) {
                     if (pItem.type != book) { // HEY! no hacking!
                         p.sendMessage(Txt("You must be holding a written book!", "error_accent").c)
-                    } // is it a book?
-
-                    pInv.setItemInMainHand(ItemBuilder.builder(pItem)
-                        .customModelData(menuItem.itemMeta.customModelData)
-                        .build())
-
+                    } else {
+                        pInv.setItemInMainHand(
+                            ItemBuilder.builder(pItem)
+                                .customModelData(menuItem.itemMeta.customModelData)
+                                .build()
+                        )
+                    }
                 }
                 event.isCancelled = true
             }
