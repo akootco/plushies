@@ -21,11 +21,9 @@ class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
 
         // not even sure why i am restricting this to axes for normal player
         if (!hasPermission(sender, "all") && !item.type.name.endsWith("_AXE")) {
-            sendError(p, "You need to be holding an axe")
-            return false
+            return sendError(p, "You need to be holding an axe")
         } else if (item.isEmpty) {
-            sendError(p, "You can't throw [AIR], check out wind charges.")
-            return false
+            return sendError(p, "You can't throw [AIR], check out wind charges.")
         }
 
         // Only add lightning effect if the player asked for it

@@ -20,8 +20,7 @@ class MaceCommand(plugin: FoxPlugin) : FoxCommand(plugin, "mace", description = 
         // i might change this to work for any tool
         // will need to find/make 3D models first
         if (item.type != Material.MACE) {
-            sendError(p, "You need to be holding a mace")
-            return false
+            return sendError(p, "You need to be holding a mace")
         }
 
         if (item.itemMeta.hasCustomModelData()) {

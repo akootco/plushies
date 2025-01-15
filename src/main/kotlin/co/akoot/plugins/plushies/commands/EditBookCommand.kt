@@ -22,8 +22,7 @@ class EditBookCommand(plugin: FoxPlugin) :
         val item = p.inventory.itemInMainHand
 
         if (p.inventory.itemInMainHand.type != Material.WRITTEN_BOOK) {
-            sendError(p, "You need to be holding a written book!")
-            return false
+            return sendError(p, "You need to be holding a written book!")
         }
 
         val bookMeta = item.itemMeta as BookMeta

@@ -50,7 +50,7 @@ class EnchantPreset private constructor(private val itemStack: ItemStack) {
             Enchantment.UNBREAKING to 3,
             Enchantment.EFFICIENCY to 5,
         ).apply {
-            mendUnbrk
+            putAll(mendUnbrk)
             if (isFortune) {
                 put(Enchantment.FORTUNE, 3)
             } else {
@@ -70,7 +70,7 @@ class EnchantPreset private constructor(private val itemStack: ItemStack) {
         ItemBuilder.builder(itemStack).enchants(mutableMapOf(
             Enchantment.EFFICIENCY to 5,
         ).apply {
-            mendUnbrk
+            putAll(mendUnbrk)
             if (isFortune) {
                 put(Enchantment.FORTUNE, 3)
             } else {

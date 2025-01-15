@@ -47,9 +47,8 @@ class PlushieCommand(plugin: FoxPlugin) : FoxCommand(plugin, "plushie", aliases 
 
 
             else if (item.type != Material.TOTEM_OF_UNDYING) {
-                sendError(sender, "You must be holding a totem!")
                 // what did you expect?
-                return false
+                return sendError(sender, "You must be holding a totem!")
             }
 
             // swap the totem with the super cool new plushie
@@ -60,7 +59,6 @@ class PlushieCommand(plugin: FoxPlugin) : FoxCommand(plugin, "plushie", aliases 
         } else {
             // no plushie found
             sendError(sender, "$arg does not exist!")
-            false
         }
     }
 }

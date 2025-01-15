@@ -12,15 +12,15 @@ import java.io.File
 class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf("akootai")) {
 
     private val configFile = File(plugin.dataFolder, "ai.conf")
-    private val laysConfig = FoxConfig(configFile)
-    private val responses = laysConfig.getStringList("responses").toMutableList()
+    private val aiConfig = FoxConfig(configFile)
+    private val responses = aiConfig.getStringList("responses").toMutableList()
 
     override fun onTabComplete(sender: CommandSender, args: Array<out String>): MutableList<String> {
         if (!hasPermission(sender, "edit")) return mutableListOf()
 
         if (args.size == 1) {
             return mutableListOf("add", "remove")
-        } else if (args.size == 2 && (args[0] == ("remove") || args[0] == ("rem"))) {
+        } else if (args[0] in setOf("remove", "rem")) {
             return responses
         }
 
@@ -35,16 +35,14 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
 
             "add" -> {
                 if (args.size < 2) {
-                    sendError(sender, "You must specify a response to add!")
-                    return false
+                    return sendError(sender, "You must specify a response to add!")
                 }
                 addResponse(args.copyOfRange(1, args.size).joinToString(" ")).send(sender).value
             }
 
             "remove", "rem" -> {
                 if (args.size < 2) {
-                    sendError(sender, "You must specify a response to remove!")
-                    return false
+                    return sendError(sender, "You must specify a response to remove!")
                 }
                 removeResponse(args.copyOfRange(1, args.size).joinToString(" ")).send(sender).value
             }
@@ -74,7 +72,7 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
                         + Txt(" not found!")).color("error_text").c
             )
         } else {
-            laysConfig.set("responses", responses) // not anymore!
+            aiConfig.set("responses", responses) // not anymore!
             Result.success(
                 (Txt()
                         + Txt(response).color("accent")
@@ -93,7 +91,7 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
             )
         } else {
             responses.add(response)
-            laysConfig.set("responses", responses)
+            aiConfig.set("responses", responses)
             Result.success(
                 (Txt()
                         + Txt(response).color("accent")

@@ -36,7 +36,6 @@ import java.util.*
  *
  * @property itemStack The `ItemStack` representing the item.
  *
- * @param amount The number of items in the stack. Defaults to 1.
  */
 class ItemBuilder private constructor(private var itemStack: ItemStack) {
     private val container: PersistentDataContainer?
@@ -156,9 +155,9 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param shownInTooltip
      * @return
      */
-    fun dye(color: Color, shownInTooltip: Boolean = true): ItemBuilder {
+    fun dye(color: String, shownInTooltip: Boolean = true): ItemBuilder {
         val dye = DyedItemColor.dyedItemColor()
-        dye.color(color)
+        dye.color(Color.fromRGB(color.toInt(16)))
         dye.showInTooltip(shownInTooltip)
         itemStack.setData(DataComponentTypes.DYED_COLOR, dye.build())
         return this
@@ -192,9 +191,10 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param id The model ID.
      * @return the updated `Item`.
      */
-    fun itemModel(namespace: String, id: String): ItemBuilder {
-        val model = NamespacedKey(namespace, id)
-        itemStack.setData(DataComponentTypes.ITEM_MODEL, model)
+    fun itemModel(model: String): ItemBuilder {
+        itemStack.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData()
+            .addString(model)
+            .build())
         return this
     }
 

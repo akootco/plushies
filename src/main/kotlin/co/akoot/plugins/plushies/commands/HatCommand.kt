@@ -20,8 +20,7 @@ class HatCommand(plugin: FoxPlugin) : FoxCommand(plugin, "hat") {
         val item = p.inventory.itemInMainHand
 
         if (item.isEmpty) {
-            sendError(p, "You need to hold something")
-            return false
+            return sendError(p, "You need to hold something")
         }
 
         val hatKey = NamespacedKey(plugin, "hat")

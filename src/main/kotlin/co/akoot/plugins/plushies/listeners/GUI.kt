@@ -56,6 +56,11 @@ class GUI : Listener {
             is BookMenu -> {
                 val book = Material.WRITTEN_BOOK
 
+                when (menuItem) {
+                    nextPage -> p.openInventory((holder as BookMenu).nextPage().inventory)
+                    prevPage -> p.openInventory((holder as BookMenu).prevPage().inventory)
+                }
+
                 if (menuItem?.type == book) {
                     if (pItem.type != book) { // HEY! no hacking!
                         p.sendMessage(Txt("You must be holding a written book!", "error_accent").c)
@@ -71,7 +76,6 @@ class GUI : Listener {
             }
         }
     }
-
 //    @EventHandler
 //    fun onInvClose(event: InventoryCloseEvent) {
 //        val inv = event.inventory

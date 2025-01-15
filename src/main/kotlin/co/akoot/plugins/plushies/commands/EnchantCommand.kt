@@ -39,8 +39,7 @@ class EnchantCommand(plugin: FoxPlugin) : FoxCommand(plugin, "enchant") {
         val item = p.inventory.itemInMainHand
 
         if (item.type == Material.AIR) {
-            sendError(p, "You must hold something.")
-            return false
+            return sendError(p, "You must hold something.")
         }
 
         val enchant = RegistryAccess.registryAccess()
@@ -48,14 +47,12 @@ class EnchantCommand(plugin: FoxPlugin) : FoxCommand(plugin, "enchant") {
             .get(NamespacedKey.minecraft(args[0]))
 
         if (enchant == null) {
-            sendError(p, "${args[0]} is not a valid enchantment.")
-            return false
+            return sendError(p, "${args[0]} is not a valid enchantment.")
         }
         val lvl = args.getOrNull(1)?.toIntOrNull() ?: 1
 
         if (lvl !in 1..255) {
-            sendError(p, "level must be between 1 and 255.")
-            return true
+            return sendError(p, "level must be between 1 and 255.")
         }
 
         ItemBuilder.builder(item)

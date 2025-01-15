@@ -29,15 +29,13 @@ class PresetCommand(plugin: FoxPlugin) : FoxCommand(plugin, "preset") {
         val p = playerCheck(sender) ?: return false
 
         if (args.isEmpty()) {
-            sendError(p, "You must define a preset.")
-            return true
+            return sendError(p, "You must define a preset.")
         }
 
         val item = p.inventory.itemInMainHand
 
         if (item.type == Material.AIR) {
-            sendError(p, "You must hold something.")
-            return false
+            return sendError(p, "You must hold something.")
         }
 
         when (args[0]) {
@@ -91,8 +89,7 @@ class PresetCommand(plugin: FoxPlugin) : FoxCommand(plugin, "preset") {
             }
 
             else -> {
-                sendError(p,"Preset: '${args[0]}' does not exist!")
-                return false
+                return sendError(p,"Preset: '${args[0]}' does not exist!")
             }
         }
     }

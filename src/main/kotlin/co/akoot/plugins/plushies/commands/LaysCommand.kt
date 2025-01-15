@@ -33,8 +33,7 @@ class LaysCommand(plugin: FoxPlugin) : FoxCommand(plugin, "lays") {
 
             "add" -> {
                 if (args.size < 2) {
-                    sendError(sender, "You must specify a chip to add!")
-                    return false
+                    return sendError(sender, "You must specify a chip to add!")
                 }
 
                 addChip(args.copyOfRange(1, args.size).joinToString(" ")).send(sender).value
@@ -42,8 +41,7 @@ class LaysCommand(plugin: FoxPlugin) : FoxCommand(plugin, "lays") {
 
             "remove" -> {
                 if (args.size < 2) {
-                    sendError(sender, "You must specify a chip to remove!")
-                    return false
+                    return sendError(sender, "You must specify a chip to remove!")
                 }
                 removeChip(args.copyOfRange(1, args.size).joinToString(" ")).send(sender).value
             }
