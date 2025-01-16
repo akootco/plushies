@@ -2,49 +2,57 @@ package co.akoot.plugins.plushies.gui
 
 import co.akoot.plugins.bluefox.util.ColorUtil.randomColor
 import co.akoot.plugins.bluefox.util.Txt
-import co.akoot.plugins.plushies.gui.Plush.home
-import co.akoot.plugins.plushies.gui.Plush.nextPage
-import co.akoot.plugins.plushies.gui.Plush.pMenu
-import co.akoot.plugins.plushies.gui.Plush.prevPage
-import co.akoot.plugins.plushies.gui.Plush.sMenu
-import co.akoot.plugins.plushies.gui.Plush.setPlushies
+import co.akoot.plugins.plushies.gui.MenuItems.home
+import co.akoot.plugins.plushies.gui.MenuItems.nextPage
+import co.akoot.plugins.plushies.util.Plush.plushies
+import co.akoot.plugins.plushies.gui.MenuItems.prevPage
+import co.akoot.plugins.plushies.util.Plush.createPlushie
 import co.akoot.plugins.plushies.util.builders.ChestGUI
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
+import org.bukkit.inventory.ItemStack
+import kotlin.math.min
 
 class PlushieMenu(private val isStatue: Boolean = false, private val page: Int = 1) : InventoryHolder {
 
-    private val mainMenu: Inventory = ChestGUI.builder(9,this, true)
-        .title((Txt("Plushies").color(randomColor(brightness = 0.6f))).c)
-        .setItem(2, pMenu)
-        .setItem(6, sMenu)
-        .build()
+    private val plushMenu: Inventory = ChestGUI.builder(54, this, true).apply {
+        title(Txt(if (isStatue) "Statues" else "Plushies").color(randomColor(brightness = 0.6f)).c)
+        if (page > 1) setItem(45,prevPage)
+        setItem(49, home)
+        if (plushies.size > page * 45) setItem(53, nextPage)
+        setItems(0..44, setPlushies(page))
+    }.build()
 
-    private val plushMenu: Inventory = ChestGUI.builder(54, this, true)
-        .title(Txt(if (isStatue) "Statues" else "Plushies").color(randomColor(brightness = 0.6f)).c)
-        .setItem(45,prevPage)
-        .setItem(49, home)
-        .setItem(53, nextPage)
-        .setItems(0..44, setPlushies(page))
-        .build()
+    // create list of plushie items
+    private fun setPlushies(pageNumber: Int): List<ItemStack> {
+        val plushList = mutableListOf<ItemStack>()
 
-    override fun getInventory(): Inventory {
-        return this.plushMenu
-    }
+        val start = (pageNumber - 1) * 45
+        val end = min(start + 45, plushies.size)
 
-    fun mainMenu(): Inventory {
-        return this.mainMenu
+        // only get what fits on the page
+        for (index in start until end) {
+            val plushie = plushies[index]
+            val name = plushie.first.replace("_.*".toRegex(), "")
+            plushList.add(createPlushie(name, plushie.second))
+        }
+
+        return plushList
     }
 
     fun nextPage(): PlushieMenu {
         return PlushieMenu(isStatue, page + 1)
     }
 
+    fun prevPage(): PlushieMenu {
+        return PlushieMenu(isStatue, page - 1)
+    }
+
     fun isStatue(): Boolean {
         return isStatue
     }
 
-    fun prevPage(): PlushieMenu {
-        return PlushieMenu(isStatue, if (page > 1) page - 1 else 1)
+    override fun getInventory(): Inventory {
+        return this.plushMenu
     }
 }

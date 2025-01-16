@@ -2,12 +2,13 @@ package co.akoot.plugins.plushies.listeners
 
 import co.akoot.plugins.bluefox.util.Txt
 import co.akoot.plugins.plushies.gui.BookMenu
-import co.akoot.plugins.plushies.gui.Plush.home
-import co.akoot.plugins.plushies.gui.Plush.nextPage
-import co.akoot.plugins.plushies.gui.Plush.pMenu
-import co.akoot.plugins.plushies.gui.Plush.plushMsg
-import co.akoot.plugins.plushies.gui.Plush.prevPage
-import co.akoot.plugins.plushies.gui.Plush.sMenu
+import co.akoot.plugins.plushies.gui.MenuItems.home
+import co.akoot.plugins.plushies.gui.MenuItems.nextPage
+import co.akoot.plugins.plushies.gui.MenuItems.pMenu
+import co.akoot.plugins.plushies.gui.MenuItems.prevPage
+import co.akoot.plugins.plushies.gui.MenuItems.sMenu
+import co.akoot.plugins.plushies.util.Plush.plushMsg
+import co.akoot.plugins.plushies.gui.PlushieMainMenu
 import co.akoot.plugins.plushies.gui.PlushieMenu
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
@@ -26,9 +27,18 @@ class GUI : Listener {
         val pItem = pInv.itemInMainHand
 
         when (holder ?: return) {
+
+            is PlushieMainMenu -> {
+                when (menuItem) {
+                    pMenu -> p.openInventory(PlushieMenu().inventory)
+                    sMenu -> p.openInventory(PlushieMenu(true).inventory)
+                }
+                event.isCancelled = true
+            }
+
             is PlushieMenu -> {
                 when (menuItem) {
-                    home -> p.openInventory(PlushieMenu().mainMenu())
+                    home -> p.openInventory(PlushieMainMenu().inventory)
                     pMenu -> p.openInventory(PlushieMenu().inventory)
                     sMenu -> p.openInventory(PlushieMenu(true).inventory)
                     nextPage -> p.openInventory((holder as PlushieMenu).nextPage().inventory)

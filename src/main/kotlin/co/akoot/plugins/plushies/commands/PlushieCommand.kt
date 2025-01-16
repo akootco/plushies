@@ -2,10 +2,10 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
-import co.akoot.plugins.plushies.gui.Plush.createPlushie
-import co.akoot.plugins.plushies.gui.Plush.plushMsg
-import co.akoot.plugins.plushies.gui.Plush.plushies
-import co.akoot.plugins.plushies.gui.PlushieMenu
+import co.akoot.plugins.plushies.util.Plush.createPlushie
+import co.akoot.plugins.plushies.util.Plush.plushMsg
+import co.akoot.plugins.plushies.util.Plush.plushies
+import co.akoot.plugins.plushies.gui.PlushieMainMenu
 import org.bukkit.*
 import org.bukkit.command.CommandSender
 
@@ -27,7 +27,7 @@ class PlushieCommand(plugin: FoxPlugin) : FoxCommand(plugin, "plushie", aliases 
 
         if (args.isEmpty()) {
             // if no args, open main menu
-            p.openInventory(PlushieMenu().mainMenu())
+            p.openInventory(PlushieMainMenu().inventory)
             return true
         }
 

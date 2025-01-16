@@ -225,9 +225,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      */
     fun writtenBook(title: String, author: String, pages: MutableList<Component>): ItemBuilder {
         itemStack.setData(DataComponentTypes.WRITTEN_BOOK_CONTENT,
-            WrittenBookContent.writtenBookContent("", "")
-                .title(title)
-                .author(author)
+            WrittenBookContent.writtenBookContent(title, author)
                 .addPages(pages)
                 .build()
         )
