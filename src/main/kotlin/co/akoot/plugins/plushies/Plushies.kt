@@ -3,9 +3,11 @@ package co.akoot.plugins.plushies
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.plushies.Plushies.Configs.conf
+import co.akoot.plugins.plushies.Plushies.Configs.headConf
 import co.akoot.plugins.plushies.Plushies.Configs.pConf
 import co.akoot.plugins.plushies.commands.*
 import co.akoot.plugins.plushies.listeners.GUI
+import co.akoot.plugins.plushies.listeners.EntityEvents
 import co.akoot.plugins.plushies.listeners.PlayerEvents
 
 class Plushies : FoxPlugin("plushies") {
@@ -13,6 +15,7 @@ class Plushies : FoxPlugin("plushies") {
     object Configs {
         lateinit var pConf: FoxConfig
         lateinit var conf: FoxConfig
+        lateinit var headConf: FoxConfig
     }
 
     override fun load() {
@@ -40,6 +43,7 @@ class Plushies : FoxPlugin("plushies") {
 
     override fun registerEvents() {
         registerEventListener(GUI())
+        registerEventListener(EntityEvents())
         registerEventListener(PlayerEvents(this))
     }
 
@@ -48,5 +52,6 @@ class Plushies : FoxPlugin("plushies") {
         registerConfig("ai")
         pConf = registerConfig("plushies")
         conf = registerConfig("main")
+        headConf = registerConfig("heads")
     }
 }

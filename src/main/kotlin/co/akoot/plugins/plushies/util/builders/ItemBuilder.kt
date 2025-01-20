@@ -18,6 +18,7 @@ import org.bukkit.attribute.AttributeModifier
 import org.bukkit.block.BlockType
 import org.bukkit.damage.DamageType
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.ItemRarity
 import org.bukkit.inventory.ItemStack
@@ -478,6 +479,16 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
         val json = "{\"textures\":{\"SKIN\":{\"url\":\"$textureUrl\"}}}"
         val encodedTexture = Base64.getEncoder().encodeToString(json.toByteArray(StandardCharsets.UTF_8))
         profile.setProperty(ProfileProperty("textures", encodedTexture))
+        headMeta.playerProfile = profile
+        itemStack.setItemMeta(headMeta)
+        return this
+    }
+
+    fun playerHead(player: Player): ItemBuilder {
+        if (!itemStack.type.name.endsWith("_HEAD")) return this
+
+        val headMeta = meta as SkullMeta
+        val profile = Bukkit.createProfile(player.uniqueId, player.name)
         headMeta.playerProfile = profile
         itemStack.setItemMeta(headMeta)
         return this
