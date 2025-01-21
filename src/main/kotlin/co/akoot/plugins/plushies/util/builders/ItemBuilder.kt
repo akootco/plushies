@@ -494,6 +494,11 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
         return this
     }
 
+    fun headSound(sound: String): ItemBuilder {
+        itemStack.setData(DataComponentTypes.NOTE_BLOCK_SOUND, NamespacedKey.minecraft(sound))
+        return this
+    }
+
     /**
      * Controls the color of the item name based on its rarity.
      *

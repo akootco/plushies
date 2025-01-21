@@ -36,6 +36,8 @@ fun onEntityDeath(event: EntityDeathEvent) {
             return
         }
         else {
+            if (victim is Creeper && victim.isPowered) event.drops.removeLast()
+
             event.drops.add(
                 headConf.getString(headTexture(victim).lowercase())?.let {
                     ItemBuilder.builder(ItemStack(Material.PLAYER_HEAD))
