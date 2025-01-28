@@ -9,6 +9,7 @@ import co.akoot.plugins.plushies.commands.*
 import co.akoot.plugins.plushies.listeners.GUI
 import co.akoot.plugins.plushies.listeners.EntityEvents
 import co.akoot.plugins.plushies.listeners.PlayerEvents
+import co.akoot.plugins.plushies.util.Recipes.addRecipes
 
 class Plushies : FoxPlugin("plushies") {
 
@@ -20,6 +21,7 @@ class Plushies : FoxPlugin("plushies") {
 
     override fun load() {
         logger.info("welcome back!")
+        addRecipes()
     }
 
     override fun unload() {
