@@ -1,7 +1,7 @@
 package co.akoot.plugins.plushies.gui
 
 import co.akoot.plugins.bluefox.util.ColorUtil.randomColor
-import co.akoot.plugins.bluefox.util.Txt
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.gui.MenuItems.home
 import co.akoot.plugins.plushies.gui.MenuItems.nextPage
 import co.akoot.plugins.plushies.util.Plush.plushies
@@ -16,7 +16,7 @@ import kotlin.math.min
 class PlushieMenu(private val isStatue: Boolean = false, private val page: Int = 1) : InventoryHolder {
 
     private val plushMenu: Inventory = ChestGUI.builder(54, this, true).apply {
-        title(Txt(if (isStatue) "Statues" else "Plushies").color(randomColor(brightness = 0.6f)).c)
+        title(Text(if (isStatue) "Statues" else "Plushies").color(randomColor(brightness = 0.6f)).component)
         if (page > 1) setItem(45,prevPage)
         setItem(49, home)
         if (plushies.size > page * 45) setItem(53, nextPage)

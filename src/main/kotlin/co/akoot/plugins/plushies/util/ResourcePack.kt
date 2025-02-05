@@ -1,6 +1,6 @@
 package co.akoot.plugins.plushies.util
 
-import co.akoot.plugins.bluefox.util.Txt
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Configs.conf
 import net.kyori.adventure.resource.ResourcePackInfo
 import net.kyori.adventure.resource.ResourcePackRequest
@@ -16,14 +16,14 @@ object ResourcePack {
         if (player.name.startsWith(".")) return false
 
         if (conf.getBoolean("pack.enabled") == false) {
-            player.sendMessage(Txt("Resource pack is disabled.", "error_accent").c)
+            player.sendMessage(Text("Resource pack is disabled.", "error_accent").component)
             return false
         }
 
         val hash = conf.getString("pack.sha1")
 
         if (hash == null || hash.length != 40) {
-            player.sendMessage(Txt("Resource pack hash is invalid.", "error_accent").c)
+            player.sendMessage(Text("Resource pack hash is invalid.", "error_accent").component)
             logger().warn("Resource pack hash is invalid.")
             return false
         }
@@ -31,7 +31,7 @@ object ResourcePack {
         val urlPath = conf.getString("pack.file")
 
         if (player.protocolVersion < 769) { // untested but i will just assume it works
-            player.sendMessage(Txt("Support for versions below 1.21.4 will end soon.\nPlease update your client!", "error_accent").c)
+            player.sendMessage(Text("Support for versions below 1.21.4 will end soon.\nPlease update your client!", "error_accent").component)
             // please update soon :pwease:, i do not want to have to edit two files anymore
             // if server is updated beyond 1.21.4, this will be removed and the player will just have to deal with it.
         }

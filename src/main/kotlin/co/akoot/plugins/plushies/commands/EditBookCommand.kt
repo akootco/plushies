@@ -2,7 +2,7 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
-import co.akoot.plugins.bluefox.util.Txt
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -31,8 +31,8 @@ class EditBookCommand(plugin: FoxPlugin) :
         // send message and return if sender is not the author
         if (bookMeta.author != p.name) {
             p.sendMessage(
-                (Txt("Nice try, pal! This book belongs to ")
-                        + Txt(bookMeta.author ?: "Unknown Author").color("player")).c
+                (Text("Nice try, pal! This book belongs to ")
+                        + Text(bookMeta.author ?: "Unknown Author").color("player")).component
             )
             return false
         }

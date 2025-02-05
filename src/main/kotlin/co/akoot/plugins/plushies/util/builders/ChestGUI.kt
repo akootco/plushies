@@ -1,6 +1,6 @@
 package co.akoot.plugins.plushies.util.builders
 
-import co.akoot.plugins.bluefox.util.Txt
+import co.akoot.plugins.bluefox.util.Text
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -19,7 +19,7 @@ import org.bukkit.inventory.ItemStack
  * @constructor Create Chest GUI
  */
 class ChestGUI private constructor(private var size: Int, private val holder: InventoryHolder?, private val isMenu: Boolean = false) {
-    private var title: Component = Txt("Menu").c // Default title
+    private var title: Component = Text("Menu").component // Default title
     private val items: MutableMap<Int, ItemStack> = mutableMapOf()
 
     init { if (size !in 9..54 && size % 9 != 0) this.size = 27 }

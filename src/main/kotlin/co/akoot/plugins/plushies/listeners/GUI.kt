@@ -1,6 +1,6 @@
 package co.akoot.plugins.plushies.listeners
 
-import co.akoot.plugins.bluefox.util.Txt
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.gui.BookMenu
 import co.akoot.plugins.plushies.gui.MenuItems.home
 import co.akoot.plugins.plushies.gui.MenuItems.nextPage
@@ -48,7 +48,7 @@ class GUI : Listener {
                 if (menuItem?.type == Material.TOTEM_OF_UNDYING && menuItem != pMenu) { // is it a friend?
 
                     if (pItem.type != Material.TOTEM_OF_UNDYING) { // HEY! no hacking!
-                        p.sendMessage(Txt("You must be holding a totem!", "error_accent").c)
+                        p.sendMessage(Text("You must be holding a totem!", "error_accent").component)
                     } else {
                         when ((holder as PlushieMenu).isStatue()) {
                             true -> ItemBuilder.builder(pItem).copyOf(menuItem)
@@ -57,7 +57,7 @@ class GUI : Listener {
                             false -> ItemBuilder.builder(pItem).copyOf(menuItem).build() // normal
                         }
 
-                        plushMsg(PlainTextComponentSerializer.plainText().serialize(menuItem.effectiveName())).c
+                        plushMsg(PlainTextComponentSerializer.plainText().serialize(menuItem.effectiveName())).component
                     }
                 }
                 event.isCancelled = true
@@ -73,7 +73,7 @@ class GUI : Listener {
 
                 if (menuItem?.type == book) {
                     if (pItem.type != book) { // HEY! no hacking!
-                        p.sendMessage(Txt("You must be holding a written book!", "error_accent").c)
+                        p.sendMessage(Text("You must be holding a written book!", "error_accent").component)
                     } else {
                         pInv.setItemInMainHand(
                             ItemBuilder.builder(pItem)

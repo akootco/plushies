@@ -1,6 +1,6 @@
 package co.akoot.plugins.plushies.util.builders
 
-import co.akoot.plugins.bluefox.util.Txt
+import co.akoot.plugins.bluefox.util.Text
 import com.destroystokyo.paper.profile.ProfileProperty
 import io.papermc.paper.datacomponent.DataComponentType
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -83,7 +83,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
     }
 
     fun filler(): ItemBuilder {
-        itemName(Txt().c)
+        itemName(Text().component)
         hideTooltip()
         return this
     }

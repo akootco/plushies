@@ -41,7 +41,7 @@ class PlushieCommand(plugin: FoxPlugin) : FoxCommand(plugin, "plushie", aliases 
 
             if (p.gameMode == GameMode.CREATIVE) {
                 p.inventory.addItem(createPlushie(plushName, plushie.second))
-                p.sendMessage(plushMsg(plushName).c)
+                p.sendMessage(plushMsg(plushName).component)
                 return true
             }
 
@@ -53,7 +53,7 @@ class PlushieCommand(plugin: FoxPlugin) : FoxCommand(plugin, "plushie", aliases 
 
             // swap the totem with the super cool new plushie
             p.inventory.setItemInMainHand(createPlushie(plushName, if (args.getOrNull(1) == "statue") plushie.second + 1 else plushie.second))
-            p.sendMessage(plushMsg(plushName).c)
+            p.sendMessage(plushMsg(plushName).component)
             true
 
         } else {

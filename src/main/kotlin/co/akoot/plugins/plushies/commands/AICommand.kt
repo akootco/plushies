@@ -4,7 +4,7 @@ import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
-import co.akoot.plugins.bluefox.util.Txt
+import co.akoot.plugins.bluefox.util.Text
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import java.io.File
@@ -56,10 +56,10 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
     private fun response(sender: CommandSender): Boolean {
         if (responses.isEmpty()) return sendError(sender, "No responses found!")
         Bukkit.getServer().sendMessage(
-            (Txt() // putting a hover on the start shows it for the whole message?
-                    + Txt("[AI]").color(MONTH_COLOR).hover("Ä_v1.0-alpha") // need to put it here I guess
-                    + Txt(" Akoot.AI ").color("player")
-                    + Txt("» " + responses.random()).color("text")).c
+            (Text() // putting a hover on the start shows it for the whole message?
+                    + Text("[AI]").color(MONTH_COLOR).hover("Ä_v1.0-alpha") // need to put it here I guess
+                    + Text(" Akoot.AI ").color("player")
+                    + Text("» " + responses.random()).color("text")).component
         )
         return true
     }
@@ -67,16 +67,16 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
     private fun removeResponse(response: String): Result<Boolean> {
         return if (!responses.remove(response)) { // does it exist?
             Result.fail(
-                (Txt()
-                        + Txt(response).color("accent")
-                        + Txt(" not found!")).color("error_text").c
+                (Text()
+                        + Text(response).color("accent")
+                        + Text(" not found!")).color("error_text").component
             )
         } else {
             aiConfig.set("responses", responses) // not anymore!
             Result.success(
-                (Txt()
-                        + Txt(response).color("accent")
-                        + Txt(" was removed!")).color("text").c
+                (Text()
+                        + Text(response).color("accent")
+                        + Text(" was removed!")).color("text").component
             )
         }
     }
@@ -85,17 +85,17 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
         return if (responses.contains(response)) {
             // easily bypassed but oh well, that is what permissions are for.
             Result.fail(
-                (Txt()
-                        + Txt(response).color("accent")
-                        + Txt(" already exists!")).color("error_text").c
+                (Text()
+                        + Text(response).color("accent")
+                        + Text(" already exists!")).color("error_text").component
             )
         } else {
             responses.add(response)
             aiConfig.set("responses", responses)
             Result.success(
-                (Txt()
-                        + Txt(response).color("accent")
-                        + Txt(" has been added!")).color("text").c
+                (Text()
+                        + Text(response).color("accent")
+                        + Text(" has been added!")).color("text").component
             )
         }
     }

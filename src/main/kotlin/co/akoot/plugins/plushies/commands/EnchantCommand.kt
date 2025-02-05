@@ -2,7 +2,7 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
-import co.akoot.plugins.bluefox.util.Txt
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
@@ -30,9 +30,9 @@ class EnchantCommand(plugin: FoxPlugin) : FoxCommand(plugin, "enchant") {
         val p = playerCheck(sender) ?: return false
 
         if (args.isEmpty()) {
-            p.sendMessage(Txt("/$name", "error_accent")
-                .plus(Txt(" <enchantment>", "accent")
-                    .plus(Txt(" <level>","number"))).c)
+            p.sendMessage(Text("/$name", "error_accent")
+                .plus(Text(" <enchantment>", "accent")
+                    .plus(Text(" <level>","number"))).component)
             return true
         }
 

@@ -1,6 +1,6 @@
 package co.akoot.plugins.plushies.util
 
-import co.akoot.plugins.bluefox.util.Txt
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.util.builders.CookRecipe
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
@@ -68,7 +68,7 @@ object Recipes {
     // ill probably move this over to food plugin, not sure yet
     private fun charcoal() {
         val charcoalBlock = ItemBuilder.builder(ItemStack(Material.COAL_BLOCK))
-            .itemName(Txt("Charcoal Block").c) // alces will make sure the name doesn't change
+            .itemName(Text("Charcoal Block").component) // alces will make sure the name doesn't change
             .build()
 
         CraftRecipe.builder("charcoal_block", charcoalBlock)

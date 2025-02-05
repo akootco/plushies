@@ -2,7 +2,7 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
-import co.akoot.plugins.bluefox.util.Txt
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import org.bukkit.NamespacedKey
 import org.bukkit.command.CommandSender
@@ -36,8 +36,8 @@ class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
 
         if (isThrowable) b.removepdc(key).build() else b.throwable(smite).build()
 
-        p.sendMessage((Txt(item.type.name.lowercase().replace("_", " ")).color("accent")
-                + Txt(" is ${if (isThrowable) "now" else "no longer"} throwable").color("text")).c)
+        p.sendMessage((Text(item.type.name.lowercase().replace("_", " ")).color("accent")
+                + Text(" is ${if (isThrowable) "now" else "no longer"} throwable").color("text")).component)
         return true
     }
 }

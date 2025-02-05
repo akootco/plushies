@@ -3,7 +3,7 @@ package co.akoot.plugins.plushies.commands
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.api.FoxPlugin
-import co.akoot.plugins.bluefox.util.Txt
+import co.akoot.plugins.bluefox.util.Text
 import org.bukkit.command.CommandSender
 import java.io.File
 
@@ -68,17 +68,17 @@ class LaysCommand(plugin: FoxPlugin) : FoxCommand(plugin, "lays") {
     private fun addChip(chip: String): Result<Boolean> {
         return if (chips.contains(chip)) { // fail if the chip already exists
             Result.fail(
-                (Txt("")
-                        + Txt(chip).color("accent")
-                        + Txt(" already exists!")).color("error_text").c
+                (Text("")
+                        + Text(chip).color("accent")
+                        + Text(" already exists!")).color("error_text").component
             )
         } else {
             chips.add(chip)
             laysConfig.set("chips", chips)
             Result.success(
-                (Txt("")
-                        + Txt(chip).color("accent")
-                        + Txt(" has been added!")).color("text").c
+                (Text("")
+                        + Text(chip).color("accent")
+                        + Text(" has been added!")).color("text").component
             )
         }
     }
@@ -86,16 +86,16 @@ class LaysCommand(plugin: FoxPlugin) : FoxCommand(plugin, "lays") {
     private fun removeChip(chip: String): Result<Boolean> {
         return if (!chips.remove(chip)) { // fail if the chip does not exist
             Result.fail(
-                (Txt("")
-                        + Txt(chip).color("accent")
-                        + Txt(" not found!")).color("error_text").c
+                (Text("")
+                        + Text(chip).color("accent")
+                        + Text(" not found!")).color("error_text").component
             )
         } else {
             laysConfig.set("chips", chips)
             Result.success(
-                (Txt("")
-                        + Txt(chip).color("accent")
-                        + Txt(" was removed!")).color("text").c
+                (Text("")
+                        + Text(chip).color("accent")
+                        + Text(" was removed!")).color("text").component
             )
         }
     }

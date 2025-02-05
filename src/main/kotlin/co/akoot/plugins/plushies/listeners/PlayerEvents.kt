@@ -1,6 +1,6 @@
 package co.akoot.plugins.plushies.listeners
 
-import co.akoot.plugins.bluefox.util.Txt
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Configs.conf
 import co.akoot.plugins.plushies.util.ResourcePack.setPack
 import io.papermc.paper.event.player.AsyncChatEvent
@@ -27,7 +27,7 @@ class PlayerEvents(private val plugin: Plugin) : Listener {
 
         object : BukkitRunnable() {
             override fun run() {
-                p.kick(Txt(msgConf.random()).c)
+                p.kick(Text(msgConf.random()).component)
             }
         }.runTask(plugin)
     }
@@ -48,8 +48,8 @@ class PlayerEvents(private val plugin: Plugin) : Listener {
 
         if (event.status == PlayerResourcePackStatusEvent.Status.DECLINED && !messageSent.contains(player.uniqueId)) {
             // pack deniers(haters) are in the same boat as rule book dumpers :angerysad:
-            player.sendMessage((Txt("Resource pack was denied.\n" , "error_accent")
-                    + Txt("Click here to enable it", "accent").run("/rp !")).c)
+            player.sendMessage((Text("Resource pack was denied.\n" , "error_accent")
+                    + Text("Click here to enable it", "accent").run("/rp !")).component)
 
             messageSent.add(player.uniqueId)
         }

@@ -1,6 +1,6 @@
 package co.akoot.plugins.plushies.listeners
 
-import co.akoot.plugins.bluefox.util.Txt
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Configs.headConf
 import co.akoot.plugins.plushies.util.MobHead.headTexture
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
@@ -42,7 +42,7 @@ fun onEntityDeath(event: EntityDeathEvent) {
                 headConf.getString(headTexture(victim).lowercase())?.let {
                     ItemBuilder.builder(ItemStack(Material.PLAYER_HEAD))
                         .headTexture(it)
-                        .itemName(Txt("${victim.name} Head").c)
+                        .itemName(Text("${victim.name} Head").component)
                         .build()
                 }
             )
@@ -93,14 +93,14 @@ fun onEntityDeath(event: EntityDeathEvent) {
 
         if (entity.owner?.uniqueId != player.uniqueId) {
             player.sendMessage(
-                (Txt("${entity.name} belongs to ") +
-                        Txt(entity.owner?.name.toString(), "player").run("/profile ${entity.owner?.name}")).c
+                (Text("${entity.name} belongs to ") +
+                        Text(entity.owner?.name.toString(), "player").run("/profile ${entity.owner?.name}")).component
             )
             return
         }
 
         entity.isTamed = false
         event.isCancelled = true
-        player.sendMessage((Txt(entity.name, "accent") + Txt(" is no longer tamed!", "text")).c)
+        player.sendMessage((Text(entity.name, "accent") + Text(" is no longer tamed!", "text")).component)
     }
 }
