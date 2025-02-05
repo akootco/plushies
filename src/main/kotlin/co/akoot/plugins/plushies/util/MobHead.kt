@@ -7,6 +7,7 @@ object MobHead {
     val headTexture: (Entity) -> String = { victim ->
         // TODO: i need to get ALL of the variants and colors smH@!!!
         when (victim) {
+            is TraderLlama -> "trader_llama.${victim.color.name}"
             is MushroomCow -> "mooshroom.${victim.variant.name}"
             is Horse -> "horse.${victim.color.name}_${victim.style.name}"
             is Villager -> "villager.${victim.profession.key.key}_${victim.villagerType.key.key}"
@@ -23,6 +24,7 @@ object MobHead {
             is Ghast -> "ghast.${if (victim.isCharging) "crying" else "normal"}"
             is Llama -> "llama.${victim.color.name}"
             is Axolotl -> "axolotl.${victim.variant.name}"
+            is Fox -> "fox.${victim.foxType.name}${if (victim.isSleeping) "_sleeping" else ""}"
 
             else -> "default.${victim.type.name}"
         }

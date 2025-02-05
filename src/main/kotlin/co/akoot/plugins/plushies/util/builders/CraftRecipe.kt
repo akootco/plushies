@@ -57,33 +57,39 @@ class CraftRecipe private constructor(val name: String, private val result: Item
      *
      * @return
      */
-    fun shapeless(): Recipe {
-            val shapelessRecipe = ShapelessRecipe(NamespacedKey("plushies", name), result)
+    fun shapeless(plugin: String = "plushies"): Recipe {
+        val recipe = NamespacedKey(plugin, name)
+        val shapelessRecipe = ShapelessRecipe(recipe, result)
 
-            // Set the ingredients
-            shapelessIngredients.forEach { ingredient ->
-                shapelessRecipe.addIngredient(ingredient)
-            }
+        Bukkit.removeRecipe(recipe)
 
-            // Register the recipe
-            Bukkit.addRecipe(shapelessRecipe)
-            return shapelessRecipe
+        // Set the ingredients
+        shapelessIngredients.forEach { ingredient ->
+            shapelessRecipe.addIngredient(ingredient)
+        }
+
+        // Register the recipe
+        Bukkit.addRecipe(shapelessRecipe)
+        return shapelessRecipe
     }
 
-    fun shaped(): Recipe {
-            val shapedRecipe = ShapedRecipe(NamespacedKey("plushies", name), result)
+    fun shaped(plugin: String = "plushies"): Recipe {
+        val recipe = NamespacedKey(plugin, name)
+        val shapedRecipe = ShapedRecipe(recipe, result)
 
-            // Set the shape
-            shapedRecipe.shape(shape[0], shape[1], shape[2])
+        Bukkit.removeRecipe(recipe)
 
-            // Set the ingredients
-            ingredients.forEach { (key, itemStack) ->
-                shapedRecipe.setIngredient(key, itemStack)
-            }
+        // Set the shape
+        shapedRecipe.shape(shape[0], shape[1], shape[2])
 
-            // Register the recipe
-            Bukkit.addRecipe(shapedRecipe)
-            return shapedRecipe
+        // Set the ingredients
+        ingredients.forEach { (key, itemStack) ->
+            shapedRecipe.setIngredient(key, itemStack)
+        }
+
+        // Register the recipe
+        Bukkit.addRecipe(shapedRecipe)
+        return shapedRecipe
     }
 
     companion object {

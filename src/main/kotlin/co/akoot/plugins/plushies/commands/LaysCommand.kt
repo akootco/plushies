@@ -1,17 +1,14 @@
 package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
-import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.plushies.Plushies.Configs.laysConf
 import org.bukkit.command.CommandSender
-import java.io.File
 
 class LaysCommand(plugin: FoxPlugin) : FoxCommand(plugin, "lays") {
 
-    private val configFile = File(plugin.dataFolder, "lays.conf")
-    private val laysConfig = FoxConfig(configFile)
-    private val chips = laysConfig.getStringList("chips").toMutableList()
+    private val chips = laysConf.getStringList("chips").toMutableList()
 
     override fun onTabComplete(sender: CommandSender, args: Array<out String>): MutableList<String> {
         if (!hasPermission(sender, "edit")) return mutableListOf()
@@ -68,15 +65,15 @@ class LaysCommand(plugin: FoxPlugin) : FoxCommand(plugin, "lays") {
     private fun addChip(chip: String): Result<Boolean> {
         return if (chips.contains(chip)) { // fail if the chip already exists
             Result.fail(
-                (Text("")
+                (Text()
                         + Text(chip).color("accent")
                         + Text(" already exists!")).color("error_text").component
             )
         } else {
             chips.add(chip)
-            laysConfig.set("chips", chips)
+            laysConf.set("chips", chips)
             Result.success(
-                (Text("")
+                (Text()
                         + Text(chip).color("accent")
                         + Text(" has been added!")).color("text").component
             )
@@ -86,14 +83,14 @@ class LaysCommand(plugin: FoxPlugin) : FoxCommand(plugin, "lays") {
     private fun removeChip(chip: String): Result<Boolean> {
         return if (!chips.remove(chip)) { // fail if the chip does not exist
             Result.fail(
-                (Text("")
+                (Text()
                         + Text(chip).color("accent")
                         + Text(" not found!")).color("error_text").component
             )
         } else {
-            laysConfig.set("chips", chips)
+            laysConf.set("chips", chips)
             Result.success(
-                (Text("")
+                (Text()
                         + Text(chip).color("accent")
                         + Text(" was removed!")).color("text").component
             )

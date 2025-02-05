@@ -470,17 +470,16 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      *
      * @return The updated `Item` with the texture applied.
      */
+
     fun headTexture(textureId: String): ItemBuilder {
         if (!itemStack.type.name.endsWith("_HEAD")) return this
-
-        val headMeta = meta as SkullMeta
-        val profile = Bukkit.createProfile(UUID.fromString("f592cd5e-ca73-4612-a962-9f3ec57dc108"), "")
         val textureUrl = "http://textures.minecraft.net/texture/$textureId"
         val json = "{\"textures\":{\"SKIN\":{\"url\":\"$textureUrl\"}}}"
         val encodedTexture = Base64.getEncoder().encodeToString(json.toByteArray(StandardCharsets.UTF_8))
-        profile.setProperty(ProfileProperty("textures", encodedTexture))
-        headMeta.playerProfile = profile
-        itemStack.setItemMeta(headMeta)
+        itemStack.setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile()
+            .addProperty(ProfileProperty("textures", encodedTexture))
+            .uuid(UUID.fromString("f592cd5e-ca73-4612-a962-9f3ec57dc108"))
+        )
         return this
     }
 

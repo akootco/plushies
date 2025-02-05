@@ -1,19 +1,16 @@
 package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
-import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.plushies.Plushies.Configs.aiConf
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
-import java.io.File
 
 class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf("akootai")) {
 
-    private val configFile = File(plugin.dataFolder, "ai.conf")
-    private val aiConfig = FoxConfig(configFile)
-    private val responses = aiConfig.getStringList("responses").toMutableList()
+    private val responses = aiConf.getStringList("responses").toMutableList()
 
     override fun onTabComplete(sender: CommandSender, args: Array<out String>): MutableList<String> {
         if (!hasPermission(sender, "edit")) return mutableListOf()
@@ -72,7 +69,7 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
                         + Text(" not found!")).color("error_text").component
             )
         } else {
-            aiConfig.set("responses", responses) // not anymore!
+            aiConf.set("responses", responses) // not anymore!
             Result.success(
                 (Text()
                         + Text(response).color("accent")
@@ -91,7 +88,7 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
             )
         } else {
             responses.add(response)
-            aiConfig.set("responses", responses)
+            aiConf.set("responses", responses)
             Result.success(
                 (Text()
                         + Text(response).color("accent")

@@ -70,7 +70,12 @@ class FoodBuilder private constructor(private val itemStack: ItemStack) {
      * @param sound The name of the sound to be played while eating the item.
      */
     fun eatSound(sound: String): FoodBuilder {
-        cBuilder.sound(NamespacedKey.minecraft(sound))
+        cBuilder.sound(
+            if (sound.contains(":")) {
+                val soundKey = sound.split(":")
+                NamespacedKey(soundKey[0], soundKey[1])
+            }
+        else NamespacedKey.minecraft(sound))
         return this
     }
 
@@ -81,7 +86,13 @@ class FoodBuilder private constructor(private val itemStack: ItemStack) {
      * @param sound The name of the sound to be played after consumption.
      */
     fun afterEatSound(sound: String): FoodBuilder {
-        cBuilder.addEffect(ConsumeEffect.playSoundConsumeEffect(NamespacedKey.minecraft(sound)))
+
+        cBuilder.addEffect(ConsumeEffect.playSoundConsumeEffect(
+            if (sound.contains(":")) {
+                val soundKey = sound.split(":")
+                NamespacedKey(soundKey[0], soundKey[1])
+            }
+            else NamespacedKey.minecraft(sound)))
         return this
     }
 
@@ -131,8 +142,8 @@ class FoodBuilder private constructor(private val itemStack: ItemStack) {
      * @return The final `ItemStack` with all the changes made to it.
      */
     fun build(): ItemStack {
-        itemStack.setData(DataComponentTypes.FOOD, FoodProperties.food().build())
-        itemStack.setData(DataComponentTypes.CONSUMABLE, Consumable.consumable().build())
+        itemStack.setData(DataComponentTypes.FOOD, fBuilder.build())
+        itemStack.setData(DataComponentTypes.CONSUMABLE, cBuilder.build())
         return itemStack
     }
 

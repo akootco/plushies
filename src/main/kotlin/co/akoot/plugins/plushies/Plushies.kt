@@ -2,14 +2,17 @@ package co.akoot.plugins.plushies
 
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.plushies.Plushies.Configs.aiConf
 import co.akoot.plugins.plushies.Plushies.Configs.conf
 import co.akoot.plugins.plushies.Plushies.Configs.headConf
+import co.akoot.plugins.plushies.Plushies.Configs.laysConf
 import co.akoot.plugins.plushies.Plushies.Configs.pConf
 import co.akoot.plugins.plushies.commands.*
 import co.akoot.plugins.plushies.listeners.GUI
 import co.akoot.plugins.plushies.listeners.EntityEvents
 import co.akoot.plugins.plushies.listeners.PlayerEvents
-import co.akoot.plugins.plushies.util.Recipes.addRecipes
+import co.akoot.plugins.plushies.util.Recipes.glassRecipes
+import co.akoot.plugins.plushies.util.Recipes.terracottaRecipes
 
 class Plushies : FoxPlugin("plushies") {
 
@@ -17,11 +20,14 @@ class Plushies : FoxPlugin("plushies") {
         lateinit var pConf: FoxConfig
         lateinit var conf: FoxConfig
         lateinit var headConf: FoxConfig
+        lateinit var aiConf: FoxConfig
+        lateinit var laysConf: FoxConfig
     }
 
     override fun load() {
         logger.info("welcome back!")
-        addRecipes()
+        terracottaRecipes()
+        glassRecipes()
     }
 
     override fun unload() {
@@ -50,10 +56,10 @@ class Plushies : FoxPlugin("plushies") {
     }
 
     override fun registerConfigs() {
-        registerConfig("lays")
-        registerConfig("ai")
+        aiConf = registerConfig("ai", "data/ai.conf")
+        laysConf = registerConfig("lays", "data/lays.conf")
         pConf = registerConfig("plushies")
         conf = registerConfig("main")
-        headConf = registerConfig("heads")
+        headConf = registerConfig("heads", "data/heads.conf")
     }
 }
