@@ -25,6 +25,7 @@ class GUI : Listener {
         val pInv = p.inventory
         val holder = event.clickedInventory?.holder
         val pItem = pInv.itemInMainHand
+        val isBPlayer = p.name.startsWith(".")
 
         when (holder ?: return) {
 
@@ -39,10 +40,8 @@ class GUI : Listener {
             is PlushieMenu -> {
                 when (menuItem) {
                     home -> p.openInventory(PlushieMainMenu().inventory)
-                    pMenu -> p.openInventory(PlushieMenu().inventory)
-                    sMenu -> p.openInventory(PlushieMenu(true).inventory)
-                    nextPage -> p.openInventory((holder as PlushieMenu).nextPage().inventory)
-                    prevPage -> p.openInventory((holder as PlushieMenu).prevPage().inventory)
+                    nextPage -> p.openInventory((holder as PlushieMenu).nextPage(isBPlayer).inventory)
+                    prevPage -> p.openInventory((holder as PlushieMenu).prevPage(isBPlayer).inventory)
                 }
 
                 if (menuItem?.type == Material.TOTEM_OF_UNDYING && menuItem != pMenu) { // is it a friend?

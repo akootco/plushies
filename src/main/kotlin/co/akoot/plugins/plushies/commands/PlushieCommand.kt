@@ -6,6 +6,7 @@ import co.akoot.plugins.plushies.util.Plush.createPlushie
 import co.akoot.plugins.plushies.util.Plush.plushMsg
 import co.akoot.plugins.plushies.util.Plush.plushies
 import co.akoot.plugins.plushies.gui.PlushieMainMenu
+import co.akoot.plugins.plushies.gui.PlushieMenu
 import org.bukkit.*
 import org.bukkit.command.CommandSender
 
@@ -26,8 +27,9 @@ class PlushieCommand(plugin: FoxPlugin) : FoxCommand(plugin, "plushie", aliases 
         val p = playerCheck(sender) ?: return false
 
         if (args.isEmpty()) {
+            val bPlayer = p.name.startsWith(".")
             // if no args, open main menu
-            p.openInventory(PlushieMainMenu().inventory)
+            p.openInventory(if (bPlayer) PlushieMenu(bedrock = true).inventory else PlushieMainMenu().inventory)
             return true
         }
 
