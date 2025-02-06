@@ -3,8 +3,8 @@ package co.akoot.plugins.plushies.commands
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
-import org.bukkit.NamespacedKey
 import org.bukkit.command.CommandSender
 
 class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
@@ -30,14 +30,13 @@ class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
         // but most importantly, check if they are cool enough
         val smite = args.getOrNull(0) == "smite" && hasPermission(sender, "all")
 
-        val key = NamespacedKey("plushies", "throwable")
-        val isThrowable = item.persistentDataContainer.has(key)
+        val isThrowable = item.persistentDataContainer.has(axeKey)
         val b = ItemBuilder.builder(item)
 
-        if (isThrowable) b.removepdc(key).build() else b.throwable(smite).build()
+        if (isThrowable) b.removepdc(axeKey).build() else b.throwable(smite).build()
 
         p.sendMessage((Text(item.type.name.lowercase().replace("_", " ")).color("accent")
-                + Text(" is ${if (isThrowable) "now" else "no longer"} throwable").color("text")).component)
+                + Text(" is ${if (!isThrowable) "now" else "no longer"} throwable").color("text")).component)
         return true
     }
 }
