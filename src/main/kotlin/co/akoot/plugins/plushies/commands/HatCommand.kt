@@ -11,7 +11,7 @@ import org.bukkit.inventory.EquipmentSlot
 
 class HatCommand(plugin: FoxPlugin) : FoxCommand(plugin, "hat") {
 
-    override fun onTabComplete(sender: CommandSender, args: Array<out String>): MutableList<String> {
+    override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
         return mutableListOf()
     }
 

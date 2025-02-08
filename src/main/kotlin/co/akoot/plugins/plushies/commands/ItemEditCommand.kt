@@ -16,7 +16,7 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
 
     val songs = RegistryAccess.registryAccess().getRegistry(RegistryKey.JUKEBOX_SONG)
 
-    override fun onTabComplete(sender: CommandSender, args: Array<out String>): MutableList<String> {
+    override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
 
         if (args.size == 1) return arrayListOf(
             "name",

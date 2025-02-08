@@ -53,7 +53,7 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
         if (event.status == PlayerResourcePackStatusEvent.Status.DECLINED && !messageSent.contains(player.uniqueId)) {
             // pack deniers(haters) are in the same boat as rule book dumpers :angerysad:
             player.sendMessage((Text("Resource pack was denied.\n" , "error_accent")
-                    + Text("Click here to enable it", "accent").run("/rp !")).component)
+                    + Text("Click here to enable it", "accent").execute("/rp !")).component)
 
             messageSent.add(player.uniqueId)
         }

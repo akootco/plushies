@@ -12,7 +12,7 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
 
     private val responses = aiConf.getStringList("responses").toMutableList()
 
-    override fun onTabComplete(sender: CommandSender, args: Array<out String>): MutableList<String> {
+    override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
         if (!hasPermission(sender, "edit")) return mutableListOf()
 
         if (args.size == 1) {

@@ -12,7 +12,7 @@ import org.bukkit.command.CommandSender
 
 class EnchantCommand(plugin: FoxPlugin) : FoxCommand(plugin, "enchant") {
 
-    override fun onTabComplete(sender: CommandSender, args: Array<out String>): MutableList<String> {
+    override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
         val enchantmentKeys = mutableListOf<String>()
 
         for (enchantment in RegistryAccess.registryAccess().getRegistry(RegistryKey.ENCHANTMENT)) {

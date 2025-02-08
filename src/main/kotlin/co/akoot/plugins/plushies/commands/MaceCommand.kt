@@ -9,7 +9,7 @@ import org.bukkit.Material
 
 class MaceCommand(plugin: FoxPlugin) : FoxCommand(plugin, "mace", description = "Changes the mace to use a 3D model") {
 
-    override fun onTabComplete(sender: CommandSender, args: Array<out String>): MutableList<String> {
+    override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
         return mutableListOf()
     }
 

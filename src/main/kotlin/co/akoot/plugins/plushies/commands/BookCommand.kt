@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender
 
 class BookCommand(plugin: FoxPlugin) : FoxCommand(plugin, "book") {
 
-    override fun onTabComplete(sender: CommandSender, args: Array<out String>): MutableList<String> {
+    override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
         return mutableListOf()
     }
 

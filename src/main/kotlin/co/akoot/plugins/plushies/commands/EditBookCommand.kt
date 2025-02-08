@@ -13,7 +13,7 @@ import org.bukkit.inventory.meta.BookMeta
 class EditBookCommand(plugin: FoxPlugin) :
     FoxCommand(plugin, "editbook", description = "Edit written books", aliases = arrayOf("edit", "eb")) {
 
-    override fun onTabComplete(sender: CommandSender, args: Array<out String>): MutableList<String> {
+    override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
         return if (args.size == 1) mutableListOf("lock", "author") else mutableListOf()
     }
 

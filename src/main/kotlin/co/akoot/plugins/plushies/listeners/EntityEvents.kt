@@ -94,7 +94,7 @@ fun onEntityDeath(event: EntityDeathEvent) {
         if (entity.owner?.uniqueId != player.uniqueId) {
             player.sendMessage(
                 (Text("${entity.name} belongs to ") +
-                        Text(entity.owner?.name.toString(), "player").run("/profile ${entity.owner?.name}")).component
+                        Text(entity.owner?.name.toString(), "player").execute("/profile ${entity.owner?.name}")).component
             )
             return
         }
