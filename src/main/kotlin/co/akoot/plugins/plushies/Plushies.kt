@@ -10,6 +10,7 @@ import co.akoot.plugins.plushies.Plushies.Configs.pConf
 import co.akoot.plugins.plushies.commands.*
 import co.akoot.plugins.plushies.listeners.GUI
 import co.akoot.plugins.plushies.listeners.EntityEvents
+import co.akoot.plugins.plushies.listeners.Events
 import co.akoot.plugins.plushies.listeners.PlayerEvents
 import co.akoot.plugins.plushies.util.Recipes.registerRecipes
 
@@ -51,6 +52,7 @@ class Plushies : FoxPlugin("plushies") {
         registerEventListener(GUI())
         registerEventListener(EntityEvents())
         registerEventListener(PlayerEvents(this))
+        registerEventListener(Events())
     }
 
     override fun registerConfigs() {

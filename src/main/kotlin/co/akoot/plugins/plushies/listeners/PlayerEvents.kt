@@ -62,8 +62,10 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
     @EventHandler
     fun playerInteract(event: PlayerInteractEvent) {
         val player = event.player
-        if (event.action == Action.RIGHT_CLICK_AIR && player.inventory.itemInMainHand.persistentDataContainer.has(axeKey)) {
-            spawnThrowable(player, plugin)
+        if (event.action == Action.RIGHT_CLICK_AIR) {
+            if (player.inventory.itemInMainHand.persistentDataContainer.has(axeKey)) {
+                spawnThrowable(player, plugin)
+            }
         }
     }
 }
