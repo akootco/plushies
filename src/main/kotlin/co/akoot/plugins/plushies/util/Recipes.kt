@@ -8,17 +8,25 @@ import org.bukkit.Tag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice.MaterialChoice
 import org.bukkit.inventory.StonecuttingRecipe
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.forEach
 
 object Recipes {
-
 
     fun registerRecipes() {
         terracottaRecipes()
         coloredRecipes()
         woodCutterRecipes()
+        strippedWoodRecipe()
+    }
+
+    private fun strippedWoodRecipe() {
+        Tag.LOGS.values.plus(Material.BAMBOO_BLOCK).forEach { inputMaterial -> // erm!!!! .plus is cool!
+            val resultMaterial = "STRIPPED_" + inputMaterial.name
+
+            Material.entries.find { it.name == resultMaterial }?.let { output ->
+                Bukkit.addRecipe(StonecuttingRecipe(NamespacedKey("plushies", output.name.lowercase()),
+                        ItemStack(output), MaterialChoice(inputMaterial)))
+            }
+        }
     }
 
     private fun terracottaRecipes() {
@@ -66,8 +74,7 @@ object Recipes {
             "_SIGN" to 2,
         )
         // they made a whole plugin for this?
-        Material.entries.filter { it.name.endsWith("_PLANKS") }.forEach { plank ->
-
+        Tag.PLANKS.values.forEach { plank ->
             output.forEach { (suffix, count) ->
                 val resultName = plank.name.replace("_PLANKS", suffix)
                 // if output matches a material, create the recipe
