@@ -2,30 +2,27 @@ package co.akoot.plugins.plushies.listeners.tasks
 
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import org.bukkit.GameMode
+import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.Sound
-import org.bukkit.enchantments.Enchantment
-import org.bukkit.entity.Arrow
-import org.bukkit.entity.ItemDisplay
-import org.bukkit.entity.Player
+import org.bukkit.attribute.Attribute
+import org.bukkit.entity.*
+import org.bukkit.inventory.ItemStack
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.scheduler.BukkitRunnable
 import org.joml.AxisAngle4f
-import org.joml.Vector3f
 
 
-class Throwable(private val shouldDrop: Boolean, private val display: ItemDisplay, private val arrow: Arrow) :
-    BukkitRunnable() {
-
+class Throwable(private val shouldDrop: Boolean, private val snowBall: Snowball, private val display: ItemDisplay) : BukkitRunnable() {
     private var rotation = 0f
 
     override fun run() {
+        val loc = snowBall.location
 
-        if (arrow.isInBlock || !arrow.isValid || !display.isValid) {
-            if (shouldDrop) arrow.location.world.dropItemNaturally(arrow.location.add(0.0, 0.5, 0.0), display.itemStack)
-            arrow.location.world.playSound(arrow.location, Sound.ITEM_TRIDENT_HIT, 1f, 1f)
-            arrow.remove()
+        if (!snowBall.isValid) {
+            if (shouldDrop) loc.world.dropItemNaturally(loc.add(0.0, 0.5, 0.0), display.itemStack)
+            loc.world.playSound(loc, Sound.ITEM_TRIDENT_HIT, 1f, 1f)
             display.remove()
-
             return cancel()
         }
 
@@ -34,64 +31,45 @@ class Throwable(private val shouldDrop: Boolean, private val display: ItemDispla
         display.transformation = display.transformation.apply { // why the heck do i need the .apply
             leftRotation.set(AxisAngle4f(rotation, 1f, 0f, 0f))
         }
+
     }
 
     companion object {
         val axeKey = NamespacedKey("plushies", "throwable")
 
         fun spawnThrowable(player: Player, plugin: FoxPlugin) {
-            val item = player.inventory.itemInMainHand
+            val itemStack = player.inventory.itemInMainHand
             var shouldDrop = true
 
-            if (player.gameMode != GameMode.CREATIVE) player.inventory.removeItem(item)
+            if (player.gameMode != GameMode.CREATIVE) player.inventory.removeItem(itemStack)
             else shouldDrop = false
 
-            // spawn the arrow at eye level
-            val arrow = player.location.world.spawnArrow(player.eyeLocation, player.location.getDirection(), 3f, 0f)
+            val snowBall = player.launchProjectile(Snowball::class.java, player.eyeLocation.direction.multiply(2))
 
-            // sorry bedrock, but i hate armor stands!
-            val itemDisplay = arrow.location.world.spawn(arrow.location.add(0.0,0.5,0.0), ItemDisplay::class.java) { display: ItemDisplay ->
+            val itemDisplay = snowBall.location.world.spawn(
+                snowBall.location.add(0.0, 0.5, 0.0), ItemDisplay::class.java) { display: ItemDisplay ->
+
                 display.apply {
-                    setItemStack(item)
+                    setItemStack(itemStack)
                     itemDisplayTransform = ItemDisplay.ItemDisplayTransform.THIRDPERSON_RIGHTHAND
-                    setRotation(player.location.yaw, 0f)
-                    transformation = display.transformation.apply { // why the heck do i need the .apply v2
-                        translation.set(Vector3f(0f, -0.4f, 0f)) // might not need this when i switch to teleporting
-                    }
+                    setRotation(player.yaw, 1.0f)
                 }
             }
 
-            // TODO
-            // axe doesn't travel when arrow is hidden. will need to teleport instead of setting it as passenger
-            arrow.apply {
-                addPassenger(itemDisplay)
-                shooter = player
-                isSilent = true
-                if (item.enchantments.containsKey(Enchantment.FIRE_ASPECT)) fireTicks = 999
+            // the players attack damage is changed depending on what weapon is in the main hand
+            // set it to half a heart for normal items
+            val damage = player.getAttribute(Attribute.ATTACK_DAMAGE)?.value?: 1.0
+
+            snowBall.apply {
+                // set the damage as pdc so we can check for it in the projectile hit event
+                persistentDataContainer.set(axeKey, PersistentDataType.DOUBLE, damage)
+                item = ItemStack(Material.AIR) // LOL what a beautiful hack
+                addPassenger(itemDisplay) // this is much smoother than teleporting
             }
 
-            Throwable(shouldDrop, itemDisplay, arrow).runTaskTimer(plugin, 1L, 1L)
-        }
+            player.location.world.playSound(player.location, Sound.ITEM_TRIDENT_THROW, 1f, 1f)
 
-        // this sucks! dont use it!!!!!!!!!!!!!!!
-//        fun getDamage(item: ItemStack): Float {
-//            var damage: Double = when (item.type) {
-//                Material.NETHERITE_AXE -> 10
-//                Material.DIAMOND_AXE, Material.IRON_AXE, Material.STONE_AXE -> 9
-//                Material.NETHERITE_SWORD -> 8
-//                Material.GOLDEN_AXE, Material.WOODEN_AXE, Material.DIAMOND_SWORD -> 7
-//                Material.NETHERITE_PICKAXE, Material.NETHERITE_SHOVEL, Material.MACE, Material.IRON_SWORD -> 6
-//                Material.DIAMOND_SHOVEL -> 5.5
-//                Material.STONE_SWORD, Material.IRON_PICKAXE, Material.IRON_SHOVEL -> 5
-//                Material.WOODEN_SWORD, Material.GOLDEN_SWORD, Material.GOLDEN_PICKAXE, Material.WOODEN_PICKAXE -> 4
-//                Material.STONE_PICKAXE, Material.STONE_SHOVEL -> 3
-//                Material.WOODEN_SHOVEL, Material.GOLDEN_SHOVEL -> 2.5
-//                else -> if (item.type.name.endsWith("_HOE")) 1.0 else 0.5
-//            }
-//
-//            val sharpnessLevel = item.getEnchantmentLevel(Enchantment.SHARPNESS)
-//            damage += 0.5 * sharpnessLevel
-//            return damage.toFloat()
-//        }
+            Throwable(shouldDrop, snowBall, itemDisplay).runTaskTimer(plugin, 1L, 1L)
+        }
     }
 }

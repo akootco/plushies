@@ -9,8 +9,7 @@ import org.bukkit.command.CommandSender
 
 class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
 
-    override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
-        if (args.size == 1 && hasPermission(sender, "all")) return mutableListOf("smite")
+    override fun onTabComplete(sender: CommandSender, args: Array<out String>): MutableList<String> {
         return mutableListOf()
     }
 
@@ -26,14 +25,10 @@ class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
             return sendError(p, "You can't throw [AIR], check out wind charges.")
         }
 
-        // Only add lightning effect if the player asked for it
-        // but most importantly, check if they are cool enough
-        val smite = args.getOrNull(0) == "smite" && hasPermission(sender, "all")
-
         val isThrowable = item.persistentDataContainer.has(axeKey)
         val b = ItemBuilder.builder(item)
 
-        if (isThrowable) b.removepdc(axeKey).build() else b.throwable(smite).build()
+        if (isThrowable) b.removepdc(axeKey).build()
 
         p.sendMessage((Text(item.type.name.lowercase().replace("_", " ")).color("accent")
                 + Text(" is ${if (!isThrowable) "now" else "no longer"} throwable").color("text")).component)
