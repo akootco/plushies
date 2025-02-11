@@ -29,6 +29,7 @@ class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
         val b = ItemBuilder.builder(item)
 
         if (isThrowable) b.removepdc(axeKey).build()
+        else b.pdc(axeKey).build()
 
         p.sendMessage((Text(item.type.name.lowercase().replace("_", " ")).color("accent")
                 + Text(" is ${if (!isThrowable) "now" else "no longer"} throwable").color("text")).component)
