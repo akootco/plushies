@@ -47,8 +47,8 @@ class CraftRecipe private constructor(val name: String, private val result: Item
      * @param input
      * @return
      */
-    fun ingredient(input: RecipeChoice): CraftRecipe {
-        shapelessIngredients.add(input)
+    fun ingredient(input: RecipeChoice, amount: Int = 1): CraftRecipe {
+        repeat(amount) { shapelessIngredients.add(input) }
         return this
     }
 
