@@ -1,6 +1,8 @@
 package co.akoot.plugins.plushies.util
 
+import co.akoot.plugins.plushies.Plushies.Configs.recipeConf
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -16,6 +18,7 @@ object Recipes {
         coloredRecipes()
         woodCutterRecipes()
         strippedWoodRecipe()
+        configRecipes()
     }
 
     private fun strippedWoodRecipe() {
@@ -79,11 +82,52 @@ object Recipes {
                 val resultName = plank.name.replace("_PLANKS", suffix)
                 // if output matches a material, create the recipe
                 Material.entries.find { it.name == resultName }?.let { resultMaterial ->
-                    Bukkit.addRecipe(StonecuttingRecipe(NamespacedKey("plushies",
-                        resultMaterial.name.lowercase()),
+                    Bukkit.addRecipe(StonecuttingRecipe(
+                        NamespacedKey("plushies", resultMaterial.name.lowercase()),
                         ItemStack(resultMaterial, count),
                         MaterialChoice(plank)))
                 }
+            }
+        }
+    }
+
+    private fun configRecipes() {
+        for (key in recipeConf.getKeys()) {
+            val shape = recipeConf.getStringList("$key.shape")
+            val result = recipeConf.getString("$key.result") ?: continue
+
+            if (shape.isEmpty()) {
+                // shapeless recipe
+                CraftRecipe.builder(key, ItemStack(Material.matchMaterial(result) ?: continue))// skip if output is invalid
+                    .apply {
+                        for (ingredient in recipeConf.getStringList("$key.ingredients")) {
+                            val parts = ingredient.split("/")
+                            val amount = parts.getOrNull(1)?.toIntOrNull() ?: 1
+
+                            val material = Material.matchMaterial(parts[0]) ?: continue // skip if input is invalid
+
+                            // nice!, add ingredient to recipe
+                            ingredient(MaterialChoice(material), amount)
+                        }
+                    }.shapeless()
+            } else {
+
+                if (shape.size != 3)  {
+                    logger("Plushies").warn("Invalid shape for recipe $key")
+                    continue // skip if shape is invalid
+                }
+
+                CraftRecipe.builder(key, ItemStack(Material.matchMaterial(result) ?: continue)) // skip if output is invalid
+                    .shape(shape[0], shape[1], shape[2])
+                    .apply {
+                        for (ingredient in recipeConf.getKeys("$key.ingredients")) {
+                            val material = recipeConf.getString("$key.ingredients.$ingredient")
+                                ?.let { Material.matchMaterial(it) } ?: continue // skip if input is invalid
+
+                            // all valid, add ingredient
+                            ingredient(ingredient[0], MaterialChoice(material))
+                        }
+                    }.shaped()
             }
         }
     }

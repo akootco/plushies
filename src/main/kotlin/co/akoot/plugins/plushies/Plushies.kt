@@ -7,6 +7,7 @@ import co.akoot.plugins.plushies.Plushies.Configs.conf
 import co.akoot.plugins.plushies.Plushies.Configs.headConf
 import co.akoot.plugins.plushies.Plushies.Configs.laysConf
 import co.akoot.plugins.plushies.Plushies.Configs.pConf
+import co.akoot.plugins.plushies.Plushies.Configs.recipeConf
 import co.akoot.plugins.plushies.commands.*
 import co.akoot.plugins.plushies.listeners.GUI
 import co.akoot.plugins.plushies.listeners.EntityEvents
@@ -22,6 +23,7 @@ class Plushies : FoxPlugin("plushies") {
         lateinit var headConf: FoxConfig
         lateinit var aiConf: FoxConfig
         lateinit var laysConf: FoxConfig
+        lateinit var recipeConf: FoxConfig
     }
 
     override fun load() {
@@ -61,5 +63,6 @@ class Plushies : FoxPlugin("plushies") {
         pConf = registerConfig("plushies")
         conf = registerConfig("main")
         headConf = registerConfig("heads", "data/heads.conf")
+        recipeConf = registerConfig("recipes", "data/recipes.conf")
     }
 }
