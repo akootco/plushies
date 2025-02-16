@@ -2,6 +2,7 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.plushies.Plushies.Companion.plushieConf
 import co.akoot.plugins.plushies.util.Plush.createPlushie
 import co.akoot.plugins.plushies.util.Plush.plushMsg
 import co.akoot.plugins.plushies.util.Plush.plushies
@@ -33,8 +34,15 @@ class PlushieCommand(plugin: FoxPlugin) : FoxCommand(plugin, "plushie", aliases 
             return true
         }
 
-        val item = p.inventory.itemInMainHand
         val arg = args[0]
+
+        // reload config
+        if (arg in setOf("reload", "load") && hasPermission(sender, "reload")) {
+            plushieConf.reload()
+            return sendMessage(sender, "Plushies reloaded!") // good prank!
+        }
+
+        val item = p.inventory.itemInMainHand
 
         val plushie = plushies.find { it.first.equals(arg, ignoreCase = true) }
 

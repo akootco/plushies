@@ -1,6 +1,6 @@
 package co.akoot.plugins.plushies.util
 
-import co.akoot.plugins.plushies.Plushies.Configs.recipeConf
+import co.akoot.plugins.plushies.Plushies.Companion.recipeConf
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
 import org.bukkit.Bukkit

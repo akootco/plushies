@@ -4,7 +4,7 @@ import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
 import co.akoot.plugins.bluefox.util.Text
-import co.akoot.plugins.plushies.Plushies.Configs.aiConf
+import co.akoot.plugins.plushies.Plushies.Companion.aiConf
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 

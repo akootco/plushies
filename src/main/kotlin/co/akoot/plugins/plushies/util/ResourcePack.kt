@@ -1,7 +1,7 @@
 package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.bluefox.util.Text
-import co.akoot.plugins.plushies.Plushies.Configs.conf
+import co.akoot.plugins.plushies.Plushies.Companion.conf
 import net.kyori.adventure.resource.ResourcePackInfo
 import net.kyori.adventure.resource.ResourcePackRequest
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger

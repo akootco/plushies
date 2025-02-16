@@ -2,7 +2,7 @@ package co.akoot.plugins.plushies.listeners
 
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.util.Text
-import co.akoot.plugins.plushies.Plushies.Configs.conf
+import co.akoot.plugins.plushies.Plushies.Companion.conf
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowable
 import co.akoot.plugins.plushies.util.ResourcePack.setPack
