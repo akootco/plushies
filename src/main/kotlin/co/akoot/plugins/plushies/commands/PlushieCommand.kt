@@ -38,7 +38,7 @@ class PlushieCommand(plugin: FoxPlugin) : FoxCommand(plugin, "plushie", aliases 
 
         // reload config
         if (arg in setOf("reload", "load") && hasPermission(sender, "reload")) {
-            plushieConf.reload()
+            plushies = plushieConf.getKeys().mapNotNull { name -> plushieConf.getInt(name)?.let { name to it } }
             return sendMessage(sender, "Plushies reloaded!") // good prank!
         }
 

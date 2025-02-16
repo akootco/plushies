@@ -1,7 +1,7 @@
 package co.akoot.plugins.plushies.listeners
 
 import co.akoot.plugins.bluefox.util.Text
-import co.akoot.plugins.plushies.Plushies.Configs.headConf
+import co.akoot.plugins.plushies.Plushies.Companion.headConf
 import co.akoot.plugins.plushies.util.MobHead.headTexture
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
