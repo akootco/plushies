@@ -35,7 +35,6 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(LaysCommand(this))
         registerCommand(AICommand(this))
         registerCommand(ThrowableCommand(this))
-        registerCommand(HatCommand(this))
         registerCommand(PlushieCommand(this))
         registerCommand(BookCommand(this))
         registerCommand(PresetCommand(this))
