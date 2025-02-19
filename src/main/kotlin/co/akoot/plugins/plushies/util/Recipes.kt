@@ -1,6 +1,8 @@
 package co.akoot.plugins.plushies.util
 
+import co.akoot.plugins.plushies.Plushies.Companion.cookRecipeConf
 import co.akoot.plugins.plushies.Plushies.Companion.recipeConf
+import co.akoot.plugins.plushies.util.builders.CookRecipe
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import com.destroystokyo.paper.MaterialTags
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
@@ -19,6 +21,11 @@ object Recipes {
         woodCutterRecipes()
         strippedWoodRecipe()
         configRecipes()
+        smeltingRecipes()
+    }
+
+    private fun getMaterial(string: String): Material? {
+        return Material.matchMaterial(string)
     }
 
     private fun strippedWoodRecipe() {
@@ -81,6 +88,31 @@ object Recipes {
                         MaterialChoice(plank)))
                 }
             }
+        }
+    }
+
+    private fun smeltingRecipes() {
+        for (key in cookRecipeConf.getKeys()) {
+            val result = cookRecipeConf.getString("$key.output") ?: return
+            val input = cookRecipeConf.getString("$key.input") ?: return
+
+            val parts = result.split("/")
+            val amount = parts.getOrNull(1)?.toIntOrNull() ?: 1
+
+            CookRecipe.builder(
+                key,
+                MaterialChoice(getMaterial(input) ?: return),
+                ItemStack(getMaterial(parts[0]) ?: return, amount),
+                cookRecipeConf.getString("$key.cookTime"),
+                cookRecipeConf.getDouble("$key.xp")
+            ).apply {
+                cookRecipeConf.getStringList("$key.type").forEach { type ->
+                    when (type.lowercase()) {
+                        "smoke" -> smoke() // smoker / campfire
+                        "blast" -> blast() // blast furnace
+                    }
+                }
+            }.smelt()
         }
     }
 

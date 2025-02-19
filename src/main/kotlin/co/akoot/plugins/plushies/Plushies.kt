@@ -18,6 +18,7 @@ class Plushies : FoxPlugin("plushies") {
         lateinit var aiConf: FoxConfig
         lateinit var laysConf: FoxConfig
         lateinit var recipeConf: FoxConfig
+        lateinit var cookRecipeConf: FoxConfig
     }
 
     override fun load() {
@@ -56,6 +57,7 @@ class Plushies : FoxPlugin("plushies") {
         plushieConf = registerConfig("plushies")
         conf = registerConfig("main")
         headConf = registerConfig("heads", "data/heads.conf")
-        recipeConf = registerConfig("recipes", "data/recipes.conf")
+        recipeConf = registerConfig("craftingRecipes", "recipes/recipes.conf")
+        cookRecipeConf = registerConfig("cookRecipes", "recipes/cook_recipes.conf")
     }
 }
