@@ -1,5 +1,6 @@
 package co.akoot.plugins.plushies.util.builders
 
+import co.akoot.plugins.bluefox.util.TimeUtil.parseTime
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.*
 import io.papermc.paper.datacomponent.item.consumable.ConsumeEffect
@@ -124,12 +125,12 @@ class FoodBuilder private constructor(private val itemStack: ItemStack) {
      */
     fun addEffect(
         effectType: PotionEffectType,
-        duration: Int,
+        duration: String,
         level: Int,
         chance: Float
     ): FoodBuilder {
         val effect = PotionEffect(effectType,
-            duration * 20,
+            parseTime(duration, true).toInt(),
             level - 1,
             true, true, true)
         cBuilder.addEffect(ConsumeEffect.applyStatusEffects(listOf(effect), chance))
