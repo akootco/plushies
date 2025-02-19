@@ -2,6 +2,7 @@ package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.plushies.Plushies.Companion.recipeConf
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
+import com.destroystokyo.paper.MaterialTags
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -14,7 +15,6 @@ import org.bukkit.inventory.StonecuttingRecipe
 object Recipes {
 
     fun registerRecipes() {
-        terracottaRecipes()
         coloredRecipes()
         woodCutterRecipes()
         strippedWoodRecipe()
@@ -32,35 +32,28 @@ object Recipes {
         }
     }
 
-    private fun terracottaRecipes() {
-        val terr = Material.entries
-            .filter { it.name.endsWith("_DYE") }
-            .associateWith { Material.valueOf(it.name.replace("_DYE", "_TERRACOTTA")) }
-
-        terr.forEach { (dye: Material, terracotta: Material) ->
-            CraftRecipe.builder(terracotta.name.lowercase(), ItemStack(terracotta, 8))
-                .shape("TTT", "TDT", "TTT")
-                .ingredient('T', MaterialChoice(Tag.TERRACOTTA))
-                .ingredient('D', MaterialChoice(dye))
-                .shaped()
-        }
-    }
-
     private fun coloredRecipes() {
-        val recipeTypes = listOf("_STAINED_GLASS", "_CONCRETE", "_CONCRETE_POWDER", "_GLAZED_TERRACOTTA")
+        val recipes = mapOf(
+            "_TERRACOTTA" to Tag.TERRACOTTA,
+            "_GLAZED_TERRACOTTA" to MaterialTags.GLAZED_TERRACOTTA,
+            "_CONCRETE" to MaterialTags.CONCRETES,
+            "_CONCRETE_POWDER" to MaterialTags.CONCRETE_POWDER,
+            "_STAINED_GLASS" to MaterialTags.STAINED_GLASS,
+            "_STAINED_GLASS_PANE" to MaterialTags.STAINED_GLASS_PANES,
+            "_WOOL" to Tag.WOOL,
+            "_CARPET" to Tag.WOOL_CARPETS
+        )
 
-        recipeTypes.forEach { suffix ->
-            val materials = Material.entries
+        recipes.forEach { (suffix, tag) ->
+            val terr = Material.entries
                 .filter { it.name.endsWith("_DYE") }
                 .associateWith { Material.valueOf(it.name.replace("_DYE", suffix)) }
 
-            val baseMaterials = Material.entries.filter { it.name.endsWith(suffix) }.toTypedArray()
-
-            materials.forEach { (dye, resultMaterial) ->
-                CraftRecipe.builder(resultMaterial.name.lowercase(), ItemStack(resultMaterial, 8))
-                    .shape("AAA", "ABA", "AAA")
-                    .ingredient('A', MaterialChoice(*baseMaterials))
-                    .ingredient('B', MaterialChoice(dye))
+            terr.forEach { (dye: Material, item: Material) ->
+                CraftRecipe.builder(item.name.lowercase(), ItemStack(item, 8))
+                    .shape("TTT", "TDT", "TTT")
+                    .ingredient('T', MaterialChoice(tag))
+                    .ingredient('D', MaterialChoice(dye))
                     .shaped()
             }
         }
