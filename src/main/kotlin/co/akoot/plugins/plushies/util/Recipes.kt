@@ -109,7 +109,8 @@ object Recipes {
                 cookRecipeConf.getStringList("$key.type").forEach { type ->
                     when (type.lowercase()) {
                         "smoke" -> smoke() // smoker / campfire
-                        "blast" -> blast() // blast furnace
+                        "blast" -> blast()
+                        "all" -> blast().smoke() // blast furnace
                     }
                 }
             }.smelt()
@@ -123,13 +124,13 @@ object Recipes {
 
             if (shape.isEmpty()) {
                 // shapeless recipe
-                CraftRecipe.builder(key, ItemStack(Material.matchMaterial(result) ?: continue))// skip if output is invalid
+                CraftRecipe.builder(key, ItemStack(getMaterial(result) ?: continue))// skip if output is invalid
                     .apply {
                         for (ingredient in recipeConf.getStringList("$key.ingredients")) {
                             val parts = ingredient.split("/")
                             val amount = parts.getOrNull(1)?.toIntOrNull() ?: 1
 
-                            val material = Material.matchMaterial(parts[0]) ?: continue // skip if input is invalid
+                            val material = getMaterial(parts[0]) ?: continue // skip if input is invalid
 
                             // nice!, add ingredient to recipe
                             ingredient(MaterialChoice(material), amount)
@@ -142,12 +143,12 @@ object Recipes {
                     continue // skip if shape is invalid
                 }
 
-                CraftRecipe.builder(key, ItemStack(Material.matchMaterial(result) ?: continue)) // skip if output is invalid
+                CraftRecipe.builder(key, ItemStack(getMaterial(result) ?: continue)) // skip if output is invalid
                     .shape(shape[0], shape[1], shape[2])
                     .apply {
                         for (ingredient in recipeConf.getKeys("$key.ingredients")) {
                             val material = recipeConf.getString("$key.ingredients.$ingredient")
-                                ?.let { Material.matchMaterial(it) } ?: continue // skip if input is invalid
+                                ?.let { getMaterial(it) } ?: continue // skip if input is invalid
 
                             // all valid, add ingredient
                             ingredient(ingredient[0], MaterialChoice(material))

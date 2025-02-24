@@ -42,11 +42,12 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(EnchantCommand(this))
         registerCommand(ItemEditCommand(this))
         registerCommand(ResourcePackCommand(this))
+        registerCommand(GolfCommand(this))
     }
 
     override fun registerEvents() {
         registerEventListener(GUI())
-        registerEventListener(EntityEvents())
+        registerEventListener(EntityEvents(this))
         registerEventListener(PlayerEvents(this))
         registerEventListener(Events())
     }
