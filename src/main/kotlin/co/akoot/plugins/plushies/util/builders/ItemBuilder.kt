@@ -440,7 +440,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @return The updated `Item` with the specified name applied.
      */
     fun itemName(name: Component): ItemBuilder {
-        if (itemStack.type.name.endsWith("_HEAD") || itemStack.type == Material.WRITTEN_BOOK) {
+        if (itemStack.type in listOf(Material.PLAYER_HEAD, Material.WRITTEN_BOOK, Material.POTION)) {
             itemStack.setData(DataComponentTypes.CUSTOM_NAME, name.decoration(TextDecoration.ITALIC, false))
         } else {
             itemStack.setData(DataComponentTypes.ITEM_NAME, name)
@@ -559,6 +559,12 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      */
     fun unsetData(dataType: DataComponentType): ItemBuilder {
         itemStack.unsetData(dataType)
+        return this
+    }
+
+    fun potionColor(color: Int): ItemBuilder {
+        val potion = PotionContents.potionContents().customColor(Color.fromRGB(color))
+        itemStack.setData(DataComponentTypes.POTION_CONTENTS, potion.build())
         return this
     }
 

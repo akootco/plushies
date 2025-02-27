@@ -1,18 +1,11 @@
 package co.akoot.plugins.plushies.listeners
 
-import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.gui.BookMenu
-import co.akoot.plugins.plushies.gui.MenuItems.home
-import co.akoot.plugins.plushies.gui.MenuItems.nextPage
-import co.akoot.plugins.plushies.gui.MenuItems.pMenu
-import co.akoot.plugins.plushies.gui.MenuItems.prevPage
-import co.akoot.plugins.plushies.gui.MenuItems.sMenu
-import co.akoot.plugins.plushies.util.Plush.plushMsg
+import co.akoot.plugins.plushies.gui.BookMenu.Companion.bookMenu
 import co.akoot.plugins.plushies.gui.PlushieMainMenu
+import co.akoot.plugins.plushies.gui.PlushieMainMenu.Companion.mainMenu
 import co.akoot.plugins.plushies.gui.PlushieMenu
-import co.akoot.plugins.plushies.util.builders.ItemBuilder
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
-import org.bukkit.Material
+import co.akoot.plugins.plushies.gui.PlushieMenu.Companion.plushMenu
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -20,69 +13,25 @@ import org.bukkit.event.inventory.InventoryClickEvent
 class GUI : Listener {
     @EventHandler
     fun onInvClick(event: InventoryClickEvent) {
-        val menuItem = event.currentItem
+        val menuItem = event.currentItem ?: return
         val p = event.whoClicked
-        val pInv = p.inventory
-        val holder = event.clickedInventory?.holder
-        val pItem = pInv.itemInMainHand
-        val isBPlayer = p.name.startsWith(".")
 
-        when (holder ?: return) {
-
+        when (val holder = event.clickedInventory?.holder) {
             is PlushieMainMenu -> {
-                when (menuItem) {
-                    pMenu -> p.openInventory(PlushieMenu().inventory)
-                    sMenu -> p.openInventory(PlushieMenu(true).inventory)
-                }
+                mainMenu(menuItem, p)
                 event.isCancelled = true
             }
 
             is PlushieMenu -> {
-                when (menuItem) {
-                    home -> p.openInventory(PlushieMainMenu().inventory)
-                    nextPage -> p.openInventory((holder as PlushieMenu).nextPage(isBPlayer).inventory)
-                    prevPage -> p.openInventory((holder as PlushieMenu).prevPage(isBPlayer).inventory)
-                }
-
-                if (menuItem?.type == Material.TOTEM_OF_UNDYING && menuItem != pMenu) { // is it a friend?
-
-                    if (pItem.type != Material.TOTEM_OF_UNDYING) { // HEY! no hacking!
-                        p.sendMessage(Text("You must be holding a totem!", "error_accent").component)
-                    } else {
-                        when ((holder as PlushieMenu).isStatue()) {
-                            true -> ItemBuilder.builder(pItem).copyOf(menuItem)
-                                .customModelData(pItem.itemMeta.customModelData + 1).build() // statue
-
-                            false -> ItemBuilder.builder(pItem).copyOf(menuItem).build() // normal
-                        }
-
-                        plushMsg(PlainTextComponentSerializer.plainText().serialize(menuItem.effectiveName())).component
-                    }
-                }
+                plushMenu(menuItem, p, holder)
                 event.isCancelled = true
             }
 
             is BookMenu -> {
-                val book = Material.WRITTEN_BOOK
-
-                when (menuItem) {
-                    nextPage -> p.openInventory((holder as BookMenu).nextPage().inventory)
-                    prevPage -> p.openInventory((holder as BookMenu).prevPage().inventory)
-                }
-
-                if (menuItem?.type == book) {
-                    if (pItem.type != book) { // HEY! no hacking!
-                        p.sendMessage(Text("You must be holding a written book!", "error_accent").component)
-                    } else {
-                        pInv.setItemInMainHand(
-                            ItemBuilder.builder(pItem)
-                                .customModelData(menuItem.itemMeta.customModelData)
-                                .build()
-                        )
-                    }
-                }
+                bookMenu(menuItem, p, holder)
                 event.isCancelled = true
             }
+            else -> return
         }
     }
 //    @EventHandler

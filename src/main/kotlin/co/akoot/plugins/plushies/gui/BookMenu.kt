@@ -6,13 +6,38 @@ import co.akoot.plugins.plushies.gui.MenuItems.prevPage
 import co.akoot.plugins.plushies.gui.MenuItems.nextPage
 import co.akoot.plugins.plushies.util.builders.ChestGUI
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import co.akoot.plugins.bluefox.util.Text.Companion.invoke
 import org.bukkit.Material
+import org.bukkit.entity.HumanEntity
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import kotlin.math.min
 
 class BookMenu(private val page: Int = 1) : InventoryHolder {
+
+    companion object {
+        fun bookMenu(item: ItemStack, p: HumanEntity, holder: InventoryHolder) {
+            val pItem = p.inventory.itemInMainHand
+
+            when (item) {
+                nextPage -> p.openInventory((holder as BookMenu).nextPage().inventory)
+                prevPage -> p.openInventory((holder as BookMenu).prevPage().inventory)
+            }
+
+            if (item.type == Material.WRITTEN_BOOK) {
+                if (pItem.type != Material.WRITTEN_BOOK)
+                    Text(p) { "You must be holding a written book!"("error_accent") }
+                else {
+                    p.inventory.setItemInMainHand(
+                        ItemBuilder.builder(pItem)
+                            .customModelData(item.itemMeta.customModelData)
+                            .build()
+                    )
+                }
+            }
+        }
+    }
 
     private val bookMenu: Inventory = ChestGUI.builder(45, this, true).apply {
         title(Text("Books").color(randomColor(brightness = 0.6f)).component)
