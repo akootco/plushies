@@ -3,6 +3,7 @@ package co.akoot.plugins.plushies
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.plushies.commands.*
+import co.akoot.plugins.plushies.commands.bluemap.*
 import co.akoot.plugins.plushies.listeners.GUI
 import co.akoot.plugins.plushies.listeners.EntityEvents
 import co.akoot.plugins.plushies.listeners.Events
@@ -43,6 +44,10 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(ItemEditCommand(this))
         registerCommand(ResourcePackCommand(this))
         registerCommand(GolfCommand(this))
+
+        // bluemap commands
+        registerCommand(ShowCommand(this))
+        registerCommand(HideCommand(this))
     }
 
     override fun registerEvents() {
