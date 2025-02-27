@@ -9,6 +9,8 @@ import co.akoot.plugins.plushies.listeners.EntityEvents
 import co.akoot.plugins.plushies.listeners.Events
 import co.akoot.plugins.plushies.listeners.PlayerEvents
 import co.akoot.plugins.plushies.util.Recipes.registerRecipes
+import org.bukkit.Bukkit
+import org.bukkit.plugin.Plugin
 
 class Plushies : FoxPlugin("plushies") {
 
@@ -20,6 +22,9 @@ class Plushies : FoxPlugin("plushies") {
         lateinit var laysConf: FoxConfig
         lateinit var recipeConf: FoxConfig
         lateinit var cookRecipeConf: FoxConfig
+
+        fun checkPlugin(name: String): Plugin? = Bukkit.getPluginManager().getPlugin(name)
+        fun pluginEnabled(name: String): Boolean = checkPlugin(name)?.isEnabled == true
     }
 
     override fun load() {
