@@ -224,10 +224,30 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param pages
      * @return
      */
-    fun writtenBook(title: String, author: String, pages: MutableList<Component>): ItemBuilder {
+    fun writtenBook(pages: MutableList<Component>, title: String = "Book", author: String = "Maltsburg", generation: Int = 0): ItemBuilder {
         itemStack.setData(DataComponentTypes.WRITTEN_BOOK_CONTENT,
             WrittenBookContent.writtenBookContent(title, author)
+                .generation(generation)
                 .addPages(pages)
+                .build()
+        )
+        return this
+    }
+
+    /**
+     * Written book
+     *
+     * @param page
+     * @return
+     * @param title
+     * @param author
+     * @param generation
+     */
+    fun writtenBook(page: Component, title: String = "Book", author: String = "Maltsburg", generation: Int = 0): ItemBuilder {
+        itemStack.setData(DataComponentTypes.WRITTEN_BOOK_CONTENT,
+            WrittenBookContent.writtenBookContent(title, author)
+                .generation(generation)
+                .addPage(page)
                 .build()
         )
         return this
@@ -239,11 +259,25 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param pages
      * @return
      */
-
     fun writableBook(pages: MutableList<String>): ItemBuilder {
         itemStack.setData(DataComponentTypes.WRITABLE_BOOK_CONTENT,
             WritableBookContent.writeableBookContent()
                 .addPages(pages)
+                .build()
+        )
+        return this
+    }
+
+    /**
+     * Writable book
+     *
+     * @param page
+     * @return
+     */
+    fun writableBook(page: String): ItemBuilder {
+        itemStack.setData(DataComponentTypes.WRITABLE_BOOK_CONTENT,
+            WritableBookContent.writeableBookContent()
+                .addPage(page)
                 .build()
         )
         return this
@@ -286,7 +320,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
     fun copyOfBook(book: ItemStack): ItemBuilder {
         val bookMeta = book.itemMeta as? BookMeta ?: return this
         val pages: MutableList<Component> = bookMeta.pages()
-        bookMeta.title?.let { bookMeta.author?.let { it1 -> writtenBook(it, it1,pages) } }
+        bookMeta.title?.let { bookMeta.author?.let { it1 -> writtenBook(pages, it, it1) } }
         return this
     }
 
