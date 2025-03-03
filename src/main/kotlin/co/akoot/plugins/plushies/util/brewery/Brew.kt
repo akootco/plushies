@@ -107,7 +107,7 @@ object Brew {
         }
 
         // return the page with color
-        return LegacyComponentSerializer.legacy('&').deserialize(page.toString())
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(page.toString())
     }
 }
 

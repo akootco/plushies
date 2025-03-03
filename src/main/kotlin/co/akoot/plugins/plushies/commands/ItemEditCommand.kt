@@ -8,13 +8,15 @@ import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import org.bukkit.JukeboxSong
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.Registry
 import org.bukkit.command.CommandSender
 
 class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
 
-    val songs = RegistryAccess.registryAccess().getRegistry(RegistryKey.JUKEBOX_SONG)
+    private val songs: Registry<JukeboxSong> = RegistryAccess.registryAccess().getRegistry(RegistryKey.JUKEBOX_SONG)
 
     override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
 
@@ -26,15 +28,17 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
             "dye",
             "model",
             "disc",
-            "meta"
+            "unbreakable"
         )
 
         when (args[0]) {
             "dye", "lore" -> return arrayListOf("-c")
             "disc" -> {
-                val songs = songs
                 val songList = songs.map { it.key.key }.toMutableList()
                 return songList
+            }
+            "unbreakable" -> {
+                return arrayListOf("true", "false")
             }
         }
 
@@ -206,17 +210,22 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
                 return true
             }
 
-            // set meta
-            "meta" -> {
-                val argList = args.drop(1)
+            "unbreakable" -> {
+                val modelArg = args.getOrNull(1)
 
-                ItemBuilder.builder(item).apply {
-                    if ("-g" in argList) glint()
-                    if ("-u" in argList) unbreakable()
-                    if ("-dp" in argList) deathProtection()
-                }.build()
+                val shouldSet = when (modelArg?.lowercase()) {
+                    "true", "+" -> true
+                    "false", "-" -> false
+                    else -> true
+                }
+
+                ItemBuilder.builder(item)
+                    .unbreakable(shouldSet)
+                    .build()
+
                 return true
             }
+
 
             else -> {
                 sendError(p, "You cannot modify '${args[0]}'!")

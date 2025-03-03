@@ -57,6 +57,7 @@ class EnchantCommand(plugin: FoxPlugin) : FoxCommand(plugin, "enchant") {
 
         ItemBuilder.builder(item)
             .addEnchant(enchant, lvl)
+            .build()
 
         return true
     }

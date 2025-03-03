@@ -24,7 +24,7 @@ object MobHead {
             is Ghast -> "ghast.${if (victim.isCharging) "crying" else "normal"}"
             is Llama -> "llama.${victim.color.name}"
             is Axolotl -> "axolotl.${victim.variant.name}"
-            is Fox -> "fox.${victim.foxType.name}${if (victim.isSleeping) "_sleeping" else ""}"
+            is Fox -> "fox.${victim.foxType.name}${if (victim.isSleeping) "_sleeping" else null}"
 
             else -> "default.${victim.type.name}"
         }

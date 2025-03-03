@@ -9,9 +9,6 @@ import org.bukkit.command.CommandSender
 class HideCommand(plugin: FoxPlugin) : FoxCommand(plugin, "hide") {
 
     override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
-        if (args.size == 1) {
-            return getOnlinePlayerSuggestions(exclude = setOf(sender.name))
-        }
         return mutableListOf()
     }
 
@@ -20,19 +17,13 @@ class HideCommand(plugin: FoxPlugin) : FoxCommand(plugin, "hide") {
 
         val map = BlueMapAPI.getInstance().get()
 
-        val target = if (args.isEmpty()) {
-            playerCheck(sender, "Please specify a player") ?: return false
-        } else {
-            plugin.server.getPlayer(args[0]) ?: return sendError(sender, "Player not found")
+        val p = playerCheck(sender) ?: return false
+
+        if (!map.webApp.getPlayerVisibility(p.uniqueId)) {
+            return sendError(sender, "You are already hidden!")
         }
 
-        val message = if (target == sender) "You are" else "${target.name} is"
-
-        if (!map.webApp.getPlayerVisibility(target.uniqueId)) {
-            return sendError(sender, "$message already hidden!")
-        }
-
-        map.webApp.setPlayerVisibility(target.uniqueId, false)
-        return sendMessage(sender,"$message now hidden!")
+        map.webApp.setPlayerVisibility(p.uniqueId, false)
+        return sendMessage(sender, "You are now hidden!")
     }
 }
