@@ -1,5 +1,8 @@
 package co.akoot.plugins.plushies.gui
 
+import co.akoot.plugins.bluefox.api.FoxCommand
+import co.akoot.plugins.bluefox.api.Kolor
+import co.akoot.plugins.bluefox.extensions.invoke
 import co.akoot.plugins.bluefox.util.ColorUtil.randomColor
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.gui.MenuItems.home
@@ -37,7 +40,7 @@ class PlushieMenu(private val isStatue: Boolean = false, private val page: Int =
             if (item.type == Material.TOTEM_OF_UNDYING && item != pMenu) { // is it a friend?
 
                 if (pItem.type != Material.TOTEM_OF_UNDYING) { // HEY! no hacking!
-                    p.sendMessage(Text("You must be holding a totem!", "error_accent").component)
+                    Kolor.ERROR.accent("You must be holding a totem!").send(p)
                 } else {
                     when ((holder as PlushieMenu).isStatue()) {
                         true -> ItemBuilder.builder(pItem).copyOf(item)

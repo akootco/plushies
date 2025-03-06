@@ -1,6 +1,9 @@
 package co.akoot.plugins.plushies.listeners.tasks
 
+import co.akoot.plugins.bluefox.api.Kolor
+import co.akoot.plugins.bluefox.api.XYZ
 import co.akoot.plugins.bluefox.extensions.getPDC
+import co.akoot.plugins.bluefox.extensions.invoke
 import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.Text.Companion.invoke
@@ -28,12 +31,12 @@ class Golf(private val player: Player, private val golfBall: ArmorStand, private
 
         if (golfBall.isOnGround) {
             Text(player) {
-                "Your golf ball traveled "("text")
-                    .plus("${round(distance)}"("error_accent"))
-                    .plus(" blocks!"("text"))
+                Kolor.TEXT("Your golf ball traveled ") +
+                    round(distance) +
+                    Kolor.TEXT(" blocks!")
             }
 
-            Text(player) { "${round(location.x)} ${round(location.y)} ${round(location.z)}"("accent") }
+            player.sendMessage(XYZ(location).toComponent())
             return cancel()
         }
     }
@@ -91,7 +94,7 @@ class Golf(private val player: Player, private val golfBall: ArmorStand, private
             val owner = golfBall.getPDC<String>(golfKey)
 
             if (owner != p.name) {
-                Text(p) { "this is $owner's golf ball"("error_accent") }
+                Text(p) { Kolor.ERROR("This is ") + Kolor.ERROR.accent(owner ?: "someone") + Kolor.ERROR("'s golf ball") }
                 return false // you cant hit someone else's ball, but you can still pick it up if needed.
             }
 

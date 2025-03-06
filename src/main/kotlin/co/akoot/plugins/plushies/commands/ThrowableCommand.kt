@@ -2,7 +2,11 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.bluefox.util.Text.Companion.cleanName
+import co.akoot.plugins.bluefox.util.Text.Companion.now
+import co.akoot.plugins.bluefox.util.Text.Companion.titleCase
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import org.bukkit.command.CommandSender
@@ -31,8 +35,6 @@ class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
         if (isThrowable) b.removepdc(axeKey).build()
         else b.pdc(axeKey).build()
 
-        p.sendMessage((Text(item.type.name.lowercase().replace("_", " ")).color("accent")
-                + Text(" is ${if (!isThrowable) "now" else "no longer"} throwable").color("text")).component)
-        return true
+        return Result.success(Kolor.ACCENT(item.type.cleanName) + Kolor.TEXT(" is ${isThrowable.not().now} throwable")).getAndSend(p)
     }
 }

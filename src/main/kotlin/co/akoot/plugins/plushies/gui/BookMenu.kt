@@ -1,5 +1,7 @@
 package co.akoot.plugins.plushies.gui
 
+import co.akoot.plugins.bluefox.api.Kolor
+import co.akoot.plugins.bluefox.extensions.invoke
 import co.akoot.plugins.bluefox.util.ColorUtil.randomColor
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.gui.MenuItems.prevPage
@@ -27,7 +29,7 @@ class BookMenu(private val page: Int = 1) : InventoryHolder {
 
             if (item.type == Material.WRITTEN_BOOK) {
                 if (pItem.type != Material.WRITTEN_BOOK)
-                    Text(p) { "You must be holding a written book!"("error_accent") }
+                    Text(p) { Kolor.ERROR.accent("You must be holding a written book!") }
                 else {
                     p.inventory.setItemInMainHand(
                         ItemBuilder.builder(pItem)

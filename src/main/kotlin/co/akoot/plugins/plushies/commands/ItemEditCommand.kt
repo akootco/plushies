@@ -95,8 +95,7 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
                         .unsetData(DataComponentTypes.LORE)
                         .build()
 
-                    sendMessage(p, "Lore cleared.")
-                    return true
+                    return Result.success("Lore cleared.").getAndSend(p)
                 }
 
                 // what the freak man

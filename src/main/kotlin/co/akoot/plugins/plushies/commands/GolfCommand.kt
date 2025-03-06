@@ -2,6 +2,10 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.bluefox.api.Kolor
+import co.akoot.plugins.bluefox.util.Text.Companion.cleanName
+import co.akoot.plugins.bluefox.util.Text.Companion.now
+import co.akoot.plugins.bluefox.util.Text.Companion.titleCase
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.golfBalls
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.golfKey
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
@@ -37,17 +41,14 @@ class GolfCommand(plugin: FoxPlugin) : FoxCommand(plugin, "golf") {
         if (args.size == 1) {
             val color = if (args[0] in golfBalls) args[0] else "white"
             b.pdc(golfKey, color).build()
-            return sendMessage(p, "Color set to $color")
+            return Result.success(Kolor.TEXT("Color set to ") + Kolor.ACCENT(color)).getAndSend(p)
         }
 
         if (args.isEmpty()) {
             if (isGolfBall) b.removepdc(golfKey).build()
             else b.pdc(golfKey, "white").build()
 
-            return sendMessage(
-                p, item.type.name.lowercase().replace("_", " ")
-                        + " is ${if (!isGolfBall) "now" else "no longer"} a golf ball"
-            )
+            return Result.success(Kolor.ACCENT(item.type.cleanName) + Kolor.TEXT(" is " + isGolfBall.not().now + " a golf ball")).getAndSend(p)
         }
 
         return false

@@ -2,6 +2,8 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.bluefox.api.Kolor
+import co.akoot.plugins.bluefox.extensions.invoke
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.laysConf
 import org.bukkit.command.CommandSender
@@ -64,36 +66,20 @@ class LaysCommand(plugin: FoxPlugin) : FoxCommand(plugin, "lays") {
 
     private fun addChip(chip: String): Result<Boolean> {
         return if (chips.contains(chip)) { // fail if the chip already exists
-            Result.fail(
-                (Text()
-                        + Text(chip).color("accent")
-                        + Text(" already exists!")).color("error_text").component
-            )
+            Result.fail(Kolor.ERROR.accent(chip) + Kolor.TEXT(" already exists!"))
         } else {
             chips.add(chip)
             laysConf.set("chips", chips)
-            Result.success(
-                (Text()
-                        + Text(chip).color("accent")
-                        + Text(" has been added!")).color("text").component
-            )
+            Result.success(Kolor.ACCENT(chip) + Kolor.TEXT(" has been added!"))
         }
     }
 
     private fun removeChip(chip: String): Result<Boolean> {
         return if (!chips.remove(chip)) { // fail if the chip does not exist
-            Result.fail(
-                (Text()
-                        + Text(chip).color("accent")
-                        + Text(" not found!")).color("error_text").component
-            )
+            Result.fail(Kolor.ERROR.accent(chip) + Kolor.TEXT(" not found!"))
         } else {
             laysConf.set("chips", chips)
-            Result.success(
-                (Text()
-                        + Text(chip).color("accent")
-                        + Text(" was removed!")).color("text").component
-            )
+            Result.success(Kolor.ACCENT(chip) + Kolor.TEXT(" was removed!"))
         }
     }
 }

@@ -1,5 +1,6 @@
 package co.akoot.plugins.plushies.util
 
+import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.plushieConf
@@ -13,10 +14,9 @@ object Plush {
     var plushies = plushieConf.getKeys().mapNotNull { name -> plushieConf.getInt(name)?.let { name to it } }
 
     fun plushMsg(name: String): Text {
-        return Text()
-            .plus(Text("Please cherish this ").color("text"))
-            .plus(Text(name).color("accent"))
-            .plus(Text(" plushie forever").color("text"))
+        return Kolor.TEXT("Please cherish this ") +
+                Kolor.ACCENT(name) +
+                Kolor.TEXT(" plushie forever")
     }
 
     fun createPlushie(name: String, customModelData: Int): ItemStack {

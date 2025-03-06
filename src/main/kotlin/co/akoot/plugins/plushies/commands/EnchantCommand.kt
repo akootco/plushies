@@ -2,6 +2,8 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.bluefox.api.Kolor
+import co.akoot.plugins.bluefox.extensions.invoke
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.registry.RegistryAccess
@@ -30,10 +32,7 @@ class EnchantCommand(plugin: FoxPlugin) : FoxCommand(plugin, "enchant") {
         val p = playerCheck(sender) ?: return false
 
         if (args.isEmpty()) {
-            p.sendMessage(Text("/$name", "error_accent")
-                .plus(Text(" <enchantment>", "accent")
-                    .plus(Text(" <level>","number"))).component)
-            return true
+            return Result.fail(Kolor.ERROR.accent("/$name") + Kolor.TEXT(" <enchantment>") + Kolor.NUMBER(" <level>")).getAndSend(p)
         }
 
         val item = p.inventory.itemInMainHand

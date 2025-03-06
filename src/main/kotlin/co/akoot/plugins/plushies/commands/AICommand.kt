@@ -2,6 +2,8 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.bluefox.api.Kolor
+import co.akoot.plugins.bluefox.extensions.invoke
 import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.aiConf
@@ -34,14 +36,14 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
                 if (args.size < 2) {
                     return sendError(sender, "You must specify a response to add!")
                 }
-                addResponse(args.copyOfRange(1, args.size).joinToString(" ")).send(sender).value
+                addResponse(args.copyOfRange(1, args.size).joinToString(" ")).getAndSend(sender)
             }
 
             "remove", "rem" -> {
                 if (args.size < 2) {
                     return sendError(sender, "You must specify a response to remove!")
                 }
-                removeResponse(args.copyOfRange(1, args.size).joinToString(" ")).send(sender).value
+                removeResponse(args.copyOfRange(1, args.size).joinToString(" ")).getAndSend(sender)
             }
 
             else -> {
@@ -52,48 +54,30 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
 
     private fun response(sender: CommandSender): Boolean {
         if (responses.isEmpty()) return sendError(sender, "No responses found!")
-        Bukkit.getServer().sendMessage(
-            (Text() // putting a hover on the start shows it for the whole message?
-                    + Text("[AI]").color(MONTH_COLOR).hover("Ä_v1.0-alpha") // need to put it here I guess
-                    + Text(" Akoot.AI ").color("player")
-                    + Text("» " + responses.random()).color("text")).component
-        )
+        val message = Kolor.MONTH("[AI]").hover("Ä_v1.0-alpha") +
+                    Kolor.PLAYER(" Akoot.AI ") +
+                    Kolor.TEXT("» " + responses.random())
+        message.broadcast()
         return true
     }
 
     private fun removeResponse(response: String): Result<Boolean> {
         return if (!responses.remove(response)) { // does it exist?
-            Result.fail(
-                (Text()
-                        + Text(response).color("accent")
-                        + Text(" not found!")).color("error_text").component
-            )
+            Result.fail(Kolor.ACCENT(response) + Kolor.ERROR.text(" not found!"))
         } else {
             aiConf.set("responses", responses) // not anymore!
-            Result.success(
-                (Text()
-                        + Text(response).color("accent")
-                        + Text(" was removed!")).color("text").component
-            )
+            Result.success(Kolor.ACCENT(response) + Kolor.TEXT(" was removed!"))
         }
     }
 
     private fun addResponse(response: String): Result<Boolean> {
         return if (responses.contains(response)) {
             // easily bypassed but oh well, that is what permissions are for.
-            Result.fail(
-                (Text()
-                        + Text(response).color("accent")
-                        + Text(" already exists!")).color("error_text").component
-            )
+            Result.fail(Kolor.ERROR.accent(response) + Kolor.ERROR(" already exists!"))
         } else {
             responses.add(response)
             aiConf.set("responses", responses)
-            Result.success(
-                (Text()
-                        + Text(response).color("accent")
-                        + Text(" has been added!")).color("text").component
-            )
+            Result.success(Kolor.ERROR.accent(response) + Kolor.ERROR(" has been added!"))
         }
     }
 }

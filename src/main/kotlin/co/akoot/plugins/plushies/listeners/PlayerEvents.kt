@@ -1,6 +1,8 @@
 package co.akoot.plugins.plushies.listeners
 
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.bluefox.api.Kolor
+import co.akoot.plugins.bluefox.extensions.invoke
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.conf
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
@@ -52,9 +54,10 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
         if (event.status == PlayerResourcePackStatusEvent.Status.DECLINED && !messageSent.contains(player.uniqueId)) {
             // pack deniers(haters) are in the same boat as rule book dumpers :angerysad:
-            player.sendMessage((Text("Resource pack was denied.\n" , "error_accent")
-                    + Text("Click here to enable it", "accent").execute("/rp !")).component)
-
+            Text(player) {
+                Kolor.ERROR.accent("Resource pack was denied.\n") +
+                        Kolor.ACCENT("Click here to enable it").execute("/rp !")
+            }
             messageSent.add(player.uniqueId)
         }
     }
