@@ -29,7 +29,7 @@ class GolfCommand(plugin: FoxPlugin) : FoxCommand(plugin, "golf") {
 
         val item = p.inventory.itemInMainHand
 
-        if (!item.type.isBlock) return sendError(p, "You need to be holding a block")
+        if (!item.type.isBlock || item.isEmpty) return sendError(p, "You need to be holding a block")
 
         val isGolfBall = item.persistentDataContainer.has(golfKey)
         val b = ItemBuilder.builder(item)

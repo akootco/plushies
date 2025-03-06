@@ -95,13 +95,17 @@ class Golf(private val player: Player, private val golfBall: ArmorStand, private
                 return false // you cant hit someone else's ball, but you can still pick it up if needed.
             }
 
+            val item = p.inventory.itemInMainHand
+
+            if (!(MaterialTags.SWORDS.isTagged(item.type) || MaterialTags.HOES.isTagged(item.type))) { return false }
+
             // hit power is read from the items tooltip
             val hitPower = (p.getAttribute(Attribute.ATTACK_DAMAGE)?.value ?: 1.0) + 2.0
 
             // add randomness to the direction so every hit isnt the same.
             val direction = p.location.direction.multiply(hitPower + Random.nextDouble(0.8, 3.0))
 
-            val item = p.inventory.itemInMainHand
+
 
             when {
                 MaterialTags.SWORDS.isTagged(item.type) -> direction.setY(2) // power swing
