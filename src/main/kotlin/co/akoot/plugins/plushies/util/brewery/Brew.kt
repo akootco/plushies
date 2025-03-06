@@ -1,15 +1,19 @@
 package co.akoot.plugins.plushies.util.brewery
 
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.checkPlugin
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Material
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
 import java.io.File
 
 object Brew {
+
+    var breweryConfig: YamlConfiguration? = null
+
+    private val regex = Regex("Edulis:|Brewery:|[\\[\\]]|&[0-9a-fk-or]")
 
     private val woodMap = mapOf(
         0 to "Any",
@@ -27,8 +31,6 @@ object Brew {
         12 to "Pale Oak"
     )
 
-    private var breweryConfig: YamlConfiguration? = null
-
     init {
         val brewery = checkPlugin("Brewery")
         if (brewery != null) {
@@ -36,78 +38,54 @@ object Brew {
         }
     }
 
-    fun getBreweryConfig(): YamlConfiguration? {
-        return breweryConfig
-    }
-
     fun brewBook(recipe: String): ItemStack? {
         val pages = mutableListOf<Component>()
 
-        val recipeSection = getBreweryConfig()?.getConfigurationSection("recipes") ?: return null
+        val recipeSection = breweryConfig?.getConfigurationSection("recipes") ?: return null
 
         if (recipe == "all") {
             // create book with all recipes
             for (key in recipeSection.getKeys(false)) {
-                addPage(key)?.let { pages.add(it) }
+                createPage(key)?.let { pages.add(it) }
             }
+
             return ItemBuilder.builder(ItemStack(Material.WRITTEN_BOOK))
-                .writtenBook(pages)
+                .writtenBook(pages, "Brewery", generation = 3)
                 .build()
         } else {
             // create book with single recipe
-            val page = addPage(recipe) ?: return null
             return ItemBuilder.builder(ItemStack(Material.WRITTEN_BOOK))
-                .writtenBook(page)
+                .writtenBook(createPage(recipe) ?: return null)
                 .build()
         }
     }
 
-    private fun addPage(recipe: String): Component? {
+    private fun createPage(recipe: String): Component? {
         val section = breweryConfig?.getConfigurationSection("recipes.$recipe") ?: return null
-
-        val page = StringBuilder()
-
-        page.append(section.name)
-
         val ingredients = section.getStringList("ingredients")
+        val name = section.getString("name")?.split("/")?.last()?.replace(regex, "") ?: section.name
 
-        if (ingredients.isNotEmpty()) {
-            val ingredientsString = ingredients.toString()
-                .replace(Regex("Edulis:|Brewery:|[\\[\\]]"), "")
-                .replace(", ", "&r\n")
+        val result = (Text(name).plus("\n\n")
+                + Text(ingredients.toString()
+                    .replace(regex, "")
+                    .replace(", ", "\n")
+                    .replace("_", " ")
+                    .lowercase())
+                + Text("\n\nCooking Time: ") + Text(section.getInt("cookingtime").toString()))
 
-            page.append("\n\n$ingredientsString").append("&r")
-        }
-
-
-        // set cook time, default to 2
-        val cookingTime = section.getInt("cookingtime", 2)
-        page.append("\n\nCooking Time: ").append(cookingTime)
-
-        // recipes don't require aging, but if they do, show it
         if (section.contains("wood")) {
-            val wood = section.getInt("wood")
-            page.append("\nWood: ").append(woodMap[wood])
+            result + Text("\nWood: ").plus(woodMap[section.getInt("wood")] ?: "error")
         }
 
-        // same thing here, not required
-        if (section.contains("age")) {
-            val age = section.getInt("age")
-            if (age != 0) {
-                page.append("\nAge: ").append(age)
-            }
+        if (section.contains("age") && section.getInt("age") != 0) {
+            result + Text("\nAge: ").plus(section.getInt("age").toString())
         }
 
-        // same here
-        if (section.contains("distillruns")) {
-            val distRuns = section.getInt("distillruns")
-            if (distRuns != 0) {
-                page.append("\nDistill Runs: ").append(distRuns)
-            }
+        if (section.contains("distillruns") && section.getInt("distillruns") != 0) {
+            result + Text("\nDistill Runs: ").plus(section.getInt("distillruns").toString())
         }
 
-        // return the page with color
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(page.toString())
+        return result.component
     }
 }
 

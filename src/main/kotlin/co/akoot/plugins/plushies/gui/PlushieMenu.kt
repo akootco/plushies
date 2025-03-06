@@ -67,7 +67,7 @@ class PlushieMenu(private val isStatue: Boolean = false, private val page: Int =
         val start = (pageNumber - 1) * 45
         val end = min(start + 45, plushies.size)
 
-        val sortedPlushies = plushies.sortedBy { it.first }
+        val sortedPlushies = plushies.sortedBy { it.first.lowercase() }
         // only get what fits on the page
         for (index in start until end) {
             val plushie = sortedPlushies[index]

@@ -3,7 +3,7 @@ package co.akoot.plugins.plushies.util.brewery
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.plushies.util.brewery.Brew.brewBook
-import co.akoot.plugins.plushies.util.brewery.Brew.getBreweryConfig
+import co.akoot.plugins.plushies.util.brewery.Brew.breweryConfig
 import org.bukkit.command.CommandSender
 
 class DrinksCommand(plugin: FoxPlugin) : FoxCommand(plugin, "drinks") {
@@ -11,7 +11,7 @@ class DrinksCommand(plugin: FoxPlugin) : FoxCommand(plugin, "drinks") {
     override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
 
         if (args.size == 1) {
-            val keys = getBreweryConfig()?.getConfigurationSection("recipes")?.getKeys(false)
+            val keys = breweryConfig?.getConfigurationSection("recipes")?.getKeys(false)
                 ?: return mutableListOf()
 
             return keys.toMutableList()
@@ -24,10 +24,9 @@ class DrinksCommand(plugin: FoxPlugin) : FoxCommand(plugin, "drinks") {
         val p = playerCheck(sender) ?: return false
 
         val recipe = if (args.isNotEmpty()) args[0] else "all"
-        val book = brewBook(recipe) ?: return sendError(p, "Recipe not found!")
 
-        if (recipe == "book" && permissionCheck(p, "book") == true) { p.give(book) }
-        else { p.openBook(book) }
+        if (recipe == "book" && permissionCheck(p, "book") == true) { p.give(brewBook("all")) }
+        else { p.openBook(brewBook(recipe) ?: return sendError(p, "Recipe not found!")) }
 
         return true
     }
