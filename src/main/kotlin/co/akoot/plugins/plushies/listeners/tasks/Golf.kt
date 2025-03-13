@@ -6,7 +6,6 @@ import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.invoke
 import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.Text
-import co.akoot.plugins.bluefox.util.Text.Companion.invoke
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import com.destroystokyo.paper.MaterialTags
 import org.bukkit.*
@@ -60,7 +59,8 @@ class Golf(private val player: Player, private val golfBall: ArmorStand, private
         fun spawnGolfBall(player: Player, location: Location): Boolean {
 
             val item = player.inventory.itemInMainHand
-            val color = item.itemMeta.getPDC<String>(golfKey) ?: return false
+            val meta = item.itemMeta ?: return false
+            val color = meta.getPDC<String>(golfKey) ?: return false
             val armorStand = location.world.spawnEntity(location, EntityType.ARMOR_STAND) as ArmorStand
 
             // create the golf ball head
@@ -91,10 +91,10 @@ class Golf(private val player: Player, private val golfBall: ArmorStand, private
 
         fun golfSwing(golfBall: ArmorStand, p: Player): Boolean {
 
-            val owner = golfBall.getPDC<String>(golfKey)
+            val owner = golfBall.getPDC<String>(golfKey) ?: return false
 
             if (owner != p.name) {
-                Text(p) { Kolor.ERROR("This is ") + Kolor.ERROR.accent(owner ?: "someone") + Kolor.ERROR("'s golf ball") }
+                Text(p) { Kolor.ERROR("This is ") + Kolor.ERROR.accent(owner) + Kolor.ERROR("'s golf ball") }
                 return false // you cant hit someone else's ball, but you can still pick it up if needed.
             }
 
@@ -107,8 +107,6 @@ class Golf(private val player: Player, private val golfBall: ArmorStand, private
 
             // add randomness to the direction so every hit isnt the same.
             val direction = p.location.direction.multiply(hitPower + Random.nextDouble(0.8, 3.0))
-
-
 
             when {
                 MaterialTags.SWORDS.isTagged(item.type) -> direction.setY(2) // power swing
