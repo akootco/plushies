@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.regex.Pattern
 
 fun petNeglect(player: Player, pItem: ItemStack, entity: Tameable, event: PlayerInteractEntityEvent) {
-    if (pItem.type != Material.BLAZE_ROD || entity.isTamed) return
+    if (pItem.type != Material.BLAZE_ROD || !entity.isTamed) return
 
     val meta = pItem.itemMeta ?: return
     val displayName = meta.displayName()?.let { PlainTextComponentSerializer.plainText().serialize(it) } ?: return
