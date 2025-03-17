@@ -1,5 +1,7 @@
 package co.akoot.plugins.plushies.util.builders
 
+import co.akoot.plugins.bluefox.extensions.removePDC
+import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.Text
 import com.destroystokyo.paper.profile.ProfileProperty
 import io.papermc.paper.datacomponent.DataComponentType
@@ -39,13 +41,6 @@ import java.util.*
  *
  */
 class ItemBuilder private constructor(private var itemStack: ItemStack) {
-    private val container: PersistentDataContainer?
-    private val meta: ItemMeta? = itemStack.itemMeta
-
-    init {
-        container = meta?.persistentDataContainer
-    }
-
     /**
      * Creates custom model data for an item, allowing optional parameters for color and model.
      *
@@ -519,6 +514,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
 
     fun playerHead(player: Player): ItemBuilder {
         if (!itemStack.type.name.endsWith("_HEAD")) return this
+        val meta = itemStack.itemMeta
 
         val headMeta = meta as SkullMeta
         val profile = Bukkit.createProfile(player.uniqueId, player.name)
@@ -563,10 +559,10 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @return The updated `Item` with the persistent data applied.
      */
     fun pdc(key: NamespacedKey, value: Any = ""): ItemBuilder {
-
+        val meta = itemStack.itemMeta
         when (value) {
-            is String -> container?.set(key, PersistentDataType.STRING, value)
-            is Boolean -> container?.set(key, PersistentDataType.BOOLEAN, value)
+            is String -> meta.setPDC<String>(key, value)
+            is Boolean -> meta.setPDC<Boolean>(key, value)
         }
 
         itemStack.setItemMeta(meta)
@@ -574,13 +570,14 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
     }
 
     /**
-     * Removepdc
+     * removepdc
      *
      * @param key
      * @return
      */
     fun removepdc(key: NamespacedKey): ItemBuilder {
-        container?.remove(key)
+        val meta = itemStack.itemMeta
+        meta.removePDC(key)
         itemStack.setItemMeta(meta)
         return this
     }

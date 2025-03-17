@@ -9,7 +9,6 @@ import co.akoot.plugins.plushies.listeners.EntityEvents
 import co.akoot.plugins.plushies.listeners.Events
 import co.akoot.plugins.plushies.listeners.PlayerEvents
 import co.akoot.plugins.plushies.util.Recipes.registerRecipes
-import co.akoot.plugins.plushies.util.brewery.DrinksCommand
 import org.bukkit.Bukkit
 import org.bukkit.plugin.Plugin
 
@@ -24,7 +23,7 @@ class Plushies : FoxPlugin("plushies") {
         lateinit var recipeConf: FoxConfig
         lateinit var cookRecipeConf: FoxConfig
 
-        fun checkPlugin(name: String): Plugin? = Bukkit.getPluginManager().getPlugin(name)
+        private fun checkPlugin(name: String): Plugin? = Bukkit.getPluginManager().getPlugin(name)
         fun pluginEnabled(name: String): Boolean = checkPlugin(name)?.isEnabled == true
     }
 
@@ -50,7 +49,6 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(ItemEditCommand(this))
         registerCommand(ResourcePackCommand(this))
         registerCommand(GolfCommand(this))
-        registerCommand(DrinksCommand(this))
 
         // bluemap commands
         registerCommand(ShowCommand(this))
