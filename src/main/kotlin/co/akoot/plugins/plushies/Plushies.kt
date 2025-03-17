@@ -49,6 +49,7 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(ItemEditCommand(this))
         registerCommand(ResourcePackCommand(this))
         registerCommand(GolfCommand(this))
+        registerCommand(BookArchiveCommand(this))
 
         // bluemap commands
         registerCommand(ShowCommand(this))

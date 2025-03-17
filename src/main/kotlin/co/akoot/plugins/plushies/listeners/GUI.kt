@@ -1,5 +1,7 @@
 package co.akoot.plugins.plushies.listeners
 
+import co.akoot.plugins.plushies.gui.BookArchiveMenu
+import co.akoot.plugins.plushies.gui.BookArchiveMenu.Companion.bookArchiveMenu
 import co.akoot.plugins.plushies.gui.BookMenu
 import co.akoot.plugins.plushies.gui.BookMenu.Companion.bookMenu
 import co.akoot.plugins.plushies.gui.PlushieMainMenu
@@ -31,6 +33,12 @@ class GUI : Listener {
                 bookMenu(menuItem, p, holder)
                 event.isCancelled = true
             }
+
+            is BookArchiveMenu -> {
+                bookArchiveMenu(menuItem, p, holder)
+                event.isCancelled = true
+            }
+
             else -> return
         }
     }
