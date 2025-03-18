@@ -1,9 +1,9 @@
 package co.akoot.plugins.plushies.util
 
-import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.util.Util.loadYamlConfig
+import co.akoot.plugins.plushies.util.Util.pl
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.entity.Player
@@ -11,7 +11,9 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
 import java.io.File
 
-class BookArchiver(private val plugin: FoxPlugin) {
+object BookArchiver {
+
+    val bookFolder = File(pl.dataFolder, "books")
 
     fun saveBook(player: Player, book: ItemStack) {
         val meta = book.itemMeta as? BookMeta ?: run {
@@ -30,7 +32,7 @@ class BookArchiver(private val plugin: FoxPlugin) {
          * Check if the book is already archived
          * clone the item and remove custom name and custom model data
          */
-        if (loadYamlConfig(plugin, "books/$fileName")
+        if (loadYamlConfig("books/$fileName")
                 .getItemStack("book")?.isSimilar(
                     ItemBuilder.builder(book.clone())
                         .unsetData(DataComponentTypes.CUSTOM_NAME)
@@ -40,12 +42,12 @@ class BookArchiver(private val plugin: FoxPlugin) {
             return
         }
 
-        val bookConfig = loadYamlConfig(plugin, "books/$fileName")
+        val bookConfig = loadYamlConfig("books/$fileName")
 
         try {
             // save the book
             bookConfig.set("book", book)
-            bookConfig.save(File(plugin.dataFolder, "books/$fileName"))
+            bookConfig.save(File(pl.dataFolder, "books/$fileName"))
             Text(player) { Kolor.TEXT("Saved book: ${meta.title}") }
         } catch (e: Exception) {
             Text(player) { Kolor.ERROR("Failed to save book: ${meta.title}") }
@@ -53,7 +55,7 @@ class BookArchiver(private val plugin: FoxPlugin) {
     }
 
     fun loadBook(bookTitle: String): ItemStack? {
-        return loadYamlConfig(plugin, "books/${bookTitle}.yml")
+        return loadYamlConfig("books/${bookTitle}.yml")
             .getItemStack("book")
     }
 }

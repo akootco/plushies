@@ -17,7 +17,7 @@ class BookCommand(plugin: FoxPlugin) : FoxCommand(plugin, "book") {
 
         when (args.getOrNull(0)) {
             "archive" -> {
-                p.openInventory(BookArchiveMenu(plugin).inventory)
+                p.openInventory(BookArchiveMenu().inventory)
                 return true
             }
 

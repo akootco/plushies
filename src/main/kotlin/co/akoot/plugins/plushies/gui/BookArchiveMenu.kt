@@ -1,11 +1,11 @@
 package co.akoot.plugins.plushies.gui
 
-import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.util.ColorUtil.randomColor
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.gui.MenuItems.prevPage
 import co.akoot.plugins.plushies.gui.MenuItems.nextPage
-import co.akoot.plugins.plushies.util.BookArchiver
+import co.akoot.plugins.plushies.util.BookArchiver.loadBook
+import co.akoot.plugins.plushies.util.Util.pl
 import co.akoot.plugins.plushies.util.builders.ChestGUI
 import org.bukkit.Material
 import org.bukkit.entity.HumanEntity
@@ -16,7 +16,7 @@ import org.bukkit.inventory.meta.BookMeta
 import java.io.File
 import kotlin.math.min
 
-class BookArchiveMenu(private val plugin: FoxPlugin, private val page: Int = 1) : InventoryHolder {
+class BookArchiveMenu(private val page: Int = 1) : InventoryHolder {
 
     companion object {
         fun bookArchiveMenu(item: ItemStack, p: HumanEntity, holder: InventoryHolder) {
@@ -41,22 +41,22 @@ class BookArchiveMenu(private val plugin: FoxPlugin, private val page: Int = 1) 
     }.build()
 
     fun nextPage(): BookArchiveMenu {
-        return BookArchiveMenu(plugin, page + 1)
+        return BookArchiveMenu(page + 1)
     }
 
     fun prevPage(): BookArchiveMenu {
-        return BookArchiveMenu(plugin, page - 1)
+        return BookArchiveMenu(page - 1)
     }
 
     private fun setBooks(pageNumber: Int): List<ItemStack> {
-        val files = File(plugin.dataFolder, "books").listFiles() ?: return bookList
+        val files = File(pl.dataFolder, "books").listFiles() ?: return bookList
 
         val start = (pageNumber - 1) * 45
         val end = min(start + 45, files.size)
 
         for (i in start until end) {
             // set all books that are saved
-            BookArchiver(plugin).loadBook(files[i].nameWithoutExtension)?.let { bookList.add(it) }
+            loadBook(files[i].nameWithoutExtension)?.let { bookList.add(it) }
         }
 
         return bookList
