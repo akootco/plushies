@@ -25,10 +25,8 @@ import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.ItemRarity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
-import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.SkullMeta
-import org.bukkit.persistence.PersistentDataContainer
-import org.bukkit.persistence.PersistentDataType
+import org.bukkit.potion.PotionEffect
 import java.nio.charset.StandardCharsets
 import java.util.*
 
@@ -113,7 +111,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param enchantments
      * @return
      */
-    fun enchants(enchantments: MutableMap<Enchantment,Int>): ItemBuilder {
+    fun enchants(enchantments: MutableMap<Enchantment, Int>): ItemBuilder {
         val enchants = ItemEnchantments.itemEnchantments()
         enchants.addAll(enchantments)
         itemStack.setData(DataComponentTypes.ENCHANTMENTS, enchants)
@@ -138,7 +136,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param enchantments
      * @return
      */
-    fun addEnchants(enchantments: MutableMap<Enchantment,Int>): ItemBuilder {
+    fun addEnchants(enchantments: MutableMap<Enchantment, Int>): ItemBuilder {
         itemStack.addUnsafeEnchantments(enchantments)
         return this
     }
@@ -593,8 +591,20 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
         return this
     }
 
-    fun potionColor(color: Int): ItemBuilder {
-        val potion = PotionContents.potionContents().customColor(Color.fromRGB(color))
+    fun potion(hex: String, effect: PotionEffect? = null): ItemBuilder {
+        if (itemStack.type != Material.POTION) return this
+
+        val potion = PotionContents.potionContents().apply {
+            if (effect != null) { addCustomEffect(effect) }
+            if (hex.length == 6) {
+                customColor(Color.fromRGB(
+                        hex.substring(0, 2).toInt(16),
+                        hex.substring(2, 4).toInt(16),
+                        hex.substring(4, 6).toInt(16)
+                ))
+            }
+        }
+
         itemStack.setData(DataComponentTypes.POTION_CONTENTS, potion.build())
         return this
     }
