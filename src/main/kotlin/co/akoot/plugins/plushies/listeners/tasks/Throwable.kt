@@ -1,9 +1,9 @@
 package co.akoot.plugins.plushies.listeners.tasks
 
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.plushies.Plushies.Companion.key
 import org.bukkit.GameMode
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.*
@@ -35,7 +35,7 @@ class Throwable(private val shouldDrop: Boolean, private val snowBall: Snowball,
     }
 
     companion object {
-        val axeKey = NamespacedKey("plushies", "throwable")
+        val axeKey = key("throwable")
 
         fun spawnThrowable(player: Player, plugin: FoxPlugin) {
             val itemStack = player.inventory.itemInMainHand

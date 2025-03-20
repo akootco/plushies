@@ -6,6 +6,7 @@ import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.invoke
 import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import com.destroystokyo.paper.MaterialTags
 import org.bukkit.*
@@ -42,7 +43,7 @@ class Golf(private val player: Player, private val golfBall: ArmorStand, private
 
     companion object {
 
-        val golfKey = NamespacedKey("plushies", "golf")
+        val golfKey = key("golf")
 
         val golfBalls = mapOf(
             "white" to "c6e4f196e908a862353dcbb8edc69fc6b0f288f0e2c4bea72f09bff698753",

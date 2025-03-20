@@ -10,6 +10,7 @@ import co.akoot.plugins.plushies.listeners.Events
 import co.akoot.plugins.plushies.listeners.PlayerEvents
 import co.akoot.plugins.plushies.util.Recipes.registerRecipes
 import org.bukkit.Bukkit
+import org.bukkit.NamespacedKey
 import org.bukkit.plugin.Plugin
 
 class Plushies : FoxPlugin("plushies") {
@@ -22,6 +23,10 @@ class Plushies : FoxPlugin("plushies") {
         lateinit var laysConf: FoxConfig
         lateinit var recipeConf: FoxConfig
         lateinit var cookRecipeConf: FoxConfig
+
+        fun key(key: String): NamespacedKey {
+            return NamespacedKey("plushies",key)
+        }
 
         private fun checkPlugin(name: String): Plugin? = Bukkit.getPluginManager().getPlugin(name)
         fun pluginEnabled(name: String): Boolean = checkPlugin(name)?.isEnabled == true

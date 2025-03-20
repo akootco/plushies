@@ -2,17 +2,21 @@ package co.akoot.plugins.plushies.listeners
 
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.api.Kolor
+import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.invoke
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.conf
+import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowable
 import co.akoot.plugins.plushies.util.ResourcePack.setPack
+import co.akoot.plugins.plushies.util.Util.setAttributes
 import io.papermc.paper.event.player.AsyncChatEvent
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerResourcePackStatusEvent
 import org.bukkit.scheduler.BukkitRunnable
@@ -23,6 +27,12 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
     private val msgConf = conf.getStringList("kickMsg").toMutableList()
     private val messageSent: MutableList<UUID> = mutableListOf()
+
+    @EventHandler
+    fun itemConsume(event: PlayerItemConsumeEvent) {
+        if (event.item.itemMeta.getPDC<String>(key("attributes")) != null)
+            setAttributes(event.item, event.player)
+    }
 
     @EventHandler
     fun isHacking(event: AsyncChatEvent) {

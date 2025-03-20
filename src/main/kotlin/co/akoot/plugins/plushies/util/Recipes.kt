@@ -1,6 +1,7 @@
 package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.plushies.Plushies.Companion.cookRecipeConf
+import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.recipeConf
 import co.akoot.plugins.plushies.util.builders.CookRecipe
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
@@ -8,7 +9,6 @@ import com.destroystokyo.paper.MaterialTags
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.Tag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice.MaterialChoice
@@ -33,7 +33,7 @@ object Recipes {
             val resultMaterial = "STRIPPED_" + inputMaterial.name
 
             Material.entries.find { it.name == resultMaterial }?.let { output ->
-                Bukkit.addRecipe(StonecuttingRecipe(NamespacedKey("plushies", output.name.lowercase()),
+                Bukkit.addRecipe(StonecuttingRecipe(key( output.name.lowercase()),
                         ItemStack(output), MaterialChoice(inputMaterial)))
             }
         }
@@ -83,7 +83,7 @@ object Recipes {
                 // if output matches a material, create the recipe
                 Material.entries.find { it.name == resultName }?.let { resultMaterial ->
                     Bukkit.addRecipe(StonecuttingRecipe(
-                        NamespacedKey("plushies", resultMaterial.name.lowercase()),
+                        key( resultMaterial.name.lowercase()),
                         ItemStack(resultMaterial, count),
                         MaterialChoice(plank)))
                 }

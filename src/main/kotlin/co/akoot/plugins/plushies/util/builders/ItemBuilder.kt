@@ -3,6 +3,7 @@ package co.akoot.plugins.plushies.util.builders
 import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.plushies.Plushies.Companion.key
 import com.destroystokyo.paper.profile.ProfileProperty
 import io.papermc.paper.datacomponent.DataComponentType
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -545,7 +546,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      */
     fun throwable(smite: Boolean = false): ItemBuilder {
         val type = if (smite) "smite" else "default"
-        pdc(NamespacedKey("plushies", "throwable"), type)
+        pdc(key("throwable"), type)
         return this
     }
 
