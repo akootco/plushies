@@ -1,9 +1,9 @@
 package co.akoot.plugins.plushies.util.builders
 
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.plushies.gui.MenuItems.filler
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
@@ -88,12 +88,7 @@ class ChestGUI private constructor(private var size: Int, private val holder: In
     fun build(): Inventory {
         val inventory = Bukkit.createInventory(holder, size, title)
 
-        if (isMenu) {
-            setItems(0..<size, ItemBuilder.builder(ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE))
-                .filler()
-                .build()
-            )
-        }
+        if (isMenu) { setItems(0..<size, filler) }
 
         items.forEach { (i: Int, item: ItemStack?) ->
             inventory.setItem(

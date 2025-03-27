@@ -24,4 +24,7 @@ object MenuItems {
     // statue menu nav button
     val sMenu = ItemBuilder.builder(ItemStack(Material.ARMOR_STAND))
         .itemName(Text("Statues", NamedTextColor.GREEN).component).build()
+
+    val filler = ItemBuilder.builder(ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE))
+        .filler().build()
 }

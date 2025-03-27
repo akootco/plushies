@@ -1,6 +1,5 @@
 package co.akoot.plugins.plushies.gui
 
-import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.invoke
 import co.akoot.plugins.bluefox.util.ColorUtil.randomColor
@@ -8,10 +7,10 @@ import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.gui.MenuItems.home
 import co.akoot.plugins.plushies.gui.MenuItems.nextPage
 import co.akoot.plugins.plushies.gui.MenuItems.pMenu
-import co.akoot.plugins.plushies.util.Plush.plushies
+import co.akoot.plugins.plushies.util.Items.plushies
 import co.akoot.plugins.plushies.gui.MenuItems.prevPage
-import co.akoot.plugins.plushies.util.Plush.createPlushie
-import co.akoot.plugins.plushies.util.Plush.plushMsg
+import co.akoot.plugins.plushies.util.Items.createPlushie
+import co.akoot.plugins.plushies.util.Util.plushMsg
 import co.akoot.plugins.plushies.util.builders.ChestGUI
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer

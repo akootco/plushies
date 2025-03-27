@@ -1,12 +1,10 @@
 package co.akoot.plugins.plushies.listeners
 
-import co.akoot.plugins.plushies.gui.BookArchiveMenu
+import co.akoot.plugins.plushies.gui.*
 import co.akoot.plugins.plushies.gui.BookArchiveMenu.Companion.bookArchiveMenu
-import co.akoot.plugins.plushies.gui.BookMenu
 import co.akoot.plugins.plushies.gui.BookMenu.Companion.bookMenu
-import co.akoot.plugins.plushies.gui.PlushieMainMenu
+import co.akoot.plugins.plushies.gui.CustomItemMenu.Companion.customItemMenu
 import co.akoot.plugins.plushies.gui.PlushieMainMenu.Companion.mainMenu
-import co.akoot.plugins.plushies.gui.PlushieMenu
 import co.akoot.plugins.plushies.gui.PlushieMenu.Companion.plushMenu
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -36,6 +34,11 @@ class GUI : Listener {
 
             is BookArchiveMenu -> {
                 bookArchiveMenu(menuItem, p, holder)
+                event.isCancelled = true
+            }
+
+            is CustomItemMenu -> {
+                customItemMenu(menuItem, p, holder)
                 event.isCancelled = true
             }
 

@@ -1,6 +1,8 @@
 package co.akoot.plugins.plushies.util
 
+import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.getPDC
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import io.papermc.paper.registry.RegistryAccess
@@ -15,6 +17,12 @@ import java.io.File
 
 object Util {
     val pl: Plushies = JavaPlugin.getPlugin(Plushies::class.java)
+
+    fun plushMsg(name: String): Text {
+        return Kolor.TEXT("Please cherish this ") +
+                Kolor.ACCENT(name) +
+                Kolor.TEXT(" plushie forever")
+    }
 
     fun loadYamlConfig(path: String): FileConfiguration {
         val file = File(pl.dataFolder, path)
@@ -49,6 +57,4 @@ object Util {
             att.baseValue += value.toDouble()
         }
     }
-
-    // i dont know about this one!
 }

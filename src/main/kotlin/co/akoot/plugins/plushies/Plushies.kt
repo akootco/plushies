@@ -8,6 +8,7 @@ import co.akoot.plugins.plushies.listeners.GUI
 import co.akoot.plugins.plushies.listeners.EntityEvents
 import co.akoot.plugins.plushies.listeners.Events
 import co.akoot.plugins.plushies.listeners.PlayerEvents
+import co.akoot.plugins.plushies.util.Items.loadItems
 import co.akoot.plugins.plushies.util.Recipes.registerRecipes
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
@@ -23,9 +24,10 @@ class Plushies : FoxPlugin("plushies") {
         lateinit var laysConf: FoxConfig
         lateinit var recipeConf: FoxConfig
         lateinit var cookRecipeConf: FoxConfig
+        lateinit var customItemConfig: FoxConfig
 
         fun key(key: String): NamespacedKey {
-            return NamespacedKey("plushies",key)
+            return NamespacedKey("plushies", key)
         }
 
         private fun checkPlugin(name: String): Plugin? = Bukkit.getPluginManager().getPlugin(name)
@@ -35,6 +37,7 @@ class Plushies : FoxPlugin("plushies") {
     override fun load() {
         logger.info("welcome back!")
         registerRecipes()
+        loadItems(customItemConfig)
     }
 
     override fun unload() {
@@ -55,6 +58,7 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(ResourcePackCommand(this))
         registerCommand(GolfCommand(this))
         registerCommand(BookArchiveCommand(this))
+        registerCommand(CustomItemCommand(this))
 
         // bluemap commands
         registerCommand(ShowCommand(this))
@@ -76,5 +80,6 @@ class Plushies : FoxPlugin("plushies") {
         headConf = registerConfig("heads", "data/heads.conf")
         recipeConf = registerConfig("craftingRecipes", "recipes/recipes.conf")
         cookRecipeConf = registerConfig("cookRecipes", "recipes/cook_recipes.conf")
+        customItemConfig = registerConfig("customItems", "data/items.conf")
     }
 }
