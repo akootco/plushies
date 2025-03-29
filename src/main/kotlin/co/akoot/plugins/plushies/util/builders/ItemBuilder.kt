@@ -592,6 +592,11 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
         return this
     }
 
+    fun resetData(dataType: DataComponentType): ItemBuilder {
+        itemStack.resetData(dataType)
+        return this
+    }
+
     fun potion(hex: String, effect: PotionEffect? = null): ItemBuilder {
         if (itemStack.type != Material.POTION) return this
 
