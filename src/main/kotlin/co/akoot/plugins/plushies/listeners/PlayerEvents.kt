@@ -7,9 +7,12 @@ import co.akoot.plugins.bluefox.extensions.invoke
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.conf
 import co.akoot.plugins.plushies.Plushies.Companion.key
+import co.akoot.plugins.plushies.listeners.handlers.playMusic
+import co.akoot.plugins.plushies.listeners.handlers.stopMusic
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowable
 import co.akoot.plugins.plushies.util.ResourcePack.setPack
+import co.akoot.plugins.plushies.util.Util.getBlockPDC
 import co.akoot.plugins.plushies.util.Util.setAttributes
 import io.papermc.paper.event.player.AsyncChatEvent
 import org.bukkit.event.EventHandler
@@ -75,10 +78,25 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
     @EventHandler
     fun playerInteract(event: PlayerInteractEvent) {
         val player = event.player
-        if (event.action == Action.RIGHT_CLICK_AIR) {
-            if (player.inventory.itemInMainHand.persistentDataContainer.has(axeKey)) {
-                spawnThrowable(player, plugin)
+
+        when (event.action) {
+            Action.RIGHT_CLICK_AIR -> {
+                if (player.inventory.itemInMainHand.persistentDataContainer.has(axeKey)) {
+                    spawnThrowable(player, plugin)
+                }
             }
+
+            Action.RIGHT_CLICK_BLOCK -> (event.clickedBlock)?.let { block ->
+                if (player.isSneaking) return
+
+                if (block.chunk.persistentDataContainer.has(getBlockPDC(block.location))) {
+                    stopMusic(block)
+                } else {
+                    event.item?.let { playMusic(it, block) }
+                }
+            }
+
+            else -> return
         }
     }
 }

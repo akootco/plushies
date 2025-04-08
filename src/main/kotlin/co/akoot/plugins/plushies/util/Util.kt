@@ -7,6 +7,7 @@ import co.akoot.plugins.plushies.Plushies
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
+import org.bukkit.Location
 import org.bukkit.NamespacedKey
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
@@ -56,5 +57,10 @@ object Util {
             // set the value
             att.baseValue += value.toDouble()
         }
+    }
+
+    fun getBlockPDC(location: Location): NamespacedKey {
+        val key = "${location.world.name}.${location.blockX}.${location.blockY}.${location.blockZ}"
+        return key(key)
     }
 }

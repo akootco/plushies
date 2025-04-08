@@ -339,8 +339,8 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param song
      * @return
      */
-    fun jukeboxSong(song: JukeboxSong): ItemBuilder {
-        itemStack.setData(DataComponentTypes.JUKEBOX_PLAYABLE, JukeboxPlayable.jukeboxPlayable(song))
+    fun jukeboxSong(song: JukeboxSong, shownInTooltip: Boolean = true): ItemBuilder {
+        itemStack.setData(DataComponentTypes.JUKEBOX_PLAYABLE, JukeboxPlayable.jukeboxPlayable(song).showInTooltip(shownInTooltip))
         return this
     }
 
@@ -565,6 +565,13 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
         }
 
         itemStack.setItemMeta(meta)
+        return this
+    }
+
+    fun song(song: String): ItemBuilder {
+        pdc(key("music_disc"), song)
+        jukeboxSong(JukeboxSong.ELEVEN, false)
+        stackSize(1)
         return this
     }
 
