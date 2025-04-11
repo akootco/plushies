@@ -568,13 +568,6 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
         return this
     }
 
-    fun song(song: String): ItemBuilder {
-        pdc(key("music_disc"), song)
-        jukeboxSong(JukeboxSong.ELEVEN, false)
-        stackSize(1)
-        return this
-    }
-
     /**
      * removepdc
      *

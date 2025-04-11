@@ -10,6 +10,8 @@ import co.akoot.plugins.plushies.listeners.Events
 import co.akoot.plugins.plushies.listeners.PlayerEvents
 import co.akoot.plugins.plushies.util.Items.loadItems
 import co.akoot.plugins.plushies.util.Recipes.registerRecipes
+import co.akoot.plugins.plushies.util.DataPack
+import co.akoot.plugins.plushies.util.DataPack.createDiscs
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.plugin.Plugin
@@ -25,6 +27,7 @@ class Plushies : FoxPlugin("plushies") {
         lateinit var recipeConf: FoxConfig
         lateinit var cookRecipeConf: FoxConfig
         lateinit var customItemConfig: FoxConfig
+        lateinit var customMusicDiscConfig: FoxConfig
 
         fun key(key: String): NamespacedKey {
             return NamespacedKey("plushies", key)
@@ -36,8 +39,13 @@ class Plushies : FoxPlugin("plushies") {
 
     override fun load() {
         logger.info("welcome back!")
+
+        val plushPack = DataPack.createPack(this)
+        createDiscs(plushPack)
+
         registerRecipes()
         loadItems(customItemConfig)
+        loadItems(customMusicDiscConfig)
     }
 
     override fun unload() {
@@ -82,5 +90,6 @@ class Plushies : FoxPlugin("plushies") {
         recipeConf = registerConfig("craftingRecipes", "recipes/recipes.conf")
         cookRecipeConf = registerConfig("cookRecipes", "recipes/cook_recipes.conf")
         customItemConfig = registerConfig("customItems", "data/items.conf")
+        customMusicDiscConfig = registerConfig("customMusicDiscs", "data/music_discs.conf")
     }
 }

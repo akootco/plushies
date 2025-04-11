@@ -55,7 +55,6 @@ object ItemCreator {
             // stackSize needs to be 1-99 or else the server will explode (real)
             config.getInt("$path.stackSize").takeIf { it in 1..99 }?.let { stackSize(it) }
 
-            config.getString("$path.song")?.let { song -> song(song) }
         }.build()
     }
 
