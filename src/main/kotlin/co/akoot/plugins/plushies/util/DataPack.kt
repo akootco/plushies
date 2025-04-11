@@ -34,7 +34,7 @@ object DataPack {
     }
 
     fun createDiscs(plushPack: File) {
-        val jukeboxFolder = File(plushPack, "jukebox_songs")
+        val jukeboxFolder = File(plushPack, "jukebox_song")
         jukeboxFolder.mkdirs()
 
         customMusicDiscConfig.getKeys().forEach { song ->
