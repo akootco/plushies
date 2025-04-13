@@ -14,7 +14,7 @@ class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
     override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
 
         if (args.size == 1) {
-            return customItems.keys.toMutableList()
+            return customItems.keys.plus("party_hat").toMutableList()
         } else if (args.size == 2 && args[0] == "party_hat") {
             return getOnlinePlayerSuggestions()
         }

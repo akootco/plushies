@@ -11,7 +11,6 @@ import co.akoot.plugins.plushies.listeners.PlayerEvents
 import co.akoot.plugins.plushies.util.Items.loadItems
 import co.akoot.plugins.plushies.util.Recipes.registerRecipes
 import co.akoot.plugins.plushies.util.DataPack
-import co.akoot.plugins.plushies.util.DataPack.createDiscs
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.plugin.Plugin
@@ -40,8 +39,7 @@ class Plushies : FoxPlugin("plushies") {
     override fun load() {
         logger.info("welcome back!")
 
-        val plushPack = DataPack.createPack(this)
-        createDiscs(plushPack)
+        DataPack(this).createDiscs()
 
         registerRecipes()
         loadItems(customItemConfig)
