@@ -1,20 +1,24 @@
 package co.akoot.plugins.plushies.util
 
-import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.plushies.Plushies.Companion.conf
 import co.akoot.plugins.plushies.Plushies.Companion.customMusicDiscConfig
 import co.akoot.plugins.plushies.util.Items.customItems
+import co.akoot.plugins.plushies.util.Util.pl
+import org.bukkit.Bukkit
 import java.io.File
 
-class DataPack(private val plugin: FoxPlugin) {
+object DataPack {
 
     // TODO: enable pack
 
-    private fun createPack(): File {
-        val worldFolder = plugin.server.getWorld("world")?.worldFolder
-        val dataPackFolder = File(worldFolder, "datapacks")
-        val dataPack = File(dataPackFolder, "plushies")
+    val dataPack: File
+        get() {
+            val worldFolder = pl.server.getWorld("world")?.worldFolder
+            val dataPackFolder = File(worldFolder, "datapacks")
+            return File(dataPackFolder, "plushies")
+        }
 
+    private fun createPack(): File {
         dataPack.mkdirs() // create new
 
         val packMeta = File(dataPack, "pack.mcmeta")
@@ -37,7 +41,6 @@ class DataPack(private val plugin: FoxPlugin) {
     fun createDiscs() {
         val jukeboxFolder = File(createPack(), "jukebox_song")
         jukeboxFolder.mkdirs()
-
         customMusicDiscConfig.getKeys().forEach { song ->
             val songInfo = """
             {
@@ -51,14 +54,21 @@ class DataPack(private val plugin: FoxPlugin) {
             """.trimIndent()
 
             File(jukeboxFolder, "$song.json").writeText(songInfo)
+        }
 
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "datapack list")
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "datapack enable 'file/plushies'")
+
+        customMusicDiscConfig.getKeys().forEach { song ->
             try {
                 val item =
-                    "music_disc_11[jukebox_playable={song:'plushies:$song'},custom_model_data={floats:[${customMusicDiscConfig.getInt("$song.customModelData")}]}]"
+                    "music_disc_11[jukebox_playable={song:'plushies:${song}'},custom_model_data={floats:[${customMusicDiscConfig.getInt("$song.customModelData")}]}]"
 
-                customItems[song] = plugin.server.itemFactory.createItemStack(item)
+                customItems[song] = pl.server.itemFactory.createItemStack(item)
+                pl.logger.info("Created disc: $song")
+
             } catch (e: IllegalArgumentException) {
-                plugin.logger.warning("Failed to create disc for $song")
+                pl.logger.warning("Failed to create disc for $song")
                 return@forEach
             }
         }

@@ -10,7 +10,8 @@ import co.akoot.plugins.plushies.listeners.Events
 import co.akoot.plugins.plushies.listeners.PlayerEvents
 import co.akoot.plugins.plushies.util.Items.loadItems
 import co.akoot.plugins.plushies.util.Recipes.registerRecipes
-import co.akoot.plugins.plushies.util.DataPack
+import co.akoot.plugins.plushies.util.DataPack.createDiscs
+import co.akoot.plugins.plushies.util.DataPack.dataPack
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.plugin.Plugin
@@ -39,14 +40,13 @@ class Plushies : FoxPlugin("plushies") {
     override fun load() {
         logger.info("welcome back!")
 
-        DataPack(this).createDiscs()
-
         registerRecipes()
         loadItems(customItemConfig)
-        loadItems(customMusicDiscConfig)
+        createDiscs() // create and enable music disc datapack
     }
 
     override fun unload() {
+        dataPack.deleteRecursively() // delete data pack
         logger.info(":i_sleep:")
     }
 
