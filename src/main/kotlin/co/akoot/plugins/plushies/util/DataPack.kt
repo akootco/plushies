@@ -4,7 +4,6 @@ import co.akoot.plugins.plushies.Plushies.Companion.conf
 import co.akoot.plugins.plushies.Plushies.Companion.customMusicDiscConfig
 import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.Util.pl
-import org.bukkit.Bukkit
 import java.io.File
 
 object DataPack {
@@ -19,6 +18,7 @@ object DataPack {
         }
 
     private fun createPack(): File {
+        dataPack.deleteRecursively() // delete data pack
         dataPack.mkdirs() // create new
 
         val packMeta = File(dataPack, "pack.mcmeta")
@@ -38,7 +38,7 @@ object DataPack {
         return plushPack
     }
 
-    fun createDiscs() {
+    fun createDiscFiles() {
         val jukeboxFolder = File(createPack(), "jukebox_song")
         jukeboxFolder.mkdirs()
         customMusicDiscConfig.getKeys().forEach { song ->
@@ -55,14 +55,17 @@ object DataPack {
 
             File(jukeboxFolder, "$song.json").writeText(songInfo)
         }
+    }
 
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "datapack list")
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "datapack enable 'file/plushies'")
-
+    fun createDiscitems() {
         customMusicDiscConfig.getKeys().forEach { song ->
             try {
                 val item =
-                    "music_disc_11[jukebox_playable={song:'plushies:${song}'},custom_model_data={floats:[${customMusicDiscConfig.getInt("$song.customModelData")}]}]"
+                    "music_disc_11[jukebox_playable={song:'plushies:${song}'},custom_model_data={floats:[${
+                        customMusicDiscConfig.getInt(
+                            "$song.customModelData"
+                        )
+                    }]}]"
 
                 customItems[song] = pl.server.itemFactory.createItemStack(item)
                 pl.logger.info("Created disc: $song")
