@@ -2,11 +2,13 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.bluefox.api.Kolor
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.customItemConfig
 import co.akoot.plugins.plushies.gui.CustomItemMenu
 import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.Items.loadItems
-import co.akoot.plugins.plushies.util.Items.partyHat
+import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import org.bukkit.command.CommandSender
 
 class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
@@ -14,7 +16,7 @@ class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
     override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
 
         if (args.size == 1) {
-            return customItems.keys.plus("party_hat").toMutableList()
+            return customItems.keys.toMutableList()
         } else if (args.size == 2 && args[0] == "party_hat") {
             return getOnlinePlayerSuggestions()
         }
@@ -33,9 +35,15 @@ class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
             }
 
             "party_hat" -> {
-                val item = partyHat(args.getOrNull(1) ?: "")
-                val count = args.getOrNull(2)?.toIntOrNull() ?: 1
-                p.inventory.addItem(item.clone().apply { amount = count })
+                val item = customItems["party_hat"] ?: return sendError(sender, "Invalid item.")
+                val hat =
+                    if (args.getOrNull(1) != null)
+                        ItemBuilder.builder(item.clone())
+                            .lore(listOf(Text("Happy Birthday ${args[1]}",
+                                Kolor.MONTH).component)).build()
+                    else item
+
+                p.inventory.addItem(hat)
                 return true
             }
 
