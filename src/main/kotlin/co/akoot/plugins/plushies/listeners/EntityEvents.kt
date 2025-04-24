@@ -8,6 +8,7 @@ import co.akoot.plugins.plushies.listeners.tasks.Golf
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.golfKey
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.golfSwing
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
+import co.akoot.plugins.plushies.util.Items.customItems
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -16,6 +17,7 @@ import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
+import kotlin.random.Random
 
 class EntityEvents(private val plugin: FoxPlugin) : Listener {
 
@@ -54,13 +56,26 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
     }
 
     @EventHandler
-    fun onEntityDeath(event: EntityDeathEvent) {
-        val victim = event.entity
-        val damageEvent = victim.lastDamageCause as? EntityDamageByEntityEvent ?: return
+    fun EntityDeathEvent.onEntityDeath() {
+        val damageEvent = entity.lastDamageCause as? EntityDamageByEntityEvent ?: return
         val killer = damageEvent.damager
 
         if (killer is Creeper && killer.isPowered) {
-            dropHead(killer, victim, event)
+            return dropHead(killer, entity, this)
+        }
+
+        // music disc drops
+        if (entity is Creeper) {
+            val disc = drops.find { it.type.isRecord }
+            // 50% chance to drop custom disc
+            if (disc != null && Random.nextDouble() < 0.2) {
+                drops.apply {
+                    remove(disc)
+                    add(customItems.filter { it.value.type.isRecord }
+                        .values.random().clone())
+                }
+                return
+            }
         }
     }
 
