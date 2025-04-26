@@ -6,7 +6,9 @@ import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.customItemConfig
 import co.akoot.plugins.plushies.gui.CustomItemMenu
+import co.akoot.plugins.plushies.util.DataPack.createDiscItems
 import co.akoot.plugins.plushies.util.Items.customItems
+import co.akoot.plugins.plushies.util.Items.isCustomItem
 import co.akoot.plugins.plushies.util.Items.loadItems
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import org.bukkit.command.CommandSender
@@ -16,7 +18,7 @@ class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
     override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
 
         if (args.size == 1) {
-            return customItems.keys.toMutableList()
+            return customItems.filter { it.value.isCustomItem }.keys.toMutableList()
         } else if (args.size == 2 && args[0] == "party_hat") {
             return getOnlinePlayerSuggestions()
         }
@@ -29,8 +31,9 @@ class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
 
         when (args.getOrNull(0)) {
             "reload" -> {
-                customItems.clear()
+                customItems.entries.removeIf { it.value.isCustomItem }
                 loadItems(customItemConfig)
+                createDiscItems()
                 return sendMessage(sender, "Custom items reloaded")
             }
 

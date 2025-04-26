@@ -2,15 +2,18 @@ package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.plushies.Plushies.Companion.conf
 import co.akoot.plugins.plushies.Plushies.Companion.customMusicDiscConfig
+import co.akoot.plugins.plushies.Plushies.Companion.key
+import co.akoot.plugins.plushies.util.ItemCreator.createItem
 import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.Util.pl
+import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import io.papermc.paper.registry.RegistryAccess
+import io.papermc.paper.registry.RegistryKey.JUKEBOX_SONG
 import java.io.File
 
 object DataPack {
 
-    // TODO: enable pack
-
-    val dataPack: File
+    private val dataPack: File
         get() {
             val worldFolder = pl.server.getWorld("world")?.worldFolder
             val dataPackFolder = File(worldFolder, "datapacks")
@@ -57,23 +60,21 @@ object DataPack {
         }
     }
 
-    fun createDiscitems() {
+    fun createDiscItems() {
         customMusicDiscConfig.getKeys().forEach { song ->
-            try {
-                val item =
-                    "music_disc_11[jukebox_playable={song:'plushies:${song}'},custom_model_data={floats:[${
-                        customMusicDiscConfig.getInt(
-                            "$song.customModelData"
-                        )
-                    }]}]"
-
-                customItems[song] = pl.server.itemFactory.createItemStack(item)
-                pl.logger.info("Created disc: $song")
-
-            } catch (e: IllegalArgumentException) {
-                pl.logger.warning("Failed to create disc for $song")
+            // check if song exist in the registry
+            val songID = RegistryAccess.registryAccess()
+                .getRegistry(JUKEBOX_SONG)
+                .get(key(song)) ?: run {
+                pl.logger.warning("$song does not exist, skipping...")
                 return@forEach
             }
+            // create disc, or don't
+            // i won't mind not one bit!
+            val item = createItem(customMusicDiscConfig, song, key("item")) ?: return@forEach
+            customItems[song] = ItemBuilder.builder(item)
+                .jukeboxSong(songID)
+                .build()
         }
     }
 }

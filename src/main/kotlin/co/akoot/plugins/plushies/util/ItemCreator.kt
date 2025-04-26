@@ -2,6 +2,7 @@ package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.plushies.Plushies.Companion.customMusicDiscConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.util.builders.EquippableBuilder
 import co.akoot.plugins.plushies.util.builders.FoodBuilder
@@ -16,7 +17,12 @@ import org.bukkit.inventory.ItemStack
 object ItemCreator {
 
     fun createItem(config: FoxConfig, path: String, namespacedKey: NamespacedKey): ItemStack? {
-        val material = config.getString("$path.material")?.let { Material.getMaterial(it) } ?: return null
+        val material = if (config == customMusicDiscConfig) {
+            Material.MUSIC_DISC_11
+        } else {
+            Material.getMaterial(config.getString("$path.material") ?: return null) ?: return null
+        }
+
         var itemStack = ItemStack(material)
 
         itemStack = itemData(config, path, itemStack, namespacedKey)

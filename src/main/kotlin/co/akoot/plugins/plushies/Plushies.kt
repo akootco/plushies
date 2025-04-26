@@ -4,17 +4,21 @@ import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.plushies.commands.*
 import co.akoot.plugins.plushies.commands.bluemap.*
+import co.akoot.plugins.plushies.geyser.GeyserRegistrar
 import co.akoot.plugins.plushies.listeners.GUI
 import co.akoot.plugins.plushies.listeners.EntityEvents
 import co.akoot.plugins.plushies.listeners.Events
 import co.akoot.plugins.plushies.listeners.PlayerEvents
 import co.akoot.plugins.plushies.util.DataPack.createDiscFiles
-import co.akoot.plugins.plushies.util.DataPack.createDiscitems
+import co.akoot.plugins.plushies.util.DataPack.createDiscItems
 import co.akoot.plugins.plushies.util.Items.loadItems
 import co.akoot.plugins.plushies.util.Recipes.registerRecipes
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.plugin.Plugin
+import org.geysermc.geyser.api.GeyserApi
+import org.geysermc.geyser.api.event.lifecycle.GeyserDefineCustomItemsEvent
+import org.geysermc.geyser.api.event.lifecycle.GeyserDefineCustomSkullsEvent
 
 class Plushies : FoxPlugin("plushies") {
 
@@ -42,7 +46,15 @@ class Plushies : FoxPlugin("plushies") {
 
         registerRecipes()
         loadItems(customItemConfig)
-        createDiscitems() // attempt to create music discs
+        createDiscItems() // attempt to create music discs
+
+        if (pluginEnabled("Geyser-Spigot")) {
+            val geyser = GeyserRegistrar()
+            val bus = GeyserApi.api().eventBus()
+            // register geyser events
+            bus.subscribe(geyser, GeyserDefineCustomItemsEvent::class.java, geyser::registerItems)
+            bus.subscribe(geyser, GeyserDefineCustomSkullsEvent::class.java, geyser::registerHeads)
+        }
     }
 
     override fun unload() {

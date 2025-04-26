@@ -1,6 +1,7 @@
 package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.bluefox.api.FoxConfig
+import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.key
@@ -12,6 +13,9 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 object Items {
+
+    val ItemStack.isCustomItem: Boolean
+        get() = itemMeta.getPDC<String>(key("item")) != null
 
     var plushies = plushieConf.getKeys().mapNotNull { name -> plushieConf.getInt(name)?.let { name to it } }
     val customItems: MutableMap<String, ItemStack> = HashMap()

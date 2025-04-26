@@ -6,4 +6,4 @@ prefix: '${name}'
 authors: [ IndiaPaleAle ]
 description: Custom Items
 website: 'https://akoot.co/plugins/${name}'
-softdepend: [ 'BlueFox' ]
+softdepend: [ 'BlueFox', 'Geyser-Spigot' ]
