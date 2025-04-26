@@ -10,7 +10,7 @@ object MobHead {
             is TraderLlama -> "trader_llama.${victim.color.name}"
             is MushroomCow -> "mooshroom.${victim.variant.name}"
             is Horse -> "horse.${victim.color.name}_${victim.style.name}"
-            is Villager -> "villager.${victim.profession.key.key}_${victim.villagerType.key.key}"
+            is Villager -> "villager.${victim.villagerType.key.key}_${victim.profession.key.key}"
             is ZombieVillager -> "zombie_villager.${victim.villagerType.key.key}_${victim.villagerProfession.key.key}"
             is Parrot -> "parrot.${victim.variant.name}"
             is Panda -> "panda.${victim.combinedGene}"

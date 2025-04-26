@@ -26,9 +26,11 @@ fun dropHead(killer: Entity, victim: Entity, event: EntityDeathEvent) {
         if (victim is Creeper && victim.isPowered) event.drops.removeLast()
 
         event.drops.add(
-            headConf.getString(headTexture(victim).lowercase())?.let {
+            headConf.getString(headTexture(victim).lowercase())
+                ?.takeIf { it.isNotBlank() }?.let {
                 ItemBuilder.builder(ItemStack(Material.PLAYER_HEAD))
                     .headTexture(it)
+                    .headSound("entity.${victim.type.name.lowercase()}.ambient")
                     .itemName(Text("${victim.name} Head").component)
                     .build()
             }
