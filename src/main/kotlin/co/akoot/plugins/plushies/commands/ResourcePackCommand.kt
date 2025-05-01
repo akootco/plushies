@@ -2,6 +2,8 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.bluefox.extensions.isBedrock
+import co.akoot.plugins.plushies.util.ResourcePack.sendPackLink
 import co.akoot.plugins.plushies.util.ResourcePack.setPack
 import org.bukkit.command.CommandSender
 
@@ -13,6 +15,11 @@ class ResourcePackCommand(plugin: FoxPlugin) : FoxCommand(plugin, "resourcepack"
 
     override fun onCommand(sender: CommandSender, alias: String, args: Array<out String>): Boolean {
         val p = playerCheck(sender) ?: return false
-        return setPack(p, args.getOrNull(0) == "!")
+        if (p.isBedrock) return false
+
+        return when (args.getOrNull(0)) {
+            "link" -> p.sendPackLink
+            else -> { setPack(p, args.getOrNull(0) == "!") }
+        }
     }
 }

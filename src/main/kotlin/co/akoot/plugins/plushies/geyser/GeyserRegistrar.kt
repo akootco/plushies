@@ -1,6 +1,6 @@
 package co.akoot.plugins.plushies.geyser
 
-import co.akoot.plugins.plushies.geyser.Helpers.register
+import co.akoot.plugins.plushies.geyser.GeyserUtil.register
 import co.akoot.plugins.plushies.util.Items
 import co.akoot.plugins.plushies.util.Items.customItems
 import org.bukkit.Material

@@ -5,6 +5,7 @@ import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.plushies.commands.*
 import co.akoot.plugins.plushies.commands.bluemap.*
 import co.akoot.plugins.plushies.geyser.GeyserRegistrar
+import co.akoot.plugins.plushies.geyser.GeyserUtil.downloadBedrockPack
 import co.akoot.plugins.plushies.listeners.GUI
 import co.akoot.plugins.plushies.listeners.EntityEvents
 import co.akoot.plugins.plushies.listeners.Events
@@ -51,6 +52,8 @@ class Plushies : FoxPlugin("plushies") {
         if (pluginEnabled("Geyser-Spigot")) {
             val geyser = GeyserRegistrar()
             val bus = GeyserApi.api().eventBus()
+            // get bedrock pack
+            downloadBedrockPack()
             // register geyser events
             bus.subscribe(geyser, GeyserDefineCustomItemsEvent::class.java, geyser::registerItems)
             bus.subscribe(geyser, GeyserDefineCustomSkullsEvent::class.java, geyser::registerHeads)

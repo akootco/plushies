@@ -2,6 +2,7 @@ package co.akoot.plugins.plushies.gui
 
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.invoke
+import co.akoot.plugins.bluefox.extensions.isBedrock
 import co.akoot.plugins.bluefox.util.ColorUtil.randomColor
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.gui.MenuItems.home
@@ -15,7 +16,7 @@ import co.akoot.plugins.plushies.util.builders.ChestGUI
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Material
-import org.bukkit.entity.HumanEntity
+import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
@@ -25,13 +26,12 @@ class PlushieMenu(private val isStatue: Boolean = false, private val page: Int =
     InventoryHolder {
 
     companion object {
-        fun plushMenu(item: ItemStack, p: HumanEntity, holder: InventoryHolder) {
-            val isBPlayer = p.name.startsWith(".")
+        fun plushMenu(item: ItemStack, p: Player, holder: InventoryHolder) {
 
             when (item) {
                 home -> p.openInventory(PlushieMainMenu().inventory)
-                nextPage -> p.openInventory((holder as PlushieMenu).nextPage(isBPlayer).inventory)
-                prevPage -> p.openInventory((holder as PlushieMenu).prevPage(isBPlayer).inventory)
+                nextPage -> p.openInventory((holder as PlushieMenu).nextPage(p.isBedrock).inventory)
+                prevPage -> p.openInventory((holder as PlushieMenu).prevPage(p.isBedrock).inventory)
             }
 
             val pItem = p.inventory.itemInMainHand

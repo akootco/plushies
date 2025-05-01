@@ -2,6 +2,7 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.bluefox.extensions.isBedrock
 import co.akoot.plugins.plushies.Plushies.Companion.plushieConf
 import co.akoot.plugins.plushies.util.Items.createPlushie
 import co.akoot.plugins.plushies.util.Items.plushies
@@ -28,9 +29,8 @@ class PlushieCommand(plugin: FoxPlugin) : FoxCommand(plugin, "plushie", aliases 
         val p = playerCheck(sender) ?: return false
 
         if (args.isEmpty()) {
-            val bPlayer = p.name.startsWith(".")
             // if no args, open main menu
-            p.openInventory(if (bPlayer) PlushieMenu(bedrock = true).inventory else PlushieMainMenu().inventory)
+            p.openInventory(if (p.isBedrock) PlushieMenu(bedrock = true).inventory else PlushieMainMenu().inventory)
             return true
         }
 
