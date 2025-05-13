@@ -14,6 +14,7 @@ import co.akoot.plugins.plushies.util.DataPack.createDiscFiles
 import co.akoot.plugins.plushies.util.DataPack.createDiscItems
 import co.akoot.plugins.plushies.util.Items.loadItems
 import co.akoot.plugins.plushies.util.Recipes.registerRecipes
+import co.akoot.plugins.plushies.util.ResourcePack.getJavaPack
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
 import org.bukkit.plugin.Plugin
@@ -44,6 +45,7 @@ class Plushies : FoxPlugin("plushies") {
 
     override fun load() {
         logger.info("welcome back!")
+        getJavaPack()
 
         registerRecipes()
         loadItems(customItemConfig)
@@ -82,6 +84,7 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(BookArchiveCommand(this))
         registerCommand(CustomItemCommand(this))
         registerCommand(ToggleArmorCommand(this))
+        registerCommand(ReloadRecipesCommand(this))
 
         // bluemap commands
         registerCommand(ShowCommand(this))

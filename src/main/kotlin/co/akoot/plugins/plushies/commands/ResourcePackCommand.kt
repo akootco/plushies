@@ -18,8 +18,8 @@ class ResourcePackCommand(plugin: FoxPlugin) : FoxCommand(plugin, "resourcepack"
         if (p.isBedrock) return false
 
         return when (args.getOrNull(0)) {
-            "link" -> p.sendPackLink
-            else -> { setPack(p, args.getOrNull(0) == "!") }
+            "enable", "!" -> setPack(p, true)
+            else -> { p.sendPackLink }
         }
     }
 }

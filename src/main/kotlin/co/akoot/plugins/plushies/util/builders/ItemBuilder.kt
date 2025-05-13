@@ -186,10 +186,8 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param id The model ID.
      * @return the updated `Item`.
      */
-    fun itemModel(model: String): ItemBuilder {
-        itemStack.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData()
-            .addString(model)
-            .build())
+    fun itemModel(model: NamespacedKey): ItemBuilder {
+        itemStack.setData(DataComponentTypes.ITEM_MODEL, model)
         return this
     }
 

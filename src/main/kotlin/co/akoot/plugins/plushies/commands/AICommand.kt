@@ -4,10 +4,8 @@ import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.invoke
-import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.aiConf
-import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 
 class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf("akootai")) {
@@ -54,9 +52,11 @@ class AICommand(plugin: FoxPlugin) : FoxCommand(plugin, "ai", aliases = arrayOf(
 
     private fun response(sender: CommandSender): Boolean {
         if (responses.isEmpty()) return sendError(sender, "No responses found!")
-        val message = Kolor.MONTH("[AI]").hover("Ä_v1.0-alpha") +
-                    Kolor.PLAYER(" Akoot.AI ") +
-                    Kolor.TEXT("» " + responses.random())
+        val message = Text() +
+                Kolor.MONTH("[AI]").hover("Ä_v1.0-alpha") +
+                Kolor.PLAYER(" Akoot.AI ") +
+                Kolor.TEXT("» " + responses.random())
+
         message.broadcast()
         return true
     }

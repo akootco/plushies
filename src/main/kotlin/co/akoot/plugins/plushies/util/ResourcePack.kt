@@ -12,8 +12,8 @@ import org.bukkit.entity.*
 import java.net.URI
 
 object ResourcePack {
-
-    val packUrl: (String) -> String = { path -> "https://maltsburg.com/packs/$path" }
+    private var javaUrl: String? = null
+    private var javaHash: String? = null
 
     val isPackEnabled: Boolean
         get() = conf.getBoolean("pack.enabled") == true
@@ -21,8 +21,8 @@ object ResourcePack {
     val Player.sendPackLink: Boolean
         get() {
             Text(this) {
-                Kolor.WARNING("click to download")
-                    .url(packUrl("java")).underlined()
+                Kolor.WARNING("click here to download")
+                    .url(javaUrl ?: "").underlined()
             }
             return true
         }
@@ -36,24 +36,31 @@ object ResourcePack {
             return true
         }
 
+    fun getJavaPack(): Boolean {
+        val json = WebUtil.getJsonString("https://maltsburg.com/packs/java/notes") ?: return false
+        val jsonObject = JsonParser.parseString(json).asJsonObject
+        val notes = jsonObject.get("body").asString ?: return false
+
+        javaUrl = jsonObject["assets"].asJsonArray[0].asJsonObject["browser_download_url"].asString
+        javaHash = notes.substringAfter("`").take(40)
+        return true
+    }
+
     fun setPack(player: Player, force: Boolean = false): Boolean {
-
         if (player.isBedrock || !isPackEnabled) return false
-        // get release notes
-        val json = WebUtil.getJsonString(packUrl("java/notes")) ?: return false
-        // extract hash from notes
-        val body = JsonParser.parseString(json).asJsonObject.get("body")?.asString ?: return false
 
-        player.sendResourcePacks(
-            ResourcePackRequest.resourcePackRequest()
-                .required(force)
-                .packs(
-                    ResourcePackInfo.resourcePackInfo()
-                        .uri(URI(packUrl("java")))
-                        .hash(body.substringAfter("`").take(40))
-                )
-                .build()
-        )
+        if (javaUrl != null && javaHash != null) {
+            player.sendResourcePacks(
+                ResourcePackRequest.resourcePackRequest()
+                    .required(force)
+                    .packs(
+                        ResourcePackInfo.resourcePackInfo()
+                            .uri(URI.create(javaUrl!!))
+                            .hash(javaHash!!)
+                    )
+                    .build()
+            )
+        }
         return true
     }
 }

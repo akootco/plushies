@@ -1,7 +1,7 @@
 package co.akoot.plugins.plushies.geyser
 
 import co.akoot.plugins.bluefox.util.WebUtil
-import co.akoot.plugins.plushies.util.ResourcePack.packUrl
+import co.akoot.plugins.plushies.util.Util.pl
 import org.bukkit.Tag
 import org.bukkit.Material
 import org.geysermc.geyser.api.GeyserApi
@@ -31,10 +31,12 @@ object GeyserUtil {
     }
 
     fun downloadBedrockPack() {
-        val pack = WebUtil.getUrl(packUrl("bedrock")) ?: return
+        val pack = WebUtil.getUrl("https://maltsburg.com/packs/bedrock") ?: return
         // download and replace bedrock pack
         pack.openStream().use { input ->
-            Files.copy(input, GeyserApi.api().packDirectory().resolve("bedrock.zip"), StandardCopyOption.REPLACE_EXISTING)
+            Files.copy(input, GeyserApi.api().packDirectory().resolve("bedrock.zip"),
+                StandardCopyOption.REPLACE_EXISTING)
         }
+        pl.logger.info("Geyser pack downloaded")
     }
 }

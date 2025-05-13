@@ -6,10 +6,12 @@ import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.util.builders.EquippableBuilder
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
+import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.inventory.EquipmentSlot
 
-class ToggleArmorCommand(plugin: FoxPlugin) : FoxCommand(plugin, "togglearmor", "toggle visibility of armor", aliases = arrayOf("armor")) {
+class ToggleArmorCommand(plugin: FoxPlugin) :
+    FoxCommand(plugin, "togglearmor", "toggle visibility of armor", aliases = arrayOf("armor")) {
 
     override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
         return mutableListOf()
@@ -26,17 +28,17 @@ class ToggleArmorCommand(plugin: FoxPlugin) : FoxCommand(plugin, "togglearmor", 
         )
 
         p.inventory.armorContents.withIndex().forEach { (index, item) ->
-            if (item != null) {
-                if (item.persistentDataContainer.has(key("hidden_armor"))) {
-                    ItemBuilder.builder(item)
-                        .resetData(DataComponentTypes.EQUIPPABLE)
-                        .removepdc(key("hidden_armor"))
-                        .build()
-                } else {
-                    val armor = EquippableBuilder.builder(item, slots[index] ?: return false)
-                    ItemBuilder.builder(armor.model(key("hidden_armor")).build())
-                        .pdc(key("hidden_armor"), true).build()
-                }
+            if (item == null || item.type == Material.ELYTRA) return@forEach
+
+            if (item.persistentDataContainer.has(key("hidden_armor"))) {
+                ItemBuilder.builder(item)
+                    .resetData(DataComponentTypes.EQUIPPABLE)
+                    .removepdc(key("hidden_armor"))
+                    .build()
+            } else {
+                val armor = EquippableBuilder.builder(item, slots[index] ?: return false)
+                ItemBuilder.builder(armor.model(key("hidden_armor")).build())
+                    .pdc(key("hidden_armor"), true).build()
             }
         }
         return true
