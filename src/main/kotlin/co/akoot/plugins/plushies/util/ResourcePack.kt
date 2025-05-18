@@ -12,17 +12,27 @@ import org.bukkit.entity.*
 import java.net.URI
 
 object ResourcePack {
-    private var javaUrl: String? = null
-    private var javaHash: String? = null
+
+    var isPackNew: Boolean = false
 
     val isPackEnabled: Boolean
         get() = conf.getBoolean("pack.enabled") == true
 
+    val javaPackLink: String
+        get() = conf.getString("pack.link") ?: " "
+
+    val javaPackHash: String
+        get() = conf.getString("pack.hash") ?: " "
+
+
     val Player.sendPackLink: Boolean
         get() {
             Text(this) {
-                Kolor.WARNING("click here to download")
-                    .url(javaUrl ?: "").underlined()
+                Kolor.WARNING("Click here to download").url(javaPackLink).apply {
+                    if (isPackNew) {
+                        plus(Kolor.WARNING("\nYour pack is out of date!"))
+                    }
+                }
             }
             return true
         }
@@ -37,30 +47,38 @@ object ResourcePack {
         }
 
     fun getJavaPack(): Boolean {
-        val json = WebUtil.getJsonString("https://maltsburg.com/packs/java/notes") ?: return false
-        val jsonObject = JsonParser.parseString(json).asJsonObject
-        val notes = jsonObject.get("body").asString ?: return false
+        val jsonString = WebUtil.getJsonString("https://maltsburg.com/packs/java/notes") ?: return false
+        val jsonObject = JsonParser.parseString(jsonString).asJsonObject
 
-        javaUrl = jsonObject["assets"].asJsonArray[0].asJsonObject["browser_download_url"].asString
-        javaHash = notes.substringAfter("`").take(40)
+        val url = jsonObject["assets"].asJsonArray[0].asJsonObject["browser_download_url"].asString
+        val hash = jsonObject.get("body").asString.substringAfter("`").take(40)
+
+        val currentUrl = conf.getString("pack.link")
+        val currentHash = conf.getString("pack.hash")
+
+        // Only update if the link or hash are truly different.
+        if (url != currentUrl || hash != currentHash) {
+            conf.set("pack.link", url)
+            conf.set("pack.hash", hash)
+            isPackNew = true
+        }
+
         return true
     }
 
     fun setPack(player: Player, force: Boolean = false): Boolean {
         if (player.isBedrock || !isPackEnabled) return false
 
-        if (javaUrl != null && javaHash != null) {
-            player.sendResourcePacks(
-                ResourcePackRequest.resourcePackRequest()
-                    .required(force)
-                    .packs(
-                        ResourcePackInfo.resourcePackInfo()
-                            .uri(URI.create(javaUrl!!))
-                            .hash(javaHash!!)
-                    )
-                    .build()
-            )
-        }
+        player.sendResourcePacks(
+            ResourcePackRequest.resourcePackRequest()
+                .required(force)
+                .packs(
+                    ResourcePackInfo.resourcePackInfo()
+                        .uri(URI.create(javaPackLink))
+                        .hash(javaPackHash)
+                )
+                .build()
+        )
         return true
     }
 }
