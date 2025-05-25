@@ -9,6 +9,7 @@ import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowable
 import co.akoot.plugins.plushies.util.ResourcePack.isPackEnabled
+import co.akoot.plugins.plushies.util.ResourcePack.packDeniers
 import co.akoot.plugins.plushies.util.ResourcePack.sendPackLink
 import co.akoot.plugins.plushies.util.ResourcePack.sendPackMsg
 import co.akoot.plugins.plushies.util.ResourcePack.setPack
@@ -22,13 +23,11 @@ import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerResourcePackStatusEvent
 import org.bukkit.scheduler.BukkitRunnable
-import java.util.UUID
 import java.util.regex.Pattern
 
 class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
     private val msgConf = conf.getStringList("kickMsg").toMutableList()
-    private val messageSent: MutableList<UUID> = mutableListOf()
 
     @EventHandler
     fun itemConsume(event: PlayerItemConsumeEvent) {
@@ -60,8 +59,8 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
     fun PlayerResourcePackStatusEvent.onPackDeny() {
         if (player.isBedrock || !isPackEnabled) return
 
-        if (status == PlayerResourcePackStatusEvent.Status.DECLINED && !messageSent.contains(player.uniqueId)) {
-            messageSent.add(player.uniqueId)
+        if (status == PlayerResourcePackStatusEvent.Status.DECLINED && !packDeniers.contains(player.uniqueId)) {
+            packDeniers.add(player.uniqueId)
             player.apply { sendPackMsg; sendPackLink }
         }
     }

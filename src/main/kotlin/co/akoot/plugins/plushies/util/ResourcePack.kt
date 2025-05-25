@@ -10,8 +10,11 @@ import net.kyori.adventure.resource.ResourcePackInfo
 import net.kyori.adventure.resource.ResourcePackRequest
 import org.bukkit.entity.*
 import java.net.URI
+import java.util.*
 
 object ResourcePack {
+
+    val packDeniers: MutableList<UUID> = mutableListOf()
 
     var isPackNew: Boolean = false
 
@@ -61,8 +64,10 @@ object ResourcePack {
             conf.set("pack.link", url)
             conf.set("pack.hash", hash)
             isPackNew = true
-        }
+        } else return false
 
+        // clear deniers so they get the message again
+        packDeniers.clear()
         return true
     }
 
