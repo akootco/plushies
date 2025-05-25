@@ -59,8 +59,8 @@ object Util {
         }
     }
 
-    fun getBlockPDC(location: Location): NamespacedKey {
-        val key = "${location.world.name}.${location.blockX}.${location.blockY}.${location.blockZ}"
-        return key(key)
+    fun getBlockPDC(location: Location, plugin: String = "plushies"): NamespacedKey {
+        val key = "${location.world.name.lowercase()}.${location.blockX}.${location.blockY}.${location.blockZ}"
+        return NamespacedKey(plugin, key)
     }
 }
