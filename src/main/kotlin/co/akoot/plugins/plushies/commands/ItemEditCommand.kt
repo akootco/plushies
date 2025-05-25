@@ -199,13 +199,14 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
                             .unsetData(DataComponentTypes.JUKEBOX_PLAYABLE)
                             .build()
                     }
-
                     else -> {
-                        val song = songs.get(NamespacedKey.minecraft(disc)) ?: return sendError(p, "$disc is not a valid music disc.")
+                        val song = songs[NamespacedKey("plushies", disc)] ?: songs[NamespacedKey.minecraft(disc)]
+                        ?: return sendError(p, "$disc is not a valid music disc.")
 
                         ItemBuilder.builder(item)
                             .jukeboxSong(song)
                             .build()
+
                         return true
                     }
                 }

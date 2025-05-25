@@ -23,15 +23,15 @@ class MaceCommand(plugin: FoxPlugin) : FoxCommand(plugin, "mace", description = 
             return sendError(p, "You need to be holding a mace")
         }
 
-        if (item.itemMeta.hasCustomModelData()) {
-            ItemBuilder.builder(item)
-                .customModelData(999)
-                .build()
-        } else {
-            ItemBuilder.builder(item)
-                .unsetData(DataComponentTypes.CUSTOM_MODEL_DATA)
-                .build()
-        }
+        ItemBuilder.builder(item)
+            .apply {
+                if (item.itemMeta.hasCustomModelData()) {
+                    unsetData(DataComponentTypes.CUSTOM_MODEL_DATA)
+                } else {
+                    customModelData(999)
+                }
+            }
+            .build()
 
         return true
     }

@@ -85,6 +85,7 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(CustomItemCommand(this))
         registerCommand(ToggleArmorCommand(this))
         registerCommand(ReloadRecipesCommand(this))
+        registerCommand(IHatePlushiesCommand(this))
 
         // bluemap commands
         registerCommand(ShowCommand(this))

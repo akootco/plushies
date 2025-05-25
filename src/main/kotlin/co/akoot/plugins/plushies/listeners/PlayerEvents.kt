@@ -4,6 +4,7 @@ import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.isBedrock
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.bluefox.util.runLater
 import co.akoot.plugins.plushies.Plushies.Companion.conf
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
@@ -22,7 +23,6 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerResourcePackStatusEvent
-import org.bukkit.scheduler.BukkitRunnable
 import java.util.regex.Pattern
 
 class PlayerEvents(private val plugin: FoxPlugin) : Listener {
@@ -37,16 +37,8 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
     @EventHandler
     fun isHacking(event: AsyncChatEvent) {
-        val p = event.player
-        val msg = event.message().toString()
-
-        if (!Pattern.compile("\\b(i\\s?('m|am)|im?)\\s?'?hacking\\b", Pattern.CASE_INSENSITIVE).matcher(msg).find()) return
-
-        object : BukkitRunnable() {
-            override fun run() {
-                p.kick(Text(msgConf.random()).component)
-            }
-        }.runTask(plugin)
+        if (!Pattern.compile("\\b(i\\s?('m|am)|im?)\\s?'?hacking\\b", Pattern.CASE_INSENSITIVE).matcher(event.message().toString()).find()) return
+        runLater(1) { event.player.kick(Text(msgConf.random()).component) }
     }
 
     @EventHandler

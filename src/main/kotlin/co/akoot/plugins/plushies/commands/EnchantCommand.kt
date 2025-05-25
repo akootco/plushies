@@ -4,11 +4,9 @@ import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.invoke
-import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
-import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.command.CommandSender
 
@@ -37,7 +35,7 @@ class EnchantCommand(plugin: FoxPlugin) : FoxCommand(plugin, "enchant") {
 
         val item = p.inventory.itemInMainHand
 
-        if (item.type == Material.AIR) {
+        if (item.isEmpty) {
             return sendError(p, "You must hold something.")
         }
 
