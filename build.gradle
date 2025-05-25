@@ -3,10 +3,8 @@ version = project.version
 
 repositories {
     maven { url 'https://repo.bluecolored.de/releases' }
-    maven { url = uri("https://repo.opencollab.dev/main/") }
 }
 dependencies {
     compileOnly project(":bluefox")
-    compileOnly 'org.geysermc.geyser:api:2.6.2-SNAPSHOT'
     compileOnly 'de.bluecolored:bluemap-api:2.7.4'
 }
