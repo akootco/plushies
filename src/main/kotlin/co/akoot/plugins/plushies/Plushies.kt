@@ -6,10 +6,7 @@ import co.akoot.plugins.plushies.commands.*
 import co.akoot.plugins.plushies.commands.bluemap.*
 import co.akoot.plugins.plushies.geyser.GeyserRegistrar
 import co.akoot.plugins.plushies.geyser.GeyserUtil.downloadBedrockPack
-import co.akoot.plugins.plushies.listeners.GUI
-import co.akoot.plugins.plushies.listeners.EntityEvents
-import co.akoot.plugins.plushies.listeners.Events
-import co.akoot.plugins.plushies.listeners.PlayerEvents
+import co.akoot.plugins.plushies.listeners.*
 import co.akoot.plugins.plushies.util.DataPack.createDiscFiles
 import co.akoot.plugins.plushies.util.DataPack.createDiscItems
 import co.akoot.plugins.plushies.util.Items.loadItems
@@ -97,6 +94,7 @@ class Plushies : FoxPlugin("plushies") {
         registerEventListener(EntityEvents(this))
         registerEventListener(PlayerEvents(this))
         registerEventListener(Events())
+        registerEventListener(HDB())
     }
 
     override fun registerConfigs() {

@@ -7,4 +7,5 @@ repositories {
 dependencies {
     compileOnly project(":bluefox")
     compileOnly 'de.bluecolored:bluemap-api:2.7.4'
+    compileOnly 'com.arcaniax:HeadDatabase-API:1.3.2'
 }
