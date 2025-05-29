@@ -12,13 +12,14 @@ import me.arcaniax.hdb.api.PlayerClickHeadEvent
 import me.arcaniax.hdb.enums.CategoryEnum
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import java.math.BigDecimal
 
 class HDB : Listener {
     // TODO: allow players to sell head back
-    private val CategoryEnum.price: Double
+    private val CategoryEnum.price: BigDecimal
         get() = when (this) {
-            CategoryEnum.ONLINE_PLAYERS -> 9.0
-            else -> 3.0
+            CategoryEnum.ONLINE_PLAYERS -> BigDecimal("9.0")
+            else -> BigDecimal("3.0")
         }
 
     @EventHandler
