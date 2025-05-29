@@ -16,7 +16,7 @@ class IHatePlushiesCommand(plugin: FoxPlugin) : FoxCommand(plugin, "ihateplushie
         val p = playerCheck(sender)?: return false
         val item = p.inventory.itemInMainHand
 
-        if (item.itemMeta.hasCustomModelData()) {
+        if (item.type == Material.TOTEM_OF_UNDYING && item.itemMeta.hasCustomModelData()) {
             p.inventory.setItemInMainHand(ItemStack(Material.TOTEM_OF_UNDYING))
         } else {
             p.chat("I hate plushies")

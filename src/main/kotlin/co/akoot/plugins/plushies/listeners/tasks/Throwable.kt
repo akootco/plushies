@@ -1,9 +1,8 @@
 package co.akoot.plugins.plushies.listeners.tasks
 
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.bluefox.extensions.isSurventure
 import co.akoot.plugins.plushies.Plushies.Companion.key
-import org.bukkit.GameMode
-import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.*
@@ -39,10 +38,11 @@ class Throwable(private val shouldDrop: Boolean, private val snowBall: Snowball,
 
         fun spawnThrowable(player: Player, plugin: FoxPlugin) {
             val itemStack = player.inventory.itemInMainHand
+            val displayItem = itemStack.clone().asOne()
             var shouldDrop = true
 
-            if (player.gameMode != GameMode.CREATIVE) player.inventory.removeItem(itemStack)
-            else shouldDrop = false
+            if (player.isSurventure) { itemStack.amount -= 1 }
+            else { shouldDrop = false }
 
             val snowBall = player.launchProjectile(Snowball::class.java, player.eyeLocation.direction.multiply(2))
 
@@ -50,7 +50,7 @@ class Throwable(private val shouldDrop: Boolean, private val snowBall: Snowball,
                 snowBall.location.add(0.0, 0.5, 0.0), ItemDisplay::class.java) { display: ItemDisplay ->
 
                 display.apply {
-                    setItemStack(itemStack)
+                    setItemStack(displayItem)
                     itemDisplayTransform = ItemDisplay.ItemDisplayTransform.THIRDPERSON_RIGHTHAND
                     setRotation(player.yaw, 1.0f)
                 }
@@ -63,7 +63,7 @@ class Throwable(private val shouldDrop: Boolean, private val snowBall: Snowball,
             snowBall.apply {
                 // set the damage as pdc so we can check for it in the projectile hit event
                 persistentDataContainer.set(axeKey, PersistentDataType.DOUBLE, damage)
-                item = ItemStack(Material.AIR) // LOL what a beautiful hack
+                item = ItemStack.empty() // LOL what a beautiful hack
                 addPassenger(itemDisplay) // this is much smoother than teleporting
             }
 
