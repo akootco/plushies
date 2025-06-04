@@ -4,7 +4,6 @@ import co.akoot.plugins.plushies.gui.*
 import co.akoot.plugins.plushies.gui.BookArchiveMenu.Companion.bookArchiveMenu
 import co.akoot.plugins.plushies.gui.BookMenu.Companion.bookMenu
 import co.akoot.plugins.plushies.gui.CustomItemMenu.Companion.customItemMenu
-import co.akoot.plugins.plushies.gui.PlushieMainMenu.Companion.mainMenu
 import co.akoot.plugins.plushies.gui.PlushieMenu.Companion.plushMenu
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -18,13 +17,8 @@ class GUI : Listener {
         val p = event.whoClicked as Player //???????? excuse me?
 
         when (val holder = event.clickedInventory?.holder) {
-            is PlushieMainMenu -> {
-                mainMenu(menuItem, p)
-                event.isCancelled = true
-            }
-
             is PlushieMenu -> {
-                plushMenu(menuItem, p, holder)
+                plushMenu(menuItem, p, holder, event.click)
                 event.isCancelled = true
             }
 
