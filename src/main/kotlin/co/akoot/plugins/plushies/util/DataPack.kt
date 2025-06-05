@@ -5,6 +5,7 @@ import co.akoot.plugins.plushies.Plushies.Companion.customMusicDiscConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.util.ItemCreator.createItem
 import co.akoot.plugins.plushies.util.Items.customItems
+import co.akoot.plugins.plushies.util.Items.itemKey
 import co.akoot.plugins.plushies.util.Util.pl
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.registry.RegistryAccess
@@ -71,7 +72,7 @@ object DataPack {
             }
             // create disc, or don't
             // i won't mind not one bit!
-            val item = createItem(customMusicDiscConfig, song, key("item")) ?: return@forEach
+            val item = createItem(customMusicDiscConfig, song, itemKey) ?: return@forEach
             customItems[song] = ItemBuilder.builder(item)
                 .jukeboxSong(songID)
                 .build()

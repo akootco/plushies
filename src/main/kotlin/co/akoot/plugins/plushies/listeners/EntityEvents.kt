@@ -8,6 +8,8 @@ import co.akoot.plugins.plushies.listeners.tasks.Golf
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.golfKey
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.golfSwing
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
+import co.akoot.plugins.plushies.listeners.handlers.boxing
+import co.akoot.plugins.plushies.listeners.handlers.isBoxing
 import co.akoot.plugins.plushies.util.Items.customItems
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
@@ -15,7 +17,6 @@ import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.ProjectileHitEvent
-import org.bukkit.event.player.PlayerArmorStandManipulateEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import kotlin.random.Random
 
@@ -37,21 +38,17 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
         val target = event.entity
         val attacker = event.damager
 
-        if (target is ArmorStand && attacker is Player) {
-            if (target.getPDC<String>(golfKey) != null) {
+        if (attacker is Player) {
+            if (target is ArmorStand && target.getPDC<String>(golfKey) != null) {
                 event.isCancelled = true // cancel the event so the armor stand isnt destroyed
                 if (golfSwing(target, attacker)) {
                     Golf(attacker, target, target.location).runTaskTimer(plugin, 20, 20)
                 }
             }
-        }
-    }
-
-    @EventHandler
-    fun armorStandEdit(event: PlayerArmorStandManipulateEvent) {
-        val clicked = event.rightClicked
-        if (clicked.getPDC<String>(golfKey) != null) {
-            clicked.remove()
+            if (target is Player && attacker.isBoxing) {
+                println("EDC")
+                boxing(attacker, target,  event.damage)
+            }
         }
     }
 

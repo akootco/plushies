@@ -2,6 +2,7 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.plushies.util.Items.isPlushie
 import org.bukkit.Material
 import org.bukkit.command.CommandSender
 import org.bukkit.inventory.ItemStack
@@ -16,7 +17,7 @@ class IHatePlushiesCommand(plugin: FoxPlugin) : FoxCommand(plugin, "ihateplushie
         val p = playerCheck(sender)?: return false
         val item = p.inventory.itemInMainHand
 
-        if (item.type == Material.TOTEM_OF_UNDYING && item.itemMeta.hasCustomModelData()) {
+        if (item.isPlushie) {
             p.inventory.setItemInMainHand(ItemStack(Material.TOTEM_OF_UNDYING))
         } else {
             p.chat("I hate plushies")

@@ -7,8 +7,10 @@ import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.runLater
 import co.akoot.plugins.plushies.Plushies.Companion.conf
 import co.akoot.plugins.plushies.Plushies.Companion.key
+import co.akoot.plugins.plushies.listeners.handlers.placeItem
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowable
+import co.akoot.plugins.plushies.util.Items.isPlaceable
 import co.akoot.plugins.plushies.util.ResourcePack.isPackEnabled
 import co.akoot.plugins.plushies.util.ResourcePack.packDeniers
 import co.akoot.plugins.plushies.util.ResourcePack.sendPackLink
@@ -60,14 +62,21 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
     @EventHandler
     fun playerInteract(event: PlayerInteractEvent) {
         val player = event.player
+        val item = player.inventory.itemInMainHand
 
         when (event.action) {
             Action.RIGHT_CLICK_AIR -> {
-                if (player.inventory.itemInMainHand.persistentDataContainer.has(axeKey)) {
+                if (item.persistentDataContainer.has(axeKey)) {
                     spawnThrowable(player, plugin)
                 }
             }
 
+            Action.RIGHT_CLICK_BLOCK -> {
+                val block = event.clickedBlock?: return
+                if (item.isPlaceable && block.isSolid && player.isSneaking) {
+                    placeItem(event.blockFace, player)
+                }
+            }
             else -> return
         }
     }

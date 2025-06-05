@@ -4,9 +4,11 @@ import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.customMusicDiscConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
+import co.akoot.plugins.plushies.util.Items.placeableKey
 import co.akoot.plugins.plushies.util.builders.EquippableBuilder
 import co.akoot.plugins.plushies.util.builders.FoodBuilder
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -36,6 +38,9 @@ object ItemCreator {
         return ItemBuilder.builder(itemStack).apply {
 
             pdc(namespacedKey, path)
+
+            // set item as placeable
+            config.getBoolean("$path.placeable")?.takeIf { it }?.let { pdc(placeableKey, true) }
 
             // attributes
             config.getStringList("$path.food.attributes").joinToString(";").takeIf { it.isNotBlank() }
@@ -116,9 +121,9 @@ object ItemCreator {
         if (!config.getKeys(path).contains("equippable")) return itemStack
 
         val ePath = "$path.equippable"
-        val slot = config.getEnum(EquipmentSlot::class.java, "$ePath.slot")?: EquipmentSlot.HEAD
+        val slot = config.getEnum(EquipmentSlot::class.java, "$ePath.slot")?: EquipmentSlot.HAND
 
-        return EquippableBuilder.builder(itemStack, slot ).apply {
+        var item = EquippableBuilder.builder(itemStack, slot).apply {
             config.getKeys(ePath).apply {
                 if (contains("unbreakable")) unbreakable()
                 if (contains("dispensable")) dispensable()
@@ -126,7 +131,14 @@ object ItemCreator {
                 if (contains("swappable")) swappable()
             }
             config.getString("$ePath.sound")?.let { equipSound(it.lowercase()) }
-
         }.build()
+
+        if (slot == EquipmentSlot.HAND) {
+            item = ItemBuilder.builder(item).apply {
+                unsetData(DataComponentTypes.ATTRIBUTE_MODIFIERS)
+            }.build()
+        }
+
+        return item
     }
 }
