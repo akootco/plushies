@@ -101,6 +101,8 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
             is Tameable -> {
                 petNeglect(player, item, entity, event)
             }
+            // anti villager lag fix
+            is Villager -> entity.isAware = true
         }
     }
 }
