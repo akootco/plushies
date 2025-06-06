@@ -67,7 +67,7 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
             return dropHead(killer, entity, this)
         }
 
-        if (killer is Player && entity is Player && Random.nextDouble() > 0.1) {
+        if (killer is Player && entity is Player && Random.nextDouble() < 0.14) {
             drops.add(
                 ItemBuilder.builder(ItemStack(Material.PLAYER_HEAD))
                     .playerHead(entity as Player)
