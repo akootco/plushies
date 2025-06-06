@@ -19,6 +19,7 @@ import co.akoot.plugins.plushies.util.ResourcePack.sendPackMsg
 import co.akoot.plugins.plushies.util.ResourcePack.setPack
 import co.akoot.plugins.plushies.util.Util.setAttributes
 import io.papermc.paper.event.player.AsyncChatEvent
+import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -75,9 +76,13 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
             }
 
             Action.RIGHT_CLICK_BLOCK -> {
-                val block = event.clickedBlock?: return
-                if (item.isPlaceable && block.isSolid && player.isSneaking) {
-                    placeItem(event.blockFace, player)
+                val block = event.clickedBlock ?: return
+                val face = event.blockFace
+                if (item.isPlaceable &&
+                    block.isSolid && player.isSneaking &&
+                    block.getRelative(face).type == Material.AIR
+                ) {
+                    placeItem(face, player)
                 }
             }
             else -> return

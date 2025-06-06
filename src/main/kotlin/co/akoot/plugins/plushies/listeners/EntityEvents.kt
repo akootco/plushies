@@ -11,13 +11,17 @@ import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.listeners.handlers.boxing
 import co.akoot.plugins.plushies.listeners.handlers.isBoxing
 import co.akoot.plugins.plushies.util.Items.customItems
+import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import org.bukkit.Material
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
+import org.bukkit.inventory.ItemStack
 import kotlin.random.Random
 
 class EntityEvents(private val plugin: FoxPlugin) : Listener {
@@ -45,9 +49,11 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
                     Golf(attacker, target, target.location).runTaskTimer(plugin, 20, 20)
                 }
             }
-            if (target is Player && attacker.isBoxing) {
-                println("EDC")
-                boxing(attacker, target,  event.damage)
+            if (target is Player && attacker.isBoxing &&
+                event.isCritical &&
+                event.cause != EntityDamageEvent.DamageCause.THORNS
+            ) {
+                boxing(attacker, target, event.damage)
             }
         }
     }
@@ -59,6 +65,14 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
 
         if (killer is Creeper && killer.isPowered) {
             return dropHead(killer, entity, this)
+        }
+
+        if (killer is Player && entity is Player && Random.nextDouble() > 0.1) {
+            drops.add(
+                ItemBuilder.builder(ItemStack(Material.PLAYER_HEAD))
+                    .playerHead(entity as Player)
+                    .build())
+            return
         }
 
         // music disc drops
