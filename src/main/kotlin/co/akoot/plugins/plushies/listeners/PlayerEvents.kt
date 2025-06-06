@@ -11,6 +11,7 @@ import co.akoot.plugins.plushies.listeners.handlers.placeItem
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowable
 import co.akoot.plugins.plushies.util.Items.isPlaceable
+import co.akoot.plugins.plushies.util.Recipes.unlockRecipes
 import co.akoot.plugins.plushies.util.ResourcePack.isPackEnabled
 import co.akoot.plugins.plushies.util.ResourcePack.packDeniers
 import co.akoot.plugins.plushies.util.ResourcePack.sendPackLink
@@ -45,8 +46,10 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
     @EventHandler
     fun PlayerJoinEvent.onJoin() {
-        if (!isPackEnabled) return
-        setPack(player)
+        unlockRecipes(player)
+        if (isPackEnabled) {
+            setPack(player)
+        }
     }
 
     @EventHandler

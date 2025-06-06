@@ -9,8 +9,10 @@ import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import com.destroystokyo.paper.MaterialTags
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
 import org.bukkit.Bukkit
+import org.bukkit.Keyed
 import org.bukkit.Material
 import org.bukkit.Tag
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice.MaterialChoice
 import org.bukkit.inventory.StonecuttingRecipe
@@ -28,6 +30,20 @@ object Recipes {
 
     private fun getMaterial(string: String): Material? {
         return Material.matchMaterial(string)
+    }
+
+    fun unlockRecipes(player: Player, id: String = "plushies") {
+        val iterator = Bukkit.recipeIterator()
+        while (iterator.hasNext()) {
+            val recipe = iterator.next()
+
+            if (recipe is Keyed) {
+                val key = (recipe as Keyed).key // erm?
+                if (key.namespace == id) {
+                    player.discoverRecipe(key)
+                }
+            }
+        }
     }
 
     private fun strippedWoodRecipe() {
