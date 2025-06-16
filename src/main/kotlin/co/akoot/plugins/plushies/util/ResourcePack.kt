@@ -8,6 +8,7 @@ import co.akoot.plugins.plushies.Plushies.Companion.conf
 import com.google.gson.JsonParser
 import net.kyori.adventure.resource.ResourcePackInfo
 import net.kyori.adventure.resource.ResourcePackRequest
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.entity.*
 import java.net.URI
 import java.util.*
@@ -27,24 +28,14 @@ object ResourcePack {
     val javaPackHash: String
         get() = conf.getString("pack.hash") ?: " "
 
-
-    val Player.sendPackLink: Boolean
-        get() {
-            Text(this) {
-                Kolor.WARNING("Click here to download").url(javaPackLink).apply {
-                    if (isPackNew) {
-                        plus(Kolor.WARNING("\nYour pack is out of date!"))
-                    }
-                }
-            }
-            return true
-        }
-
     val Player.sendPackMsg: Boolean
         get() {
             Text(this) {
-                Kolor.ERROR("Resource pack was denied :(\n") +
-                        Kolor.WARNING("click to enable").execute("/rp !")
+                Text() +
+                Kolor.MONTH("Download").url(javaPackLink).hover("Link to Github") +
+                        Kolor.QUOTE(" | ").decorate(TextDecoration.BOLD) +
+                        Kolor.MONTH("Enable").execute("/rp !")
+                            .hover("Sadly this will disconnect you from the server if denied.")
             }
             return true
         }

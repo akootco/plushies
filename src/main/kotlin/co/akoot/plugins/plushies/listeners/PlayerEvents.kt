@@ -1,7 +1,8 @@
 package co.akoot.plugins.plushies.listeners
 
 import co.akoot.plugins.bluefox.api.FoxPlugin
-import co.akoot.plugins.bluefox.extensions.getPDC
+import co.akoot.plugins.bluefox.api.Kolor
+import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.extensions.isBedrock
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.runLater
@@ -14,7 +15,6 @@ import co.akoot.plugins.plushies.util.Items.isPlaceable
 import co.akoot.plugins.plushies.util.Recipes.unlockRecipes
 import co.akoot.plugins.plushies.util.ResourcePack.isPackEnabled
 import co.akoot.plugins.plushies.util.ResourcePack.packDeniers
-import co.akoot.plugins.plushies.util.ResourcePack.sendPackLink
 import co.akoot.plugins.plushies.util.ResourcePack.sendPackMsg
 import co.akoot.plugins.plushies.util.ResourcePack.setPack
 import co.akoot.plugins.plushies.util.Util.setAttributes
@@ -35,8 +35,16 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
     @EventHandler
     fun itemConsume(event: PlayerItemConsumeEvent) {
-        if (event.item.itemMeta.getPDC<String>(key("attributes")) != null)
-            setAttributes(event.item, event.player)
+        val meta = event.item.itemMeta ?: return
+
+        when {
+            meta.hasPDC(key("attributes")) ->
+                setAttributes(event.item, event.player)
+
+            meta.hasPDC(axeKey) -> {
+                spawnThrowable(event.player, plugin)
+            }
+        }
     }
 
     @EventHandler
@@ -59,7 +67,8 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
         if (status == PlayerResourcePackStatusEvent.Status.DECLINED && !packDeniers.contains(player.uniqueId)) {
             packDeniers.add(player.uniqueId)
-            player.apply { sendPackMsg; sendPackLink }
+            Text(player) { Kolor.WARNING("Resource pack was denied").hover("sad") }
+            player.sendPackMsg
         }
     }
 
@@ -69,11 +78,11 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
         val item = player.inventory.itemInMainHand
 
         when (event.action) {
-            Action.RIGHT_CLICK_AIR -> {
-                if (item.persistentDataContainer.has(axeKey)) {
-                    spawnThrowable(player, plugin)
-                }
-            }
+//            Action.RIGHT_CLICK_AIR -> {
+//                if (item.persistentDataContainer.has(axeKey)) {
+//                    spawnThrowable(player, plugin)
+//                }
+//            }
 
             Action.RIGHT_CLICK_BLOCK -> {
                 val block = event.clickedBlock ?: return

@@ -3,12 +3,12 @@ package co.akoot.plugins.plushies.commands
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.api.Kolor
-import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.Text.Companion.cleanName
 import co.akoot.plugins.bluefox.util.Text.Companion.now
-import co.akoot.plugins.bluefox.util.Text.Companion.titleCase
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import com.destroystokyo.paper.MaterialTags
+import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.command.CommandSender
 
 class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
@@ -22,6 +22,7 @@ class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
 
         val item = p.inventory.itemInMainHand
 
+        if (MaterialTags.THROWABLE_PROJECTILES.isTagged(item)) return false
         // not even sure why i am restricting this to axes for normal player
         if (!hasPermission(sender, "all") && !item.type.name.endsWith("_AXE")) {
             return sendError(p, "You need to be holding an axe")
@@ -32,8 +33,10 @@ class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
         val isThrowable = item.persistentDataContainer.has(axeKey)
         val b = ItemBuilder.builder(item)
 
-        if (isThrowable) b.removepdc(axeKey).build()
-        else b.pdc(axeKey).build()
+        b.apply {
+            if (isThrowable) removepdc(axeKey).resetData(DataComponentTypes.FOOD).resetData(DataComponentTypes.CONSUMABLE)
+            else throwable()
+        }
 
         return Result.success(Kolor.ACCENT(item.type.cleanName) + Kolor.TEXT(" is ${isThrowable.not().now} throwable")).getAndSend(p)
     }

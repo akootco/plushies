@@ -1,12 +1,11 @@
 package co.akoot.plugins.plushies.listeners.handlers
 
-import co.akoot.plugins.bluefox.extensions.setPDC
+import co.akoot.plugins.bluefox.extensions.hasMeta
+import co.akoot.plugins.bluefox.extensions.setMeta
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.headConf
-import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.util.MobHead.headTexture
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
-import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
 import org.bukkit.Material
 import org.bukkit.entity.Creeper
 import org.bukkit.entity.Entity
@@ -15,7 +14,7 @@ import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.inventory.ItemStack
 
 fun dropHead(killer: Entity, victim: Entity, event: EntityDeathEvent) {
-    if (killer.persistentDataContainer.has(key("dropped"))) return
+    if (killer.hasMeta("dropped")) return
 
     if (victim is Player) {
         event.drops.add(
@@ -37,7 +36,7 @@ fun dropHead(killer: Entity, victim: Entity, event: EntityDeathEvent) {
         )
     }
 
-    logger().info(headTexture(victim).lowercase()) // for testing
-    // set pdc so the creeper only gives 1 head
-    killer.setPDC<Boolean>(key("dropped"), true)
+//    logger().info(headTexture(victim).lowercase()) // for testing
+    // set meta so the creeper only gives 1 head
+    killer.setMeta("dropped", true)
 }

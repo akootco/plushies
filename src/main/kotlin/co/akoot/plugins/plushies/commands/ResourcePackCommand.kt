@@ -7,7 +7,7 @@ import co.akoot.plugins.bluefox.extensions.isBedrock
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.util.ResourcePack.getJavaPack
 import co.akoot.plugins.plushies.util.ResourcePack.javaPackLink
-import co.akoot.plugins.plushies.util.ResourcePack.sendPackLink
+import co.akoot.plugins.plushies.util.ResourcePack.sendPackMsg
 import co.akoot.plugins.plushies.util.ResourcePack.setPack
 import org.bukkit.command.CommandSender
 import java.awt.Color
@@ -39,7 +39,7 @@ class ResourcePackCommand(plugin: FoxPlugin) : FoxCommand(plugin, "resourcepack"
         return when (arg) {
             "enable", "!" -> setPack(p, true)
             else -> {
-                p.sendPackLink
+                p.sendPackMsg
             }
         }
     }

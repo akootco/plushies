@@ -4,10 +4,12 @@ import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.key
+import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import com.destroystokyo.paper.profile.ProfileProperty
 import io.papermc.paper.datacomponent.DataComponentType
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.*
+import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.tag.TagKey
@@ -542,9 +544,14 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param smite If `true`, the item will summon lightning when it hits an entity.
      * @return The updated `Item` with the throwable behavior applied.
      */
-    fun throwable(smite: Boolean = false): ItemBuilder {
-        val type = if (smite) "smite" else "default"
-        pdc(key("throwable"), type)
+    fun throwable(): ItemBuilder {
+        FoodBuilder.builder(pdc(axeKey).build())
+            .animation(ItemUseAnimation.SPEAR)
+            .hunger(0,0f,0.5f)
+            .isSnack()
+            .noCrumbs()
+            .eatSound("_")
+            .build()
         return this
     }
 

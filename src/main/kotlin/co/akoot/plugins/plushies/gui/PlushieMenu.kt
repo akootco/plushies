@@ -20,7 +20,7 @@ import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import kotlin.math.min
 
-class PlushieMenu(private val isStatue: Boolean = false, private val page: Int = 1) :
+class PlushieMenu(private val page: Int = 1) :
     InventoryHolder {
 
     companion object {
@@ -52,7 +52,7 @@ class PlushieMenu(private val isStatue: Boolean = false, private val page: Int =
     }
 
     private val plushMenu: Inventory = ChestGUI.builder(54, this, true).apply {
-        title(Text(if (isStatue) "Statues" else "Plushies").color(randomColor(brightness = 0.6f)).component)
+        title(Text("Plushies").color(randomColor(brightness = 0.6f)).component)
         if (page > 1) setItem(45, prevPage)
         if (plushies.size > page * 45) setItem(53, nextPage)
         setItems(0..44, setPlushies(page))
@@ -77,11 +77,11 @@ class PlushieMenu(private val isStatue: Boolean = false, private val page: Int =
     }
 
     fun nextPage(): PlushieMenu {
-        return PlushieMenu(isStatue, page + 1)
+        return PlushieMenu(page + 1)
     }
 
     fun prevPage(): PlushieMenu {
-        return PlushieMenu(isStatue, page - 1)
+        return PlushieMenu(page - 1)
     }
 
     override fun getInventory(): Inventory {

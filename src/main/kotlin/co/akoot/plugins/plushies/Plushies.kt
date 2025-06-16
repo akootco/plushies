@@ -66,7 +66,6 @@ class Plushies : FoxPlugin("plushies") {
     }
 
     override fun registerCommands() {
-        registerCommand(MaceCommand(this))
         registerCommand(EditBookCommand(this))
         registerCommand(LaysCommand(this))
         registerCommand(AICommand(this))

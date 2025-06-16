@@ -1,7 +1,7 @@
 package co.akoot.plugins.plushies.listeners
 
-import co.akoot.plugins.bluefox.extensions.getMeta
 import co.akoot.plugins.bluefox.extensions.getPDC
+import co.akoot.plugins.bluefox.extensions.hasMeta
 import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.listeners.handlers.dropItem
@@ -32,14 +32,14 @@ class Events : Listener {
 
     @EventHandler
     fun blockPlace(event: BlockPlaceEvent) {
-        event.isCancelled = (event.player.getMeta<Boolean>("placedPlushie") == true) ||
+        event.isCancelled = (event.player.hasMeta("placedPlushie")) ||
                 spawnGolfBall(event.player, event.block.location.add(0.5, 0.0, 0.5))
     }
 
     @EventHandler
     fun blockPlace(event: HangingPlaceEvent) {
         val player = event.player ?: return
-        event.isCancelled = (player.getMeta<Boolean>("placedPlushie") == true)
+        event.isCancelled = (player.hasMeta("placedPlushie"))
     }
 
     @EventHandler
