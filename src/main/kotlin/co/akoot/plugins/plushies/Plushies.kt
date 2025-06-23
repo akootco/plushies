@@ -66,6 +66,7 @@ class Plushies : FoxPlugin("plushies") {
     }
 
     override fun registerCommands() {
+        registerCommand(MaceCommand(this))
         registerCommand(EditBookCommand(this))
         registerCommand(LaysCommand(this))
         registerCommand(AICommand(this))
@@ -83,7 +84,6 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(ReloadRecipesCommand(this))
         registerCommand(IHatePlushiesCommand(this))
         registerCommand(IHateJumpBoostCommand(this))
-
         // bluemap commands
         registerCommand(ShowCommand(this))
         registerCommand(HideCommand(this))

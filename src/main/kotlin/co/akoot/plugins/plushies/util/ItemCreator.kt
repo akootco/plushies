@@ -52,13 +52,30 @@ object ItemCreator {
             // set amount
             config.getInt("$path.amount").takeIf { it != 1 }?.let { itemStack.amount = it }
 
+            // set glint
+            if (config.getBoolean("$path.glint") == true) glint()
+
             config.getString("$path.potionColor")?.let { potion(it) }
 
             // makes sure to get the id directly from the texture servers!
             config.getString("$path.textures")?.let { id -> headTexture(id) }
 
+            config.getString("$path.itemModel")?.let { id ->
+                val key = if (id.contains(":")) {
+                    val (namespace, key) = id.split(":")
+                    NamespacedKey(namespace, key)
+                } else {
+                    NamespacedKey.minecraft(id)
+                }
+                itemModel(key)
+            }
+
             // set custom model data
-            config.getInt("$path.customModelData").takeIf { it != 0 }?.let { customModelData(it) }
+            config.getInt("$path.customModelData").takeIf { it != 0 }?.let {
+                customModelData(it)
+            } ?: config.getString("$path.customModelData")?.takeIf { it.isNotBlank() }?.let {
+                customModelData(it)
+            }
 
             //set lore
             lore(config.getStringList("$path.lore").map { Text(it).component })

@@ -42,7 +42,8 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
                 setAttributes(event.item, event.player)
 
             meta.hasPDC(axeKey) -> {
-                spawnThrowable(event.player, plugin)
+                spawnThrowable(event, plugin)
+                event.isCancelled = true
             }
         }
     }

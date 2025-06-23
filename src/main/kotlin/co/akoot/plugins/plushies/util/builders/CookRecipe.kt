@@ -7,7 +7,6 @@ import org.bukkit.inventory.*
 
 class CookRecipe private constructor(
     val name: String, private val input: RecipeChoice, private val result: ItemStack, private val cookTime: String, private val xp: Double) {
-    private val recipes = mutableListOf<Recipe>()
 
     // furnace only
     fun smelt(plugin: String = "plushies"): CookRecipe {
@@ -20,7 +19,6 @@ class CookRecipe private constructor(
 
         // Register the recipe
         Bukkit.addRecipe(smeltRecipe)
-        recipes.add(smeltRecipe)
         return this
     }
 
@@ -38,7 +36,6 @@ class CookRecipe private constructor(
         // Register the recipe
         smelt(plugin)
         Bukkit.addRecipe(blastRecipe)
-        recipes.add(blastRecipe)
         return this
     }
 
@@ -64,8 +61,6 @@ class CookRecipe private constructor(
         Bukkit.removeRecipe(cfRecipe)
         Bukkit.addRecipe(campfireRecipe)
 
-        recipes.add(smokerRecipe)
-        recipes.add(campfireRecipe)
         return this
     }
 
