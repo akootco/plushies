@@ -28,7 +28,6 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
             "dye",
             "model",
             "disc",
-            "unbreakable"
         )
 
         when (args[0]) {
@@ -36,9 +35,6 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
             "disc" -> {
                 val songList = songs.map { it.key.key }.toMutableList()
                 return songList
-            }
-            "unbreakable" -> {
-                return arrayListOf("true", "false")
             }
         }
 
@@ -212,23 +208,6 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
                 }
                 return true
             }
-
-            "unbreakable" -> {
-                val modelArg = args.getOrNull(1)
-
-                val shouldSet = when (modelArg?.lowercase()) {
-                    "true", "+" -> true
-                    "false", "-" -> false
-                    else -> true
-                }
-
-                ItemBuilder.builder(item)
-                    .unbreakable(shouldSet)
-                    .build()
-
-                return true
-            }
-
 
             else -> {
                 sendError(p, "You cannot modify '${args[0]}'!")

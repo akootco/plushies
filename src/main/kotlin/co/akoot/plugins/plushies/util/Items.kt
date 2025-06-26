@@ -1,12 +1,12 @@
 package co.akoot.plugins.plushies.util
 
-import co.akoot.plugins.bluefox.api.FoxConfig
-import co.akoot.plugins.bluefox.extensions.getPDC
+import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.plushies.Plushies.Companion.customBlockConfig
+import co.akoot.plugins.plushies.Plushies.Companion.customItemConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.plushieConf
-import co.akoot.plugins.plushies.listeners.handlers.boxingGlove
 import co.akoot.plugins.plushies.util.ItemCreator.createItem
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.registry.keys.tags.DamageTypeTagKeys
@@ -19,10 +19,10 @@ object Items {
     val placeableKey = key("placeable")
 
     val ItemStack.isCustomItem: Boolean
-        get() = itemMeta?.getPDC<String>(itemKey) != null
+        get() = itemMeta?.hasPDC(itemKey) == true
 
     val ItemStack.isPlaceable: Boolean
-        get() = isPlushie || itemMeta?.getPDC<Boolean>(placeableKey) != null
+        get() = isPlushie || itemMeta?.hasPDC(placeableKey) == true
 
     val ItemStack.isPlushie: Boolean
         get() = type == Material.TOTEM_OF_UNDYING && itemMeta?.hasCustomModelData() == true
@@ -31,10 +31,14 @@ object Items {
     var plushies = plushieConf.getKeys().mapNotNull { name -> plushieConf.getInt(name)?.let { name to it } }
     val customItems: MutableMap<String, ItemStack> = HashMap()
 
-    fun loadItems(config: FoxConfig) {
-        customItems["boxing_glove"] = boxingGlove
-        for (key in config.getKeys()) {
-            customItems[key.lowercase()] = createItem(config, key, itemKey) ?: continue
+    fun loadItems() {
+        // Load ItemConfig
+        for (key in customItemConfig.getKeys()) {
+            customItems[key.lowercase()] = createItem(customItemConfig, key, itemKey) ?: continue
+        }
+        // Load BlockConfig
+        for (key in customBlockConfig.getKeys()) {
+            customItems[key.lowercase()] = createItem(customBlockConfig, key, itemKey) ?: continue
         }
     }
 

@@ -2,6 +2,7 @@ package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.plushies.Plushies.Companion.customBlockConfig
 import co.akoot.plugins.plushies.Plushies.Companion.customMusicDiscConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.util.Items.placeableKey
@@ -14,15 +15,15 @@ import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.Registry
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemRarity
 import org.bukkit.inventory.ItemStack
 
 object ItemCreator {
 
     fun createItem(config: FoxConfig, path: String, namespacedKey: NamespacedKey): ItemStack? {
-        val material = if (config == customMusicDiscConfig) {
-            Material.MUSIC_DISC_11
-        } else {
-            Material.getMaterial(config.getString("$path.material") ?: return null) ?: return null
+        val material = when (config) {
+            customMusicDiscConfig -> Material.MUSIC_DISC_11
+            else -> Material.getMaterial(config.getString("$path.material") ?: return null) ?: return null
         }
 
         var itemStack = ItemStack(material)
@@ -34,8 +35,20 @@ object ItemCreator {
         return itemStack
     }
 
-    private fun itemData(config: FoxConfig, path: String, itemStack: ItemStack, namespacedKey: NamespacedKey): ItemStack {
+    private fun itemData(
+        config: FoxConfig,
+        path: String,
+        itemStack: ItemStack,
+        namespacedKey: NamespacedKey
+    ): ItemStack {
         return ItemBuilder.builder(itemStack).apply {
+
+            if (config == customBlockConfig) {
+                val textures = config.getString("$path.textures")?: return@apply
+                rarity(ItemRarity.COMMON)
+                pdc(blockKey, "$path|$textures")
+                itemModel(NamespacedKey.minecraft("player_head"))
+            }
 
             pdc(namespacedKey, path)
 
@@ -138,7 +151,7 @@ object ItemCreator {
         if (!config.getKeys(path).contains("equippable")) return itemStack
 
         val ePath = "$path.equippable"
-        val slot = config.getEnum(EquipmentSlot::class.java, "$ePath.slot")?: EquipmentSlot.HAND
+        val slot = config.getEnum(EquipmentSlot::class.java, "$ePath.slot") ?: EquipmentSlot.HAND
 
         var item = EquippableBuilder.builder(itemStack, slot).apply {
             config.getKeys(ePath).apply {

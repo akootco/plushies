@@ -4,7 +4,6 @@ import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.util.Text
-import co.akoot.plugins.plushies.Plushies.Companion.customItemConfig
 import co.akoot.plugins.plushies.gui.CustomItemMenu
 import co.akoot.plugins.plushies.util.DataPack.createDiscItems
 import co.akoot.plugins.plushies.util.Items.customItems
@@ -32,7 +31,7 @@ class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
         when (args.getOrNull(0)) {
             "reload" -> {
                 customItems.entries.removeIf { it.value.isCustomItem }
-                loadItems(customItemConfig)
+                loadItems()
                 createDiscItems()
                 return sendMessage(sender, "Custom items reloaded")
             }

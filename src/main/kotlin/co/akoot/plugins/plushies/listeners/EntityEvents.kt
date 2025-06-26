@@ -7,11 +7,10 @@ import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.bluefox.util.Text.Companion.asString
 import co.akoot.plugins.bluefox.util.Text.Companion.now
 import co.akoot.plugins.plushies.Plushies.Companion.key
-import co.akoot.plugins.plushies.listeners.handlers.boxing
 import co.akoot.plugins.plushies.listeners.handlers.dropHead
-import co.akoot.plugins.plushies.listeners.handlers.isBoxing
 import co.akoot.plugins.plushies.listeners.handlers.petNeglect
 import co.akoot.plugins.plushies.listeners.tasks.Golf
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.golfKey
@@ -61,12 +60,6 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
                     Golf(attacker, target, target.location).runTaskTimer(plugin, 20, 20)
                 }
             }
-            if (target is Player && attacker.isBoxing &&
-                event.isCritical &&
-                event.cause != EntityDamageEvent.DamageCause.THORNS
-            ) {
-                boxing(attacker, target, event.damage)
-            }
         }
     }
 
@@ -107,6 +100,17 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
     fun interactEntity(event: PlayerInteractEntityEvent) {
         if (event.isCancelled) return
         val item = event.player.inventory.itemInMainHand
+
+        if (item.type == Material.NAME_TAG) {
+            val silent = when (item.itemMeta?.customName()?.asString()?.lowercase()) {
+                "silence me", "silent", "mute" -> true
+                "yap", "unmute" -> false
+                else -> return
+            }
+            event.rightClicked.isSilent = silent
+            event.isCancelled = true
+            return
+        }
 
         when (val entity = event.rightClicked) {
             // anti villager lag fix

@@ -155,10 +155,9 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param shownInTooltip
      * @return
      */
-    fun dye(color: String, shownInTooltip: Boolean = true): ItemBuilder {
+    fun dye(color: String): ItemBuilder {
         val dye = DyedItemColor.dyedItemColor()
         dye.color(Color.fromRGB(color.toInt(16)))
-        dye.showInTooltip(shownInTooltip)
         itemStack.setData(DataComponentTypes.DYED_COLOR, dye.build())
         return this
     }
@@ -172,9 +171,8 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param shownInTooltip
      * @return
      */
-    fun attribute(attribute: Attribute, modifier: AttributeModifier, slot: EquipmentSlotGroup, shownInTooltip: Boolean = true): ItemBuilder {
+    fun attribute(attribute: Attribute, modifier: AttributeModifier, slot: EquipmentSlotGroup): ItemBuilder {
         val att = ItemAttributeModifiers.itemAttributes()
-        att.showInTooltip(shownInTooltip)
         att.addModifier(attribute, modifier, slot)
 
         itemStack.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, att.build())
@@ -342,8 +340,8 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param song
      * @return
      */
-    fun jukeboxSong(song: JukeboxSong, shownInTooltip: Boolean = true): ItemBuilder {
-        itemStack.setData(DataComponentTypes.JUKEBOX_PLAYABLE, JukeboxPlayable.jukeboxPlayable(song).showInTooltip(shownInTooltip))
+    fun jukeboxSong(song: JukeboxSong): ItemBuilder {
+        itemStack.setData(DataComponentTypes.JUKEBOX_PLAYABLE, JukeboxPlayable.jukeboxPlayable(song))
         return this
     }
 
@@ -418,12 +416,6 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      *
      * @return The modified `Item`  with the unbreakable property applied.
      */
-    fun unbreakable(shownInTooltip: Boolean? = true): ItemBuilder {
-        val tooltipBuilder = Unbreakable.unbreakable()
-        shownInTooltip?.let { tooltipBuilder.showInTooltip(it) }
-        itemStack.setData(DataComponentTypes.UNBREAKABLE, tooltipBuilder.build())
-        return this
-    }
 
     /**
      * If set, it will completely hide whole item tooltip (that includes item name).
@@ -431,7 +423,9 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @return
      */
     fun hideTooltip(): ItemBuilder {
-        itemStack.setData(DataComponentTypes.HIDE_TOOLTIP)
+        val meta = itemStack.itemMeta
+        meta.isHideTooltip = true
+        itemStack.setItemMeta(meta)
         return this
     }
 
@@ -503,7 +497,6 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      */
 
     fun headTexture(textureId: String): ItemBuilder {
-        if (!itemStack.type.name.endsWith("_HEAD")) return this
         val textureUrl = "http://textures.minecraft.net/texture/$textureId"
         val json = "{\"textures\":{\"SKIN\":{\"url\":\"$textureUrl\"}}}"
         val encodedTexture = Base64.getEncoder().encodeToString(json.toByteArray(StandardCharsets.UTF_8))
@@ -515,6 +508,17 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
     }
 
     fun playerHead(player: Player): ItemBuilder {
+        if (!itemStack.type.name.endsWith("_HEAD")) return this
+        val meta = itemStack.itemMeta
+
+        val headMeta = meta as SkullMeta
+        val profile = Bukkit.createProfile(player.uniqueId, player.name)
+        headMeta.playerProfile = profile
+        itemStack.setItemMeta(headMeta)
+        return this
+    }
+
+    fun playerHead(player: OfflinePlayer): ItemBuilder {
         if (!itemStack.type.name.endsWith("_HEAD")) return this
         val meta = itemStack.itemMeta
 

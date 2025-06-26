@@ -3,7 +3,6 @@ package co.akoot.plugins.plushies.util
 import co.akoot.plugins.plushies.Plushies.Companion.cookRecipeConf
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.recipeConf
-import co.akoot.plugins.plushies.listeners.handlers.gloveRecipe
 import co.akoot.plugins.plushies.util.builders.CookRecipe
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import com.destroystokyo.paper.MaterialTags
@@ -25,7 +24,6 @@ object Recipes {
         strippedWoodRecipe()
         configRecipes()
         smeltingRecipes()
-        gloveRecipe
     }
 
     private fun getMaterial(string: String): Material? {

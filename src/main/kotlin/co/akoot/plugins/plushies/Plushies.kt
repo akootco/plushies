@@ -31,6 +31,7 @@ class Plushies : FoxPlugin("plushies") {
         lateinit var cookRecipeConf: FoxConfig
         lateinit var customItemConfig: FoxConfig
         lateinit var customMusicDiscConfig: FoxConfig
+        lateinit var customBlockConfig: FoxConfig
 
         fun key(key: String): NamespacedKey {
             return NamespacedKey("plushies", key)
@@ -45,7 +46,7 @@ class Plushies : FoxPlugin("plushies") {
         getJavaPack()
 
         registerRecipes()
-        loadItems(customItemConfig)
+        loadItems()
         createDiscItems() // attempt to create music discs
 
         if (pluginEnabled("Geyser-Spigot")) {
@@ -95,6 +96,7 @@ class Plushies : FoxPlugin("plushies") {
         registerEventListener(PlayerEvents(this))
         registerEventListener(Events())
         registerEventListener(HDB())
+        registerEventListener(BlockEvents())
     }
 
     override fun registerConfigs() {
@@ -106,6 +108,7 @@ class Plushies : FoxPlugin("plushies") {
         recipeConf = registerConfig("craftingRecipes", "recipes/recipes.conf")
         cookRecipeConf = registerConfig("cookRecipes", "recipes/cook_recipes.conf")
         customItemConfig = registerConfig("customItems", "data/items.conf")
+        customBlockConfig = registerConfig("customBlocks", "data/blocks.conf")
         customMusicDiscConfig = registerConfig("customMusicDiscs", "data/music_discs.conf")
     }
 }
