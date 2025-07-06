@@ -83,6 +83,7 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(ReloadRecipesCommand(this))
         registerCommand(IHatePlushiesCommand(this))
         registerCommand(IHateJumpBoostCommand(this))
+        registerCommand(EditBookCommand(this))
         // bluemap commands
         registerCommand(ShowCommand(this))
         registerCommand(HideCommand(this))
