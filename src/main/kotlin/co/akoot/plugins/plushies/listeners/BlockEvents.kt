@@ -9,7 +9,6 @@ import co.akoot.plugins.plushies.util.Util.getBlockPDC
 import com.destroystokyo.paper.event.block.BlockDestroyEvent
 import io.papermc.paper.event.block.BlockBreakBlockEvent
 import org.bukkit.ExplosionResult
-import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.*
@@ -30,30 +29,31 @@ class BlockEvents : Listener {
     @EventHandler
     fun BlockDropItemEvent.onItemDrop() {
         if (isCancelled || !block.isCustomBlock) return
-        removeCustomBlock(block.location)
         if (items.isNotEmpty()) dropItems(block.location, items.count())
         items.clear()
+        removeCustomBlock(block.location)
     }
 
     @EventHandler
     fun BlockDestroyEvent.onDestroy() {
         if (isCancelled || !block.isCustomBlock) return
-        removeCustomBlock(block.location)
         val drops = block.state.drops
         if (drops.isNotEmpty()) {
             setWillDrop(false)
             dropItems(block.location, drops.count())
         }
+        removeCustomBlock(block.location)
     }
 
     @EventHandler
     fun BlockBreakBlockEvent.onDestroy() {
         if (!block.isCustomBlock) return
-        removeCustomBlock(block.location)
-        drops.clear()
         val drops = block.state.drops
-        if (drops.isNotEmpty())
+        if (drops.isNotEmpty()) {
             dropItems(block.location, drops.count())
+            drops.clear()
+        }
+        removeCustomBlock(block.location)
     }
 
     @EventHandler
@@ -61,12 +61,12 @@ class BlockEvents : Listener {
         if (isCancelled || explosionResult != ExplosionResult.DESTROY) return
         blockList().filter { it.isCustomBlock }
             .forEach {
-                removeCustomBlock(it.location)
                 val drops = it.state.drops
                 if (drops.isNotEmpty()) {
                     dropItems(it.location, drops.count())
+                    drops.clear()
                 }
-                it.type = Material.AIR
+                removeCustomBlock(it.location)
             }
     }
 
@@ -78,9 +78,9 @@ class BlockEvents : Listener {
                 val drops = it.state.drops
                 if (drops.isNotEmpty()) {
                     dropItems(it.location, drops.count())
+                    drops.clear()
                 }
                 removeCustomBlock(it.location)
-                it.type = Material.AIR
             }
     }
 

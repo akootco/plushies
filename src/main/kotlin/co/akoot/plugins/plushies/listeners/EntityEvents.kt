@@ -19,11 +19,15 @@ import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.Items.isPlushie
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import io.papermc.paper.world.MoonPhase
 import org.bukkit.Material
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.entity.*
+import org.bukkit.event.entity.EntityDamageByEntityEvent
+import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.entity.EntityTargetEvent
+import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.ItemStack
 import kotlin.random.Random
@@ -44,6 +48,7 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
         if (projectile is Snowball) {
             projectile.getPDC<Double>(axeKey)?.let {
                 (event.hitEntity as? LivingEntity)?.damage(it, projectile.shooter as Player)
+                projectile.remove()
             }
         }
     }
@@ -52,10 +57,9 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
     fun entityDamage(event: EntityDamageByEntityEvent) {
         val target = event.entity
         val attacker = event.damager
-
         if (attacker is Player) {
-            if (target is ArmorStand && target.getPDC<String>(golfKey) != null) {
-                event.isCancelled = true // cancel the event so the armor stand isnt destroyed
+            if (target is ArmorStand && target.hasPDC(golfKey)) {
+                event.damage = 0.0
                 if (golfSwing(target, attacker)) {
                     Golf(attacker, target, target.location).runTaskTimer(plugin, 20, 20)
                 }
@@ -72,7 +76,12 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
             return dropHead(killer, entity, this)
         }
 
-        if (killer is Player && entity is Player && Random.nextDouble() < 0.14) {
+        val chance = when {
+            entity.world.moonPhase == MoonPhase.FULL_MOON -> 1.0
+            else -> 0.14
+        }
+
+        if (killer is Player && entity is Player && Random.nextDouble() < chance) {
             drops.add(
                 ItemBuilder.builder(ItemStack(Material.PLAYER_HEAD))
                     .playerHead(entity as Player)

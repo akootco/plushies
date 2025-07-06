@@ -53,7 +53,7 @@ class Throwable(private val shouldDrop: Boolean, private val snowBall: Snowball,
             val snowBall = player.launchProjectile(Snowball::class.java, player.eyeLocation.direction.multiply(2))
 
             val itemDisplay = snowBall.location.world.spawn(
-                snowBall.location.add(0.0, 0.5, 0.0), ItemDisplay::class.java) { display: ItemDisplay ->
+                snowBall.location, ItemDisplay::class.java) { display: ItemDisplay ->
 
                 display.apply {
                     setItemStack(item.clone().asOne())
@@ -64,7 +64,7 @@ class Throwable(private val shouldDrop: Boolean, private val snowBall: Snowball,
 
             // the players attack damage is changed depending on what weapon is in the main hand
             // set it to half a heart for normal items
-            val damage = player.getAttribute(Attribute.ATTACK_DAMAGE)?.value?: 1.0
+            val damage = player.getAttribute(Attribute.ATTACK_DAMAGE)?.value?: 2.0
 
             if (player.isSurventure) {
                 if (event.hand == EquipmentSlot.HAND) {

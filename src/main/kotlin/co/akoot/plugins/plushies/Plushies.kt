@@ -10,7 +10,6 @@ import co.akoot.plugins.plushies.listeners.*
 import co.akoot.plugins.plushies.util.DataPack.createDiscFiles
 import co.akoot.plugins.plushies.util.DataPack.createDiscItems
 import co.akoot.plugins.plushies.util.Items.loadItems
-import co.akoot.plugins.plushies.util.Recipes.registerRecipes
 import co.akoot.plugins.plushies.util.ResourcePack.getJavaPack
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
@@ -68,7 +67,6 @@ class Plushies : FoxPlugin("plushies") {
 
     override fun registerCommands() {
         registerCommand(MaceCommand(this))
-        registerCommand(EditBookCommand(this))
         registerCommand(LaysCommand(this))
         registerCommand(AICommand(this))
         registerCommand(ThrowableCommand(this))
