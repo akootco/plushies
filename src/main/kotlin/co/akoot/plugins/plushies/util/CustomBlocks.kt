@@ -53,15 +53,13 @@ fun createDisplay(location: Location, id: String) {
 }
 
 fun removeCustomBlock(location: Location) {
-    if (location.block.isCustomBlock) {
-        val loc = location.toCenterLocation()
-        for (entity in location.world.getNearbyEntities(loc, 0.5, 0.5, 0.5)) {
-            if (entity is ItemDisplay) {
-                entity.remove()
-                loc.chunk.removePDC(getBlockPDC(loc))
-                break
-            }
-        }
+    // good trick!
+    plugins.forEach {
+        location.chunk.removePDC(getBlockPDC(location, it))
+    }
+
+    for (entity in location.world.getNearbyEntities(location, 0.6, 0.6, 0.6)) {
+        if (entity is ItemDisplay) entity.remove()
     }
 }
 

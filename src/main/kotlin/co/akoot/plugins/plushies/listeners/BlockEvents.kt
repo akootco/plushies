@@ -27,10 +27,14 @@ class BlockEvents : Listener {
     }
 
     @EventHandler
-    fun BlockDropItemEvent.onItemDrop() {
-        if (isCancelled || !block.isCustomBlock) return
-        if (items.isNotEmpty()) dropItems(block.location, items.count())
-        items.clear()
+    fun BlockBreakEvent.onDestroy() {
+        if (block.isCustomBlock) {
+            val drops = block.state.drops
+            if (drops.isNotEmpty()) {
+                dropItems(block.location, drops.count())
+                isDropItems = false
+            }
+        }
         removeCustomBlock(block.location)
     }
 

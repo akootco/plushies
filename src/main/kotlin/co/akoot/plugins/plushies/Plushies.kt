@@ -84,6 +84,7 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(IHatePlushiesCommand(this))
         registerCommand(IHateJumpBoostCommand(this))
         registerCommand(EditBookCommand(this))
+        registerCommand(ChunkPDCCommand(this))
         // bluemap commands
         registerCommand(ShowCommand(this))
         registerCommand(HideCommand(this))
