@@ -19,21 +19,13 @@ class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
 
     override fun onCommand(sender: CommandSender, alias: String, args: Array<out String>): Boolean {
         val p = playerCheck(sender) ?: return false
-
         val item = p.inventory.itemInMainHand
+        val isThrowable = item.persistentDataContainer.has(axeKey)
 
         if (MaterialTags.THROWABLE_PROJECTILES.isTagged(item)) return false
-        // not even sure why i am restricting this to axes for normal player
-        if (!hasPermission(sender, "all") && !item.type.name.endsWith("_AXE")) {
-            return sendError(p, "You need to be holding an axe")
-        } else if (item.isEmpty) {
-            return sendError(p, "You can't throw [AIR], check out wind charges.")
-        }
+        if (item.isEmpty) return sendError(p, "You can't throw [AIR], check out wind charges.")
 
-        val isThrowable = item.persistentDataContainer.has(axeKey)
-        val b = ItemBuilder.builder(item)
-
-        b.apply {
+        ItemBuilder.builder(item).apply {
             if (isThrowable) removepdc(axeKey).resetData(DataComponentTypes.FOOD).resetData(DataComponentTypes.CONSUMABLE)
             else throwable()
         }

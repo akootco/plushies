@@ -10,6 +10,7 @@ import co.akoot.plugins.plushies.listeners.*
 import co.akoot.plugins.plushies.util.DataPack.createDiscFiles
 import co.akoot.plugins.plushies.util.DataPack.createDiscItems
 import co.akoot.plugins.plushies.util.Items.loadItems
+import co.akoot.plugins.plushies.util.Recipes.registerPlushieRecipes
 import co.akoot.plugins.plushies.util.ResourcePack.getJavaPack
 import org.bukkit.Bukkit
 import org.bukkit.NamespacedKey
@@ -44,9 +45,9 @@ class Plushies : FoxPlugin("plushies") {
         logger.info("welcome back!")
         getJavaPack()
 
-        registerRecipes()
         loadItems()
         createDiscItems() // attempt to create music discs
+        registerPlushieRecipes()
 
         if (pluginEnabled("Geyser-Spigot")) {
             val geyser = GeyserRegistrar()

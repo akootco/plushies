@@ -2,7 +2,7 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
-import co.akoot.plugins.plushies.util.Recipes.registerRecipes
+import co.akoot.plugins.plushies.util.Recipes.registerPlushieRecipes
 import org.bukkit.Bukkit
 import org.bukkit.Keyed
 import org.bukkit.command.CommandSender
@@ -28,7 +28,7 @@ class ReloadRecipesCommand(plugin: FoxPlugin) : FoxCommand(plugin, "reloadrecipe
             }
         }
 
-        registerRecipes()
+        registerPlushieRecipes()
         return sendMessage(sender, "Plushie Recipes reloaded!")
     }
 }

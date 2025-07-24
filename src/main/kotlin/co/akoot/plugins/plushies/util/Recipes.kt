@@ -3,6 +3,7 @@ package co.akoot.plugins.plushies.util
 import co.akoot.plugins.plushies.Plushies.Companion.cookRecipeConf
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.recipeConf
+import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.builders.CookRecipe
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import com.destroystokyo.paper.MaterialTags
@@ -13,12 +14,13 @@ import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.RecipeChoice
 import org.bukkit.inventory.RecipeChoice.MaterialChoice
 import org.bukkit.inventory.StonecuttingRecipe
 
 object Recipes {
 
-    fun registerRecipes() {
+    fun registerPlushieRecipes() {
         coloredRecipes()
         woodCutterRecipes()
         strippedWoodRecipe()
@@ -26,8 +28,34 @@ object Recipes {
         smeltingRecipes()
     }
 
-    private fun getMaterial(string: String): Material? {
-        return Material.matchMaterial(string)
+    // get recipe input items
+    private fun getInput(input: String): RecipeChoice? {
+        // if no prefix, check for custom item or vanilla material.
+        customItems.keys.find { it.equals(input, ignoreCase = true) }?.let { key ->
+            customItems[key]?.let {
+                return RecipeChoice.ExactChoice(it)
+            }
+        }
+        Material.getMaterial(input.uppercase())?.let { return MaterialChoice(it) }
+        return null
+    }
+
+    private fun getMaterial(input: String, amount: Int = 1): ItemStack? {
+        // if no prefix, check for flugin item or vanilla material.
+        customItems.keys.find { it.equals(input, ignoreCase = true) }?.let { key ->
+            customItems[key]?.let {
+                it.amount = amount
+                return it
+            }
+        }
+
+        Material.getMaterial(input.uppercase())?.let {
+            val itemStack = ItemStack(it)
+            itemStack.amount = amount
+            return itemStack
+        }
+
+        return null
     }
 
     fun unlockRecipes(player: Player, id: String = "plushies") {
@@ -113,12 +141,11 @@ object Recipes {
             val input = cookRecipeConf.getString("$key.input") ?: return
 
             val parts = result.split("/")
-            val amount = parts.getOrNull(1)?.toIntOrNull() ?: 1
 
             CookRecipe.builder(
                 key,
-                MaterialChoice(getMaterial(input) ?: return),
-                ItemStack(getMaterial(parts[0]) ?: return, amount),
+                getInput(input) ?: return,
+                getMaterial(parts[0]) ?: return,
                 cookRecipeConf.getString("$key.cookTime"),
                 cookRecipeConf.getDouble("$key.xp")
             ).apply {
@@ -146,10 +173,10 @@ object Recipes {
                             val parts = ingredient.split("/")
                             val amount = parts.getOrNull(1)?.toIntOrNull() ?: 1
 
-                            val material = getMaterial(parts[0]) ?: continue // skip if input is invalid
+                            val material = getInput(parts[0]) ?: continue // skip if input is invalid
 
                             // nice!, add ingredient to recipe
-                            ingredient(MaterialChoice(material), amount)
+                            ingredient(material, amount)
                         }
                     }.shapeless()
             } else {
@@ -164,13 +191,14 @@ object Recipes {
                     .apply {
                         for (ingredient in recipeConf.getKeys("$key.ingredients")) {
                             val material = recipeConf.getString("$key.ingredients.$ingredient")
-                                ?.let { getMaterial(it) } ?: continue // skip if input is invalid
+                                ?.let { getInput(it) } ?: continue // skip if input is invalid
 
                             // all valid, add ingredient
-                            ingredient(ingredient[0], MaterialChoice(material))
+                            ingredient(ingredient[0], material)
                         }
                     }.shaped()
             }
         }
     }
+
 }

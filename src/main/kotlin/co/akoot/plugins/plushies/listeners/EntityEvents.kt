@@ -76,10 +76,7 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
             return dropHead(killer, entity, this)
         }
 
-        val chance = when {
-            entity.world.moonPhase == MoonPhase.FULL_MOON -> 1.0
-            else -> 0.14
-        }
+        val chance = if (entity.world.moonPhase == MoonPhase.FULL_MOON) 1.0 else 0.14
 
         if (killer is Player && entity is Player && Random.nextDouble() < chance) {
             drops.add(
@@ -94,7 +91,7 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
         if (entity is Creeper) {
             val disc = drops.find { it.type.isRecord }
             // 50% chance to drop custom disc
-            if (disc != null && Random.nextDouble() < 0.2) {
+            if (disc != null && Random.nextDouble() < 0.36) {
                 drops.apply {
                     remove(disc)
                     add(customItems.filter { it.value.type.isRecord }

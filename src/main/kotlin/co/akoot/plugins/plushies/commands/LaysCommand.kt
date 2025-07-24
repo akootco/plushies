@@ -4,11 +4,10 @@ import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.invoke
-import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.laysConf
 import org.bukkit.command.CommandSender
 
-class LaysCommand(plugin: FoxPlugin) : FoxCommand(plugin, "lays") {
+class LaysCommand(plugin: FoxPlugin) : FoxCommand(plugin, "lays", aliases = arrayOf("walkers")) {
 
     private val chips = laysConf.getStringList("chips").toMutableList()
 

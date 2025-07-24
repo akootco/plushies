@@ -28,6 +28,7 @@ class BlockEvents : Listener {
 
     @EventHandler
     fun BlockBreakEvent.onDestroy() {
+        if (isCancelled) return // this needs to be checked so core protect doesn't break
         if (block.isCustomBlock) {
             val drops = block.state.drops
             if (drops.isNotEmpty()) {
