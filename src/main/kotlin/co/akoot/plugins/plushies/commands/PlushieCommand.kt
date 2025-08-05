@@ -10,7 +10,7 @@ import co.akoot.plugins.plushies.util.Util.plushMsg
 import org.bukkit.*
 import org.bukkit.command.CommandSender
 
-class PlushieCommand(plugin: FoxPlugin) : FoxCommand(plugin, "plushie", aliases = arrayOf("plushies", "plush")) {
+class PlushieCommand(plugin: FoxPlugin) : FoxCommand(plugin, "plushie", aliases = arrayOf("plush")) {
 
     override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
 

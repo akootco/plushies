@@ -90,8 +90,7 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
         // music disc drops
         if (entity is Creeper) {
             val disc = drops.find { it.type.isRecord }
-            // 50% chance to drop custom disc
-            if (disc != null && Random.nextDouble() < 0.36) {
+            if (disc != null && Random.nextDouble() < 0.51) {
                 drops.apply {
                     remove(disc)
                     add(customItems.filter { it.value.type.isRecord }

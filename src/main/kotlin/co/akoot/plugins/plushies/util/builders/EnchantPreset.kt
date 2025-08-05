@@ -32,7 +32,7 @@ class EnchantPreset private constructor(private val itemStack: ItemStack) {
                 Enchantment.SWEEPING_EDGE to 3,
                 Enchantment.KNOCKBACK to 2,
                 Enchantment.FIRE_ASPECT to 2,
-            ).apply { putAll(mendUnbrk) }).build()
+            )).build()
         return this
     }
 
@@ -50,7 +50,6 @@ class EnchantPreset private constructor(private val itemStack: ItemStack) {
             Enchantment.UNBREAKING to 3,
             Enchantment.EFFICIENCY to 5,
         ).apply {
-            putAll(mendUnbrk)
             if (isFortune) {
                 put(Enchantment.FORTUNE, 3)
             } else {
@@ -70,7 +69,6 @@ class EnchantPreset private constructor(private val itemStack: ItemStack) {
         ItemBuilder.builder(itemStack).enchants(mutableMapOf(
             Enchantment.EFFICIENCY to 5,
         ).apply {
-            putAll(mendUnbrk)
             if (isFortune) {
                 put(Enchantment.FORTUNE, 3)
             } else {
@@ -92,7 +90,7 @@ class EnchantPreset private constructor(private val itemStack: ItemStack) {
                     Enchantment.PROTECTION to 4,
                     Enchantment.RESPIRATION to 3,
                     Enchantment.AQUA_AFFINITY to 3
-                ).apply { putAll(mendUnbrk) }
+                )
             )
         }.build()
         return this
@@ -107,7 +105,6 @@ class EnchantPreset private constructor(private val itemStack: ItemStack) {
         ItemBuilder.builder(itemStack).apply {
             enchants(
                 mutableMapOf(
-                    Enchantment.MENDING to 1,
                     Enchantment.UNBREAKING to 3,
                     Enchantment.PROTECTION to 4,
                 )
@@ -127,7 +124,7 @@ class EnchantPreset private constructor(private val itemStack: ItemStack) {
                 mutableMapOf(
                     Enchantment.SWIFT_SNEAK to 3,
                     Enchantment.PROTECTION to 4,
-                ).apply { putAll(mendUnbrk) }
+                )
             ).build()
         return this
     }
@@ -145,7 +142,6 @@ class EnchantPreset private constructor(private val itemStack: ItemStack) {
             Enchantment.PROTECTION to 4,
             Enchantment.SOUL_SPEED to 4,
         ).apply {
-            putAll(mendUnbrk)
             if (frostWalker) {
                 put(Enchantment.FROST_WALKER, 2)
             } else {
@@ -155,14 +151,15 @@ class EnchantPreset private constructor(private val itemStack: ItemStack) {
 
         return this
     }
-
-
     /**
      * Build
      *
      * @return
      */
     fun build(): ItemStack {
+        ItemBuilder.builder(itemStack)
+            .enchants((itemStack.enchantments + mendUnbrk).toMutableMap())
+            .build()
         return itemStack
     }
 
