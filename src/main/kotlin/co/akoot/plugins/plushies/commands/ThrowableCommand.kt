@@ -22,7 +22,7 @@ class ThrowableCommand(plugin: FoxPlugin) : FoxCommand(plugin, "throwable") {
         val item = p.inventory.itemInMainHand
         val isThrowable = item.persistentDataContainer.has(axeKey)
 
-        if (MaterialTags.THROWABLE_PROJECTILES.isTagged(item) || item.isEmpty) return false
+        if (item.isEmpty ||MaterialTags.THROWABLE_PROJECTILES.isTagged(item)) return false
 
         ItemBuilder.builder(item).apply {
             if (isThrowable) removepdc(axeKey).resetData(DataComponentTypes.FOOD).resetData(DataComponentTypes.CONSUMABLE)
