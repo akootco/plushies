@@ -40,7 +40,7 @@ object Recipes {
         return null
     }
 
-    private fun getMaterial(input: String, amount: Int = 1): ItemStack? {
+    fun getMaterial(input: String, amount: Int = 1): ItemStack? {
         // if no prefix, check for flugin item or vanilla material.
         customItems.keys.find { it.equals(input, ignoreCase = true) }?.let { key ->
             customItems[key]?.let {
@@ -200,5 +200,4 @@ object Recipes {
             }
         }
     }
-
 }

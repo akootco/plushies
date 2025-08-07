@@ -32,6 +32,7 @@ class Plushies : FoxPlugin("plushies") {
         lateinit var customItemConfig: FoxConfig
         lateinit var customMusicDiscConfig: FoxConfig
         lateinit var customBlockConfig: FoxConfig
+        lateinit var customDialogConfig: FoxConfig
 
         fun key(key: String): NamespacedKey {
             return NamespacedKey("plushies", key)
@@ -116,5 +117,6 @@ class Plushies : FoxPlugin("plushies") {
         customItemConfig = registerConfig("customItems", "data/items.conf")
         customBlockConfig = registerConfig("customBlocks", "data/blocks.conf")
         customMusicDiscConfig = registerConfig("customMusicDiscs", "data/music_discs.conf")
+        customDialogConfig = registerConfig("customDialogs", "data/dialogs.conf")
     }
 }
