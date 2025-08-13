@@ -22,7 +22,9 @@ class ChestGUI private constructor(private var size: Int, private val holder: In
     private var title: Component = Text("Menu").component // Default title
     private val items: MutableMap<Int, ItemStack> = mutableMapOf()
 
-    init { if (size !in 9..54 && size % 9 != 0) this.size = 27 }
+    init {
+        size = (((size + 8) / 9) * 9).coerceIn(9, 54) // this never worked lmfao
+    }
 
     /**
      * Title
