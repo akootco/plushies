@@ -19,21 +19,35 @@ class CoinMenu(private val p: Player, private val coin: Coin) : InventoryHolder 
         val amount = (p.wallet?.balance?.get(coin)?: BigDecimal.ZERO).toInt()
         if (amount <= 0) return backingItems
 
-        val blocks = amount / 9
-        val remainder = amount % 9
+        val itemMat = coin.backing ?: return backingItems
+        val blockMat = coin.backingBlock
 
         // need to separate stacks, so it's not all put into one slot
-        if (blocks > 0) {
-            var remainingBlocks = blocks
-            while (remainingBlocks > 0) { // win?
-                val stackSize = minOf(remainingBlocks, coin.backingBlock!!.maxStackSize)
-                backingItems.add(ItemStack(coin.backingBlock!!, stackSize))
-                remainingBlocks -= stackSize
-            }
-        }
+        if (blockMat != null) {
+            // if theres a backing block, use it here
+            val blocks = amount / 9
+            val remainder = amount % 9
 
-        if (remainder > 0) {
-            backingItems.add(ItemStack(coin.backing!!, remainder))
+            if (blocks > 0) {
+                var remainingBlocks = blocks
+                while (remainingBlocks > 0) {
+                    val stackSize = minOf(remainingBlocks, blockMat.maxStackSize)
+                    backingItems.add(ItemStack(blockMat, stackSize))
+                    remainingBlocks -= stackSize
+                }
+            }
+
+            if (remainder > 0) {
+                backingItems.add(ItemStack(itemMat, remainder))
+            }
+        } else {
+            // no backing block use items. fixes $AD menu issue
+            var remainingItems = amount
+            while (remainingItems > 0) {
+                val stackSize = minOf(remainingItems, itemMat.maxStackSize)
+                backingItems.add(ItemStack(itemMat, stackSize))
+                remainingItems -= stackSize
+            }
         }
 
         return backingItems
