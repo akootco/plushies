@@ -18,7 +18,6 @@ import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.golfSwing
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.Items.isPlushie
-import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.world.MoonPhase
 import org.bukkit.Material
 import org.bukkit.entity.*
@@ -29,7 +28,6 @@ import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.entity.EntityTargetEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
-import org.bukkit.inventory.ItemStack
 import kotlin.random.Random
 
 class EntityEvents(private val plugin: FoxPlugin) : Listener {
@@ -72,19 +70,14 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
         val damageEvent = entity.lastDamageCause as? EntityDamageByEntityEvent ?: return
         val killer = damageEvent.damager
 
-        if (killer is Creeper && killer.isPowered) {
-            return dropHead(killer, entity, this)
+        val chance = when {
+            entity is Player -> if (entity.world.moonPhase == MoonPhase.FULL_MOON) 1.0 else 0.14
+            entity.type in listOf(EntityType.WANDERING_TRADER, EntityType.WARDEN, EntityType.HAPPY_GHAST) -> 1.0
+            else -> 0.08
         }
 
-        val chance = if (entity.world.moonPhase == MoonPhase.FULL_MOON) 1.0 else 0.14
-
-        if (killer is Player && entity is Player && Random.nextDouble() < chance) {
-            drops.add(
-                ItemBuilder.builder(ItemStack(Material.PLAYER_HEAD))
-                    .playerHead(entity as Player)
-                    .build()
-            )
-            return
+        if ((killer is Creeper && killer.isPowered) || (killer is Player && Random.nextDouble() < chance)) {
+            return dropHead(killer, entity, this)
         }
 
         // music disc drops
