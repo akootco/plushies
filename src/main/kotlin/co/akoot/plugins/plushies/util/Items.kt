@@ -25,7 +25,7 @@ object Items {
         get() = isPlushie || itemMeta?.hasPDC(placeableKey) == true
 
     val ItemStack.isPlushie: Boolean
-        get() = type == Material.TOTEM_OF_UNDYING && itemMeta?.hasCustomModelData() == true
+        get() = type == Material.TOTEM_OF_UNDYING && itemMeta?.hasCustomModelDataComponent() == true
 
 
     var plushies = plushieConf.getKeys().mapNotNull { name -> plushieConf.getInt(name)?.let { name to it } }

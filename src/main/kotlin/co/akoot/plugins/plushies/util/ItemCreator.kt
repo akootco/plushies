@@ -9,7 +9,6 @@ import co.akoot.plugins.plushies.util.Items.placeableKey
 import co.akoot.plugins.plushies.util.builders.EquippableBuilder
 import co.akoot.plugins.plushies.util.builders.FoodBuilder
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
-import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -74,13 +73,7 @@ object ItemCreator {
             config.getString("$path.textures")?.let { id -> headTexture(id) }
 
             config.getString("$path.itemModel")?.let { id ->
-                val key = if (id.contains(":")) {
-                    val (namespace, key) = id.split(":")
-                    NamespacedKey(namespace, key)
-                } else {
-                    NamespacedKey.minecraft(id)
-                }
-                itemModel(key)
+                itemModel(NamespacedKey.fromString(id, null)!!)
             }
 
             // set custom model data
@@ -151,23 +144,15 @@ object ItemCreator {
         if (!config.getKeys(path).contains("equippable")) return itemStack
 
         val ePath = "$path.equippable"
-        val slot = config.getEnum(EquipmentSlot::class.java, "$ePath.slot") ?: EquipmentSlot.HAND
+        val slot = config.getEnum(EquipmentSlot::class.java, "$ePath.slot") ?: itemStack.type.equipmentSlot
 
-        var item = EquippableBuilder.builder(itemStack, slot).apply {
-            config.getKeys(ePath).apply {
-                if (contains("unbreakable")) unbreakable()
-                if (contains("dispensable")) dispensable()
-                if (contains("glider")) glider()
-                if (contains("swappable")) swappable()
-            }
+        val item = EquippableBuilder.builder(itemStack, slot).apply {
+            config.getBoolean("$ePath.glider")?.let { glider() }
+            config.getBoolean("$ePath.unbreakable")?.let { unbreakable() }
+            config.getString("$ePath.overlay")?.let { cameraOverlay(NamespacedKey.fromString(it, null)!!) }
+            config.getString("$ePath.model")?.let { model(NamespacedKey.fromString(it, null)!!) }
             config.getString("$ePath.sound")?.let { equipSound(it.lowercase()) }
         }.build()
-
-        if (slot == EquipmentSlot.HAND) {
-            item = ItemBuilder.builder(item).apply {
-                unsetData(DataComponentTypes.ATTRIBUTE_MODIFIERS)
-            }.build()
-        }
 
         return item
     }

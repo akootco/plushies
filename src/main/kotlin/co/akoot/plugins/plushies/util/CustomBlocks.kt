@@ -16,6 +16,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.inventory.ItemStack
+import org.bukkit.util.BoundingBox
 import org.bukkit.util.Transformation
 import org.joml.AxisAngle4f
 import org.joml.Vector3f
@@ -58,7 +59,7 @@ fun removeCustomBlock(location: Location) {
         location.chunk.removePDC(getBlockPDC(location, it))
     }
 
-    for (entity in location.world.getNearbyEntities(location, 0.6, 0.6, 0.6)) {
+    for (entity in location.world.getNearbyEntities(BoundingBox.of(location.block))) {
         if (entity is ItemDisplay) entity.remove()
     }
 }
