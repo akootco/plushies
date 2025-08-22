@@ -6,11 +6,9 @@ import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.isBedrock
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.util.ResourcePack.getJavaPack
-import co.akoot.plugins.plushies.util.ResourcePack.javaPackLink
 import co.akoot.plugins.plushies.util.ResourcePack.sendPackMsg
 import co.akoot.plugins.plushies.util.ResourcePack.setPack
 import org.bukkit.command.CommandSender
-import java.awt.Color
 
 class ResourcePackCommand(plugin: FoxPlugin) : FoxCommand(plugin, "resourcepack", aliases = arrayOf("rp", "pack")) {
 
@@ -24,8 +22,10 @@ class ResourcePackCommand(plugin: FoxPlugin) : FoxCommand(plugin, "resourcepack"
         if (arg == "reload") {
             if (!hasPermission(sender, "reload")) return false
             return if (getJavaPack()) {
-                Text("resource pack has been reloaded\nclick here to update", Color.GREEN).hover(javaPackLink)
-                    .execute("/rp enable").broadcast()
+                for (p in plugin.server.onlinePlayers.filter { !it.isBedrock }) {
+                    Text(p) { Kolor.WARNING("Resource pack has been reloaded") }
+                    p.sendPackMsg
+                }
                 true
             } else {
                 Text(sender) { Kolor.ERROR("Could not update link!") }

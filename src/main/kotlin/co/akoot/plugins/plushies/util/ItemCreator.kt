@@ -46,7 +46,7 @@ object ItemCreator {
                 val textures = config.getString("$path.textures")?: return@apply
                 rarity(ItemRarity.COMMON)
                 pdc(blockKey, "$path|$textures")
-                itemModel(NamespacedKey.minecraft("player_head"))
+                itemModel("player_head")
             }
 
             pdc(namespacedKey, path)
@@ -73,7 +73,7 @@ object ItemCreator {
             config.getString("$path.textures")?.let { id -> headTexture(id) }
 
             config.getString("$path.itemModel")?.let { id ->
-                itemModel(NamespacedKey.fromString(id, null)!!)
+                itemModel(id)
             }
 
             // set custom model data

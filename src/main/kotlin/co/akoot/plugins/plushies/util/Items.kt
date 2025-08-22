@@ -9,6 +9,7 @@ import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.plushieConf
 import co.akoot.plugins.plushies.util.ItemCreator.createItem
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.registry.keys.tags.DamageTypeTagKeys
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -40,6 +41,13 @@ object Items {
         for (key in customBlockConfig.getKeys()) {
             customItems[key.lowercase()] = createItem(customBlockConfig, key, itemKey) ?: continue
         }
+
+        customItems["wrench"] = ItemBuilder.builder(Material.POISONOUS_POTATO) // lol
+            .itemName(Text("Wrench").component)
+            .unsetData(DataComponentTypes.CONSUMABLE)
+            .pdc(itemKey, "wrench")
+            .itemModel("trial_key")
+            .build()
     }
 
     fun createPlushie(name: String, customModelData: Int): ItemStack {

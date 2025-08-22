@@ -26,6 +26,12 @@ object Recipes {
         strippedWoodRecipe()
         configRecipes()
         smeltingRecipes()
+
+        CraftRecipe.builder("wrench", customItems["wrench"]?: return)
+            .ingredient(MaterialChoice(Material.LIGHTNING_ROD))
+            .ingredient(MaterialChoice(Material.COPPER_INGOT))
+            .shapeless()
+
     }
 
     // get recipe input items

@@ -11,6 +11,7 @@ import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.listeners.handlers.placeItem
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowable
+import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.Items.isPlaceable
 import co.akoot.plugins.plushies.util.Recipes.unlockRecipes
 import co.akoot.plugins.plushies.util.ResourcePack.isPackEnabled
@@ -18,8 +19,11 @@ import co.akoot.plugins.plushies.util.ResourcePack.packDeniers
 import co.akoot.plugins.plushies.util.ResourcePack.sendPackMsg
 import co.akoot.plugins.plushies.util.ResourcePack.setPack
 import co.akoot.plugins.plushies.util.Util.setAttributes
+import com.destroystokyo.paper.MaterialTags
 import io.papermc.paper.event.player.AsyncChatEvent
 import org.bukkit.Material
+import org.bukkit.block.BlockFace
+import org.bukkit.block.data.Directional
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -27,6 +31,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerResourcePackStatusEvent
+import org.bukkit.inventory.EquipmentSlot
 import java.util.regex.Pattern
 
 class PlayerEvents(private val plugin: FoxPlugin) : Listener {
@@ -75,24 +80,29 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
     @EventHandler
     fun playerInteract(event: PlayerInteractEvent) {
+        if (event.hand != EquipmentSlot.HAND) return // dumb
         val player = event.player
         val item = player.inventory.itemInMainHand
+        val block = event.clickedBlock ?: return
+        val face = event.blockFace
 
         when (event.action) {
-//            Action.RIGHT_CLICK_AIR -> {
-//                if (item.persistentDataContainer.has(axeKey)) {
-//                    spawnThrowable(player, plugin)
-//                }
-//            }
-
             Action.RIGHT_CLICK_BLOCK -> {
-                val block = event.clickedBlock ?: return
-                val face = event.blockFace
-                if (item.isPlaceable &&
-                    block.isSolid && player.isSneaking &&
-                    block.getRelative(face).type == Material.AIR
-                ) {
-                    placeItem(face, player)
+                // placeable items
+                if (item.isPlaceable && block.isSolid && player.isSneaking && block.getRelative(face).type == Material.AIR) {
+                        placeItem(face, player)
+                }
+
+                // terracotta wrench
+                if (item.isSimilar(customItems["wrench"]) && MaterialTags.GLAZED_TERRACOTTA.isTagged(block)) {
+                    val data = block.blockData as? Directional ?: return
+                    val rotation = listOf(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST) // idk
+                    val current = rotation.indexOf(data.facing)
+
+                    data.facing = if (current + 1 >= rotation.size)
+                        rotation.first() else rotation[current + 1]
+
+                    block.blockData = data
                 }
             }
             else -> return

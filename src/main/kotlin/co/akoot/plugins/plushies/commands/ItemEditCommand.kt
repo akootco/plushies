@@ -178,11 +178,7 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
             "model" -> {
                 val model = args.getOrNull(1) ?: return sendError(p, "Model argument is missing.")
                 ItemBuilder.builder(item)
-                    .itemModel( if (model.contains(":")) {
-                        val modelKey = model.split(":")
-                        NamespacedKey(modelKey[0], modelKey[1])
-                    }
-                    else NamespacedKey.minecraft(model))
+                    .itemModel(model)
                     .build()
                 return true
             }

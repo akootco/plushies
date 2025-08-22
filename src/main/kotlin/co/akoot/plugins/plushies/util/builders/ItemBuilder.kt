@@ -42,6 +42,7 @@ import java.util.*
  *
  */
 class ItemBuilder private constructor(private var itemStack: ItemStack) {
+    constructor(material: Material) : this(ItemStack(material))
     /**
      * Sets custom model data for an item.
      *
@@ -189,8 +190,8 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param id The model ID.
      * @return the updated `Item`.
      */
-    fun itemModel(model: NamespacedKey): ItemBuilder {
-        itemStack.setData(DataComponentTypes.ITEM_MODEL, model)
+    fun itemModel(model: String): ItemBuilder {
+        NamespacedKey.fromString(model)?.let { itemStack.setData(DataComponentTypes.ITEM_MODEL, it) }
         return this
     }
 
@@ -637,8 +638,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
     }
 
     companion object {
-        fun builder(itemStack: ItemStack): ItemBuilder {
-            return ItemBuilder(itemStack)
-        }
+        fun builder(itemStack: ItemStack) = ItemBuilder(itemStack)
+        fun builder(material: Material) = ItemBuilder(material)
     }
 }
