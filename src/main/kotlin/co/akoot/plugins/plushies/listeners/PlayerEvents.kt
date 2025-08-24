@@ -19,7 +19,9 @@ import co.akoot.plugins.plushies.util.ResourcePack.packDeniers
 import co.akoot.plugins.plushies.util.ResourcePack.sendPackMsg
 import co.akoot.plugins.plushies.util.ResourcePack.setPack
 import co.akoot.plugins.plushies.util.Util.setAttributes
+import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import com.destroystokyo.paper.MaterialTags
+import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.event.player.AsyncChatEvent
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
@@ -88,21 +90,25 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
         when (event.action) {
             Action.RIGHT_CLICK_BLOCK -> {
-                // placeable items
-                if (item.isPlaceable && block.isSolid && player.isSneaking && block.getRelative(face).type == Material.AIR) {
+                when {
+                    (item.isPlaceable && block.isSolid && player.isSneaking && block.getRelative(face).type == Material.AIR) ->
                         placeItem(face, player)
-                }
 
-                // terracotta wrench
-                if (item.isSimilar(customItems["wrench"]) && MaterialTags.GLAZED_TERRACOTTA.isTagged(block)) {
-                    val data = block.blockData as? Directional ?: return
-                    val rotation = listOf(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST) // idk
-                    val current = rotation.indexOf(data.facing)
+                    (item.isSimilar(customItems["wrench"]) && MaterialTags.GLAZED_TERRACOTTA.isTagged(block)) -> {
+                        val data = block.blockData as? Directional ?: return
+                        val rotation = listOf(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST) // idk
+                        val current = rotation.indexOf(data.facing)
 
-                    data.facing = if (current + 1 >= rotation.size)
-                        rotation.first() else rotation[current + 1]
+                        data.facing = if (current + 1 >= rotation.size)
+                            rotation.first() else rotation[current + 1]
 
-                    block.blockData = data
+                        block.blockData = data
+                    }
+
+                    (block.type == Material.WATER_CAULDRON && item.type == Material.ELYTRA && item.hasData(DataComponentTypes.DYED_COLOR)) -> {
+                        event.isCancelled = true
+                        ItemBuilder.builder(item).unsetData(DataComponentTypes.DYED_COLOR).build()
+                    }
                 }
             }
             else -> return

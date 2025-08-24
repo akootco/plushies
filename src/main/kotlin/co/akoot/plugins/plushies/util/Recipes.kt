@@ -3,15 +3,15 @@ package co.akoot.plugins.plushies.util
 import co.akoot.plugins.plushies.Plushies.Companion.cookRecipeConf
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.recipeConf
+import co.akoot.plugins.plushies.Plushies.Companion.smithRecipeConf
 import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.builders.CookRecipe
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
+import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import co.akoot.plugins.plushies.util.builders.SmithRecipe
 import com.destroystokyo.paper.MaterialTags
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
-import org.bukkit.Bukkit
-import org.bukkit.Keyed
-import org.bukkit.Material
-import org.bukkit.Tag
+import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice
@@ -26,16 +26,29 @@ object Recipes {
         strippedWoodRecipe()
         configRecipes()
         smeltingRecipes()
+        smithingRecipes()
+        wingRecipes()
 
         CraftRecipe.builder("wrench", customItems["wrench"]?: return)
             .ingredient(MaterialChoice(Material.LIGHTNING_ROD))
             .ingredient(MaterialChoice(Material.COPPER_INGOT))
             .shapeless()
-
     }
 
     // get recipe input items
     private fun getInput(input: String): RecipeChoice? {
+        if (input.startsWith("tag.")) {
+            val tag = when (input.removePrefix("tag.").uppercase()) {
+                "WOOL" -> Tag.WOOL
+                "LEAVES" -> Tag.LEAVES
+                "PLANKS" -> Tag.PLANKS
+                "LOGS" -> Tag.LOGS
+                else -> {
+                    return null
+                }
+            }
+            return MaterialChoice(tag)
+        }
         // if no prefix, check for custom item or vanilla material.
         customItems.keys.find { it.equals(input, ignoreCase = true) }?.let { key ->
             customItems[key]?.let {
@@ -86,6 +99,17 @@ object Recipes {
                 Bukkit.addRecipe(StonecuttingRecipe(key( output.name.lowercase()),
                         ItemStack(output), MaterialChoice(inputMaterial)))
             }
+        }
+    }
+
+    private fun wingRecipes() {
+        MaterialTags.DYES.values.forEach { dye ->
+            val baseName = dye.name.removeSuffix("_DYE")
+            CraftRecipe.builder("${baseName.lowercase()}.elytra",
+                ItemBuilder(Material.ELYTRA).dye(DyeColor.valueOf(dye.name.removeSuffix("_DYE")).color).build())
+                .ingredient(MaterialChoice(Material.ELYTRA))
+                .ingredient(MaterialChoice(dye))
+                .shapeless()
         }
     }
 
@@ -166,14 +190,36 @@ object Recipes {
         }
     }
 
+    private fun smithingRecipes() {
+        for (key in smithRecipeConf.getKeys()) {
+            val result = smithRecipeConf.getString("$key.output") ?: return
+            val base = smithRecipeConf.getString("$key.base") ?: return
+            val template = smithRecipeConf.getString("$key.template") ?: return
+            val addition = smithRecipeConf.getString("$key.addition") ?: return
+
+            val parts = result.split("/")
+            val amount = parts.getOrNull(1)?.toIntOrNull() ?: 1
+
+            SmithRecipe.builder(
+                key,
+                getInput(template) ?: return,
+                getInput(base) ?: return,
+                getInput(addition) ?: return,
+                getMaterial(parts[0], amount) ?: return
+            ).add()
+        }
+    }
+
     private fun configRecipes() {
         for (key in recipeConf.getKeys()) {
             val shape = recipeConf.getStringList("$key.shape")
             val result = recipeConf.getString("$key.result") ?: continue
+            val parts = result.split("/")
+            val amount = parts.getOrNull(1)?.toIntOrNull() ?: 1
 
             if (shape.isEmpty()) {
                 // shapeless recipe
-                CraftRecipe.builder(key, ItemStack(getMaterial(result) ?: continue))// skip if output is invalid
+                CraftRecipe.builder(key, ItemStack(getMaterial(parts[0], amount) ?: continue))// skip if output is invalid
                     .apply {
                         for (ingredient in recipeConf.getStringList("$key.ingredients")) {
                             val parts = ingredient.split("/")
@@ -192,7 +238,7 @@ object Recipes {
                     continue // skip if shape is invalid
                 }
 
-                CraftRecipe.builder(key, ItemStack(getMaterial(result) ?: continue)) // skip if output is invalid
+                CraftRecipe.builder(key, ItemStack(getMaterial(parts[0], amount) ?: continue)) // skip if output is invalid
                     .shape(shape[0], shape[1], shape[2])
                     .apply {
                         for (ingredient in recipeConf.getKeys("$key.ingredients")) {

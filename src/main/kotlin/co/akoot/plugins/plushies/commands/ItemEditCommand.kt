@@ -8,10 +8,7 @@ import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
-import org.bukkit.JukeboxSong
-import org.bukkit.Material
-import org.bukkit.NamespacedKey
-import org.bukkit.Registry
+import org.bukkit.*
 import org.bukkit.command.CommandSender
 
 class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
@@ -149,7 +146,7 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
                     else -> {
                         if (arg1.matches("^[A-Fa-f0-9]{6}$".toRegex())) {
                             ItemBuilder.builder(item)
-                                .dye(arg1)
+                                .dye(Color.fromRGB(Integer.parseInt(arg1, 16)))
                                 .build()
                         } else {
                             sendError(p, "Invalid format. Use RRGGBB.")

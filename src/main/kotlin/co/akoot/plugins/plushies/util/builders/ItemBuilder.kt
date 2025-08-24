@@ -156,9 +156,9 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param shownInTooltip
      * @return
      */
-    fun dye(color: String): ItemBuilder {
+    fun dye(color: Color): ItemBuilder {
         val dye = DyedItemColor.dyedItemColor()
-        dye.color(Color.fromRGB(color.toInt(16)))
+        dye.color(color)
         itemStack.setData(DataComponentTypes.DYED_COLOR, dye.build())
         return this
     }
@@ -406,6 +406,25 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
         )
 
         itemStack.setData(DataComponentTypes.TOOL, tool.build())
+        return this
+    }
+
+    fun setWeapon(damage: Double = 2.0, speed: Double = 1.6): ItemBuilder {
+        val attributeModifiers: ItemAttributeModifiers = ItemAttributeModifiers.itemAttributes()
+            .addModifier(Attribute.ATTACK_DAMAGE,AttributeModifier(
+                key("attack.dmg"),
+                damage,
+                AttributeModifier.Operation.ADD_NUMBER
+            ))
+            .addModifier(Attribute.ATTACK_SPEED,AttributeModifier(
+                key("attack.spd"),
+                speed,
+                AttributeModifier.Operation.ADD_NUMBER
+            ))
+            .build()
+
+        itemStack.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, attributeModifiers)
+
         return this
     }
 

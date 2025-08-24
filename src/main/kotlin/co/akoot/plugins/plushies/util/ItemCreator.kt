@@ -64,8 +64,18 @@ object ItemCreator {
             // set amount
             config.getInt("$path.amount").takeIf { it != 1 }?.let { itemStack.amount = it }
 
+            config.getString("$path.weapon")?.let { value ->
+                val parts = value.split("/")
+                val damage = parts.getOrNull(0)?.toDoubleOrNull() ?: 2.0
+                val speed = parts.getOrNull(1)?.toDoubleOrNull() ?: 1.6
+
+                setWeapon(damage, speed)
+            }
+
             // set glint
             if (config.getBoolean("$path.glint") == true) glint()
+
+            if (config.getBoolean("$path.throwable") == true) throwable()
 
             config.getString("$path.potionColor")?.let { potion(it) }
 
