@@ -14,8 +14,9 @@ class GeyserRegistrar : EventRegistrar {
     fun registerItems(event: GeyserDefineCustomItemsEvent) {
         // register plushies
         for (key in Items.plushies.sortedBy { it.second }) {
-            register(event, key.first, key.second, "totem_of_undying")
-            register(event, "${key.first}.st", key.second + 1, "totem_of_undying")
+            val asInt = key.second.toIntOrNull() ?: continue
+            register(event, key.first, asInt, "totem_of_undying")
+            register(event, "${key.first}.st", asInt + 1, "totem_of_undying")
         }
 
         // book covers

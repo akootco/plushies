@@ -29,21 +29,25 @@ class GUI : Listener {
 
         when (val holder = event.inventory.holder) {
             is PlushieMenu -> {
+                if (event.clickedInventory != event.view.topInventory) return
                 plushMenu(menuItem, p, holder, event.click)
                 event.isCancelled = true
             }
 
             is BookMenu -> {
+                if (event.clickedInventory != event.view.topInventory) return
                 bookMenu(menuItem, p, holder)
                 event.isCancelled = true
             }
 
             is BookArchiveMenu -> {
+                if (event.clickedInventory != event.view.topInventory) return
                 bookArchiveMenu(menuItem, p, holder)
                 event.isCancelled = true
             }
 
             is CustomItemMenu -> {
+                if (event.clickedInventory != event.view.topInventory) return
                 customItemMenu(menuItem, p, holder)
                 event.isCancelled = true
             }

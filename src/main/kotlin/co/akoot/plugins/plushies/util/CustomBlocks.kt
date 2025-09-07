@@ -9,19 +9,22 @@ import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.Util.getBlockPDC
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import me.arcaniax.hdb.api.HeadDatabaseAPI
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.entity.Display.Brightness
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.ItemDisplay
-import org.bukkit.inventory.ItemStack
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Transformation
 import org.joml.AxisAngle4f
 import org.joml.Vector3f
 
 val blockKey = key("block_data")
+val texturedkKey = key("block_textured")
+
 val plugins = listOf("plushies", "edulis")
 
 val Block.isCustomBlock: Boolean
@@ -34,21 +37,32 @@ val Location.id: String?
         chunk.getPDC<String>(getBlockPDC(this, ns))
     }
 
+fun createDisplay(location: Location, id: String, textured: Boolean = false) {
+    val item = ItemBuilder.builder(if (textured) Material.OAK_PRESSURE_PLATE else Material.PLAYER_HEAD)
+        .apply {
+            if (textured) { customModelData(id); itemModel("air") } // e
+            else {
+                println(id)
+                val headItem = HeadDatabaseAPI().getItemHead(id)
+                if (headItem != null) copyOf(headItem)
+                else headTexture(id)
+            }
+        }.build()
 
-fun createDisplay(location: Location, id: String) {
-    val overlay = ItemBuilder.builder(ItemStack(Material.PLAYER_HEAD))
-        .headTexture(id)
-        .build()
+
 
     val itemDisplay =
         location.world.spawnEntity(location.toCenterLocation(), EntityType.ITEM_DISPLAY) as ItemDisplay
+    itemDisplay.itemDisplayTransform = ItemDisplay.ItemDisplayTransform.FIXED
+
     itemDisplay.apply {
-        setItemStack(overlay)
+        setItemStack(item)
+        brightness = Brightness(0, 15)
         transformation = Transformation(
-            Vector3f(0f, .501f, 0f),
-            AxisAngle4f(0f, 1f, 0f, 0f),
-            Vector3f(2.001f, 2.004f, 2.001f),
-            AxisAngle4f(0f, 1f, 0f, 0f)
+            Vector3f(),
+            AxisAngle4f(),
+            Vector3f(2f, 2f, 2f),
+            AxisAngle4f()
         )
     }
 }

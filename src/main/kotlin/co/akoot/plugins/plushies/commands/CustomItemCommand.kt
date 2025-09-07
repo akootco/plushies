@@ -3,6 +3,7 @@ package co.akoot.plugins.plushies.commands
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.api.Kolor
+import co.akoot.plugins.bluefox.extensions.isSurventure
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.gui.CustomItemMenu
 import co.akoot.plugins.plushies.util.DataPack.createDiscItems
@@ -26,8 +27,6 @@ class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
     }
 
     override fun onCommand(sender: CommandSender, alias: String, args: Array<out String>): Boolean {
-        val p = playerCheck(sender) ?: return false
-
         when (args.getOrNull(0)) {
             "reload" -> {
                 customItems.entries.removeIf { it.value.isCustomItem }
@@ -37,6 +36,7 @@ class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
             }
 
             "party_hat" -> {
+                val p = playerCheck(sender)?: return false
                 val item = customItems["party_hat"] ?: return sendError(sender, "Invalid item.")
                 val hat =
                     if (args.getOrNull(1) != null)
@@ -45,11 +45,13 @@ class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
                                 Kolor.MONTH).component)).build()
                     else item
 
-                p.inventory.addItem(hat)
+                if (!p.isSurventure) p.give(hat)
+
                 return true
             }
 
             else -> {
+                val p = playerCheck(sender)?: return false
                 if (args.isEmpty()) {
                     p.openInventory(CustomItemMenu().inventory)
                     return true
@@ -59,7 +61,8 @@ class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
                     ?.let { customItems[it] } ?: run { return sendError(sender, "Invalid item.") }
                 val count = args.getOrNull(2)?.toIntOrNull() ?: 1
 
-                p.inventory.addItem(outputItem.clone().apply { amount = count })
+                if (!p.isSurventure) p.give(outputItem.clone().apply { amount = count })
+
                 return true
             }
         }

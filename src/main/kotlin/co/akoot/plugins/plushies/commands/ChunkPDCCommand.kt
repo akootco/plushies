@@ -31,7 +31,9 @@ class ChunkPDCCommand(plugin: FoxPlugin) : FoxCommand(plugin, "chunkpdc") {
 
         when (args.getOrNull(0)) {
             "list" -> {
-                Text(p) { Kolor.WARNING(p.location.chunk.persistentDataContainer.keys.toString()) }
+                for (id in p.location.chunk.persistentDataContainer.keys) {
+                    Text(p) { Kolor.WARNING("${id.key}.${id.value()}") }
+                }
                 return true
             }
 

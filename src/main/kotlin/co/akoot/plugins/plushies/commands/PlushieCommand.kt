@@ -3,11 +3,11 @@ package co.akoot.plugins.plushies.commands
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.plushies.Plushies.Companion.plushieConf
+import co.akoot.plugins.plushies.gui.PlushieMenu
 import co.akoot.plugins.plushies.util.Items.createPlushie
 import co.akoot.plugins.plushies.util.Items.plushies
-import co.akoot.plugins.plushies.gui.PlushieMenu
 import co.akoot.plugins.plushies.util.Util.plushMsg
-import org.bukkit.*
+import org.bukkit.Material
 import org.bukkit.command.CommandSender
 
 class PlushieCommand(plugin: FoxPlugin) : FoxCommand(plugin, "plushie", aliases = arrayOf("plush")) {
@@ -36,7 +36,7 @@ class PlushieCommand(plugin: FoxPlugin) : FoxCommand(plugin, "plushie", aliases 
 
         // reload config
         if (arg in setOf("reload", "load") && hasPermission(sender, "reload")) {
-            plushies = plushieConf.getKeys().mapNotNull { name -> plushieConf.getInt(name)?.let { name to it } }
+            plushies = plushieConf.getKeys().map { name -> name to (plushieConf.getString(name).takeUnless { it == "0" } ?: name) }
             return sendMessage(sender, "Plushies reloaded!") // good prank!
         }
 
@@ -47,20 +47,17 @@ class PlushieCommand(plugin: FoxPlugin) : FoxCommand(plugin, "plushie", aliases 
         return if (plushie != null) {
             val plushName = plushie.first.replace("_.*".toRegex(),"")
 
-            if (p.gameMode == GameMode.CREATIVE) {
-                p.inventory.addItem(createPlushie(plushName, plushie.second))
-                p.sendMessage(plushMsg(plushName).component)
-                return true
-            }
-
-
-            else if (item.type != Material.TOTEM_OF_UNDYING) {
+            if (item.type != Material.TOTEM_OF_UNDYING) {
                 // what did you expect?
                 return sendError(sender, "You must be holding a totem!")
             }
 
             // swap the totem with the super cool new plushie
-            p.inventory.setItemInMainHand(createPlushie(plushName, if (args.getOrNull(1) == "statue") plushie.second + 1 else plushie.second))
+            val value = if (args.getOrNull(1) == "statue") {
+                plushie.second.toIntOrNull()?.plus(1) ?: (plushie.second + ".st")
+            } else plushie.second
+
+            p.inventory.setItemInMainHand(createPlushie(plushName, value.toString()))
             p.sendMessage(plushMsg(plushName).component)
             true
 

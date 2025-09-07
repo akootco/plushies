@@ -1,6 +1,7 @@
 package co.akoot.plugins.plushies.listeners
 
 import co.akoot.plugins.bluefox.extensions.getPDC
+import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.runLater
@@ -19,10 +20,13 @@ class BlockEvents : Listener {
     @EventHandler
     fun BlockPlaceEvent.onPlace() {
         if (isCancelled) return // this needs to be checked so core protect doesn't break
-        val id = itemInHand.itemMeta.getPDC<String>(blockKey) ?: return
+        val hand = itemInHand.itemMeta?: return
+        val pdc = hand.getPDC<String>(blockKey) ?: hand.getPDC<String>(texturedkKey) ?: return
+        val split = pdc.split("|")
+        val id = split.getOrNull(1)
 
-        createDisplay(block.location, id.split("|")[1])
-        block.chunk.setPDC(getBlockPDC(block.location), id)
+        if (id != null) createDisplay(block.location, id, hand.hasPDC(texturedkKey))
+        block.chunk.setPDC(getBlockPDC(block.location), pdc)
         runLater(1) { block.chunk.removePDC(getBlockPDC(block.location, "alces")) }
     }
 

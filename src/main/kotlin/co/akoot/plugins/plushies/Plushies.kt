@@ -75,7 +75,6 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(ThrowableCommand(this))
         registerCommand(PlushieCommand(this))
         //test
-        registerCommand(Plushie2Command(this))
         registerCommand(DialogTestCommand(this))
         //crest
         registerCommand(BookCommand(this))

@@ -1,5 +1,6 @@
 package co.akoot.plugins.plushies.gui
 
+import co.akoot.plugins.bluefox.extensions.isSurventure
 import co.akoot.plugins.bluefox.util.ColorUtil.randomColor
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.gui.MenuItems.filler
@@ -9,6 +10,7 @@ import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.Items.isCustomItem
 import co.akoot.plugins.plushies.util.builders.ChestGUI
 import org.bukkit.entity.HumanEntity
+import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
@@ -30,7 +32,9 @@ class CustomItemMenu(private val page: Int = 1) : InventoryHolder {
                 }
             }
             // if not item above, give it to player
-            p.inventory.addItem(item)
+            if (!(p as Player).isSurventure) {
+                p.give(item)
+            }
         }
     }
 

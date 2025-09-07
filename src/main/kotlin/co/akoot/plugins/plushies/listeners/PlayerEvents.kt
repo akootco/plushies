@@ -13,6 +13,7 @@ import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowable
 import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.Items.isPlaceable
+import co.akoot.plugins.plushies.util.Items.updateInventory
 import co.akoot.plugins.plushies.util.Recipes.unlockRecipes
 import co.akoot.plugins.plushies.util.ResourcePack.isPackEnabled
 import co.akoot.plugins.plushies.util.ResourcePack.packDeniers
@@ -25,6 +26,10 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.event.player.AsyncChatEvent
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Chest
+import org.bukkit.block.Container
+import org.bukkit.block.Hopper
+import org.bukkit.block.ShulkerBox
 import org.bukkit.block.data.Directional
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -63,6 +68,7 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
     @EventHandler
     fun PlayerJoinEvent.onJoin() {
+        updateInventory(player.inventory)
         unlockRecipes(player)
         if (isPackEnabled) {
             setPack(player)
@@ -108,6 +114,11 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
                     (block.type == Material.WATER_CAULDRON && item.type == Material.ELYTRA && item.hasData(DataComponentTypes.DYED_COLOR)) -> {
                         event.isCancelled = true
                         ItemBuilder.builder(item).unsetData(DataComponentTypes.DYED_COLOR).build()
+                    }
+
+                    block.state is Container -> {
+                        println(block.type)
+                        updateInventory((block.state as Container).inventory)
                     }
                 }
             }

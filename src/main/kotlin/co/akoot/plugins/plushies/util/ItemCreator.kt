@@ -43,10 +43,19 @@ object ItemCreator {
         return ItemBuilder.builder(itemStack).apply {
 
             if (config == customBlockConfig) {
-                val textures = config.getString("$path.textures")?: return@apply
+                val textures = config.getString("$path.textures")
+                val customModelData = config.getString("$path.customModelData")
+
                 rarity(ItemRarity.COMMON)
-                pdc(blockKey, "$path|$textures")
-                itemModel("player_head")
+
+                when {
+                    textures != null -> {
+                        pdc(blockKey, "$path|$textures")
+                        itemModel( "player_head")
+                    }
+                    customModelData != null -> pdc(texturedkKey, "$path|$customModelData")
+                    else -> pdc(blockKey, path)
+                }
             }
 
             pdc(namespacedKey, path)
@@ -83,7 +92,7 @@ object ItemCreator {
             config.getString("$path.textures")?.let { id -> headTexture(id) }
 
             config.getString("$path.itemModel")?.let { id ->
-                itemModel(id)
+                itemModel(id.lowercase())
             }
 
             // set custom model data

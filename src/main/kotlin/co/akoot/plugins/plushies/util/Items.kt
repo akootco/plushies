@@ -1,5 +1,6 @@
 package co.akoot.plugins.plushies.util
 
+import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
 import co.akoot.plugins.bluefox.util.Text
@@ -12,6 +13,7 @@ import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.registry.keys.tags.DamageTypeTagKeys
 import org.bukkit.Material
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
 object Items {
@@ -29,7 +31,7 @@ object Items {
         get() = type == Material.TOTEM_OF_UNDYING && itemMeta?.hasCustomModelDataComponent() == true
 
 
-    var plushies = plushieConf.getKeys().mapNotNull { name -> plushieConf.getInt(name)?.let { name to it } }
+    var plushies = plushieConf.getKeys().map { name -> name to (plushieConf.getString(name).takeUnless { it == "0" } ?: name) }
     val customItems: MutableMap<String, ItemStack> = HashMap()
 
     fun loadItems() {
@@ -50,7 +52,23 @@ object Items {
             .build()
     }
 
-    fun createPlushie(name: String, customModelData: Int): ItemStack {
+    fun updateItem(item: ItemStack?): ItemStack? {
+        if (item == null) return null
+        val id = item.itemMeta?.getPDC<String>(itemKey) ?: return null
+        val customItem = customItems[id] ?: return null
+
+        if (item.isSimilar(customItem)) return null
+        return customItem.clone().apply { amount = item.amount }
+    }
+
+    fun updateInventory(inv: Inventory) {
+        for (i in 0 until inv.size) {
+            val new = updateItem(inv.getItem(i))
+            if (new != null) inv.setItem(i, new)
+        }
+    }
+
+    fun createPlushie(name: String, customModelData: String): ItemStack {
         return ItemBuilder.builder(ItemStack(Material.TOTEM_OF_UNDYING))
             .itemName((Text(name).color(MONTH_COLOR)).component)
             .customModelData(customModelData)

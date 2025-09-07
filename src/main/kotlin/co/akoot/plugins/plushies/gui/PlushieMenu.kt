@@ -4,14 +4,14 @@ import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.invoke
 import co.akoot.plugins.bluefox.util.ColorUtil.randomColor
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.bluefox.util.Text.Companion.asString
 import co.akoot.plugins.plushies.gui.MenuItems.nextPage
-import co.akoot.plugins.plushies.util.Items.plushies
 import co.akoot.plugins.plushies.gui.MenuItems.prevPage
 import co.akoot.plugins.plushies.util.Items.createPlushie
+import co.akoot.plugins.plushies.util.Items.plushies
 import co.akoot.plugins.plushies.util.Util.plushMsg
 import co.akoot.plugins.plushies.util.builders.ChestGUI
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -34,18 +34,22 @@ class PlushieMenu(private val page: Int = 1) :
             val pItem = p.inventory.itemInMainHand
 
             if (item.type == Material.TOTEM_OF_UNDYING) { // is it a friend?
-
                 if (pItem.type != Material.TOTEM_OF_UNDYING) { // HEY! no hacking!
                     Kolor.ERROR.accent("You must be holding a totem!").send(p)
                 } else {
                     when (clickType) {
-                        ClickType.RIGHT -> ItemBuilder.builder(pItem).copyOf(item)
-                            .customModelData(pItem.itemMeta.customModelData + 1).build() // statue
+                        ClickType.RIGHT -> ItemBuilder.builder(pItem).copyOf(item).apply {
+                            val cmd = pItem.itemMeta.customModelDataComponent
+
+                            customModelData(
+                                cmd.floats?.firstOrNull()?.plus(1)?.toInt()
+                                    ?: (cmd.strings?.firstOrNull() + ".st")) // disgtusting
+                        }.build() // statue
 
                         else -> ItemBuilder.builder(pItem).copyOf(item).build() // normal
                     }
 
-                    plushMsg(PlainTextComponentSerializer.plainText().serialize(item.effectiveName())).component
+                    plushMsg(item.effectiveName().asString()).component
                 }
             }
         }

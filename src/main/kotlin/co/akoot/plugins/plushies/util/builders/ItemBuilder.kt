@@ -53,10 +53,12 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
     fun customModelData(value: Any): ItemBuilder {
         val builder = CustomModelData.customModelData()
 
-        when (value) {
-            is Int -> builder.addFloat(value.toFloat())
-            is String -> builder.addString(value)
-            else -> return this
+        val strValue = value.toString()
+        val intValue = strValue.toIntOrNull()
+
+        builder.apply {
+            if (intValue != null) addFloat(intValue.toFloat())
+            else builder.addString(strValue.lowercase())
         }
 
         itemStack.setData(DataComponentTypes.CUSTOM_MODEL_DATA, builder.build())
@@ -84,6 +86,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
 
     fun filler(): ItemBuilder {
         itemName(Text().component)
+        itemModel("air")
         hideTooltip()
         return this
     }
