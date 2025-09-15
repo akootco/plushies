@@ -28,6 +28,7 @@ object Recipes {
         smeltingRecipes()
         smithingRecipes()
         wingRecipes()
+        shulkers() // why is nobody licking my brains?!?
 
         CraftRecipe.builder("wrench", customItems["wrench"]?: return)
             .ingredient(MaterialChoice(Material.LIGHTNING_ROD))
@@ -118,7 +119,7 @@ object Recipes {
             "_TERRACOTTA" to Tag.TERRACOTTA,
             "_GLAZED_TERRACOTTA" to MaterialTags.GLAZED_TERRACOTTA,
             "_CONCRETE" to MaterialTags.CONCRETES,
-            "_CONCRETE_POWDER" to MaterialTags.CONCRETE_POWDER,
+            "_CONCRETE_POWDER" to Tag.CONCRETE_POWDER,
             "_STAINED_GLASS" to MaterialTags.STAINED_GLASS,
             "_STAINED_GLASS_PANE" to MaterialTags.STAINED_GLASS_PANES,
             "_WOOL" to Tag.WOOL,
@@ -222,13 +223,13 @@ object Recipes {
                 CraftRecipe.builder(key, ItemStack(getMaterial(parts[0], amount) ?: continue))// skip if output is invalid
                     .apply {
                         for (ingredient in recipeConf.getStringList("$key.ingredients")) {
-                            val parts = ingredient.split("/")
-                            val amount = parts.getOrNull(1)?.toIntOrNull() ?: 1
+                            val ingparts = ingredient.split("/")
+                            val ingamount = ingparts.getOrNull(1)?.toIntOrNull() ?: 1
 
-                            val material = getInput(parts[0]) ?: continue // skip if input is invalid
+                            val material = getInput(ingparts[0]) ?: continue // skip if input is invalid
 
                             // nice!, add ingredient to recipe
-                            ingredient(material, amount)
+                            ingredient(material, ingamount)
                         }
                     }.shapeless()
             } else {

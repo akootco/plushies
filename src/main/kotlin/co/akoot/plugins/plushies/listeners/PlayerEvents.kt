@@ -26,10 +26,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.event.player.AsyncChatEvent
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
-import org.bukkit.block.Chest
 import org.bukkit.block.Container
-import org.bukkit.block.Hopper
-import org.bukkit.block.ShulkerBox
 import org.bukkit.block.data.Directional
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -117,7 +114,6 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
                     }
 
                     block.state is Container -> {
-                        println(block.type)
                         updateInventory((block.state as Container).inventory)
                     }
                 }

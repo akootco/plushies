@@ -123,7 +123,7 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
 
                     else -> {
                         ItemBuilder.builder(item)
-                            .customModelData(cmd.toInt())
+                            .customModelData(cmd)
                             .build()
                     }
                 }
