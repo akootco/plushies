@@ -5,6 +5,7 @@ import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
+import co.akoot.plugins.plushies.util.Items.hitSoundKey
 import com.destroystokyo.paper.profile.ProfileProperty
 import io.papermc.paper.datacomponent.DataComponentType
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -62,6 +63,13 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
         }
 
         itemStack.setData(DataComponentTypes.CUSTOM_MODEL_DATA, builder.build())
+        return this
+    }
+
+
+    fun hitSound(sound: String): ItemBuilder {
+        if (sound in listOf("none", "-c", "null")) { removepdc(hitSoundKey) }
+        else { pdc(hitSoundKey, sound) }
         return this
     }
 

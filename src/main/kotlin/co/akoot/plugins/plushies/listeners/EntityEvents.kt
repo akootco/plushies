@@ -17,6 +17,7 @@ import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.golfKey
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.golfSwing
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.util.Items.customItems
+import co.akoot.plugins.plushies.util.Items.hitSound
 import co.akoot.plugins.plushies.util.Items.isPlushie
 import io.papermc.paper.world.MoonPhase
 import org.bukkit.Material
@@ -56,6 +57,11 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
         val target = event.entity
         val attacker = event.damager
         if (attacker is Player) {
+
+            attacker.inventory.itemInMainHand.hitSound?.let { sound ->
+                target.world.playSound(target.location, sound, 1.0f, 1.0f)
+            }
+
             if (target is ArmorStand && target.hasPDC(golfKey)) {
                 event.damage = 0.0
                 if (golfSwing(target, attacker)) {
@@ -129,7 +135,7 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
                     }
                     event.isCancelled = true
                     Text(event.player) {
-                        Kolor.ALT(entity.name) + Kolor.TEXT(" is ${entity.hasPDC(key("friendly")).now} friendly!")
+                        Kolor.MONTH(entity.name) + Kolor.TEXT(" is ${entity.hasPDC(key("friendly")).now} friendly!")
                     }
                 }
             }

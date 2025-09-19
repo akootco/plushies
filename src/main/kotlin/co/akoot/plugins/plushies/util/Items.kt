@@ -20,6 +20,7 @@ object Items {
 
     val itemKey = key("item")
     val placeableKey = key("placeable")
+    val hitSoundKey = key("hit.sound")
 
     val ItemStack.isCustomItem: Boolean
         get() = itemMeta?.hasPDC(itemKey) == true
@@ -30,6 +31,12 @@ object Items {
     val ItemStack.isPlushie: Boolean
         get() = type == Material.TOTEM_OF_UNDYING && itemMeta?.hasCustomModelDataComponent() == true
 
+    var ItemStack.hitSound: String?
+        get() = itemMeta?.getPDC<String>(key("hit.sound"))
+        set(value) {
+            if (value != null) { ItemBuilder.builder(this).hitSound(value).build()
+            }
+        }
 
     var plushies = plushieConf.getKeys().map { name -> name to (plushieConf.getString(name).takeUnless { it == "0" } ?: name) }
     val customItems: MutableMap<String, ItemStack> = HashMap()

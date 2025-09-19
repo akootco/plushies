@@ -96,11 +96,10 @@ object ItemCreator {
             }
 
             // set custom model data
-            config.getInt("$path.customModelData").takeIf { it != 0 }?.let {
-                customModelData(it)
-            } ?: config.getString("$path.customModelData")?.takeIf { it.isNotBlank() }?.let {
-                customModelData(it)
-            }
+            config.getString("$path.customModelData")
+                .takeUnless { it == "0" }
+                ?.let { customModelData(it) }
+                ?: customModelData(path)
 
             //set lore
             lore(config.getStringList("$path.lore").map { Text(it).component })

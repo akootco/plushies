@@ -2,6 +2,9 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.bluefox.extensions.removePDC
+import co.akoot.plugins.plushies.util.Items.hitSound
+import co.akoot.plugins.plushies.util.Items.hitSoundKey
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.registry.RegistryAccess
@@ -25,6 +28,7 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
             "dye",
             "model",
             "disc",
+            "hitsound"
         )
 
         when (args[0]) {
@@ -105,6 +109,12 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
                     .lore(lore.map { it.replaceText(replace) })
                     .build()
 
+                return true
+            }
+
+            "hitsound" -> {
+                if (arg1 == null) { return sendError(p, "what sound should this make?") }
+                item.hitSound = args[1]
                 return true
             }
 
