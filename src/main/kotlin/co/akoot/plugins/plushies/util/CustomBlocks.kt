@@ -14,6 +14,7 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.block.data.Directional
 import org.bukkit.entity.Display.Brightness
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.ItemDisplay
@@ -42,26 +43,35 @@ fun createDisplay(location: Location, id: String, textured: Boolean = false) {
         .apply {
             if (textured) { customModelData(id); itemModel("air") } // e
             else {
-                println(id)
                 val headItem = HeadDatabaseAPI().getItemHead(id)
                 if (headItem != null) copyOf(headItem)
                 else headTexture(id)
             }
         }.build()
 
-
+    val blockYaw = (location.block.blockData as? Directional)?.facing?.let { facing ->
+        when (facing) {
+            BlockFace.EAST -> -90f
+            BlockFace.WEST -> 90f
+            BlockFace.SOUTH -> 0f
+            else -> 180f
+        }
+    } ?: 180f
 
     val itemDisplay =
-        location.world.spawnEntity(location.toCenterLocation(), EntityType.ITEM_DISPLAY) as ItemDisplay
+        location.world.spawnEntity(location.toCenterLocation().apply { yaw = blockYaw }, EntityType.ITEM_DISPLAY) as ItemDisplay
+
     itemDisplay.itemDisplayTransform = ItemDisplay.ItemDisplayTransform.FIXED
 
     itemDisplay.apply {
         setItemStack(item)
-        brightness = Brightness(0, 15)
+        shadowRadius = 0f
+        shadowStrength = 0f
+        brightness = Brightness(5, 10)
         transformation = Transformation(
             Vector3f(),
             AxisAngle4f(),
-            Vector3f(2f, 2f, 2f),
+            Vector3f(2.001f, 2.001f, 2.001f),
             AxisAngle4f()
         )
     }

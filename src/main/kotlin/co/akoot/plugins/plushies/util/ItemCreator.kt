@@ -10,6 +10,7 @@ import co.akoot.plugins.plushies.util.builders.EquippableBuilder
 import co.akoot.plugins.plushies.util.builders.FoodBuilder
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation
+import me.arcaniax.hdb.api.HeadDatabaseAPI
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.Registry
@@ -25,7 +26,13 @@ object ItemCreator {
             else -> Material.getMaterial(config.getString("$path.material") ?: return null) ?: return null
         }
 
-        var itemStack = ItemStack(material)
+        val headId = config.getString("$path.hdb")
+
+        var itemStack = if (headId != null) {
+            HeadDatabaseAPI().getItemHead(headId) ?: return null
+        } else {
+            ItemStack(material)
+        }
 
         itemStack = itemData(config, path, itemStack, namespacedKey)
         itemStack = equippable(config, path, itemStack)
@@ -43,6 +50,7 @@ object ItemCreator {
         return ItemBuilder.builder(itemStack).apply {
 
             if (config == customBlockConfig) {
+                val hdb = HeadDatabaseAPI().getItemID(itemStack)
                 val textures = config.getString("$path.textures")
                 val customModelData = config.getString("$path.customModelData")
 
@@ -54,6 +62,7 @@ object ItemCreator {
                         itemModel( "player_head")
                     }
                     customModelData != null -> pdc(texturedkKey, "$path|$customModelData")
+                    hdb != null -> pdc(blockKey, "$path|${hdb}")
                     else -> pdc(blockKey, path)
                 }
             }
@@ -96,10 +105,7 @@ object ItemCreator {
             }
 
             // set custom model data
-            config.getString("$path.customModelData")
-                .takeUnless { it == "0" }
-                ?.let { customModelData(it) }
-                ?: customModelData(path)
+            config.getString("$path.customModelData")?.let { customModelData(if (it == "0") path else it) }
 
             //set lore
             lore(config.getStringList("$path.lore").map { Text(it).component })
