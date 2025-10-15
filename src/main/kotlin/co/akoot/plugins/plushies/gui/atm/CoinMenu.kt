@@ -13,50 +13,27 @@ import java.math.BigDecimal
 
 class CoinMenu(private val p: Player, private val coin: Coin) : InventoryHolder {
 
-    private fun showBal(): List<ItemStack> {
-        val backingItems = mutableListOf<ItemStack>()
-        // sorry but i had to steal this!
-        val amount = (p.wallet?.balance?.get(coin)?: BigDecimal.ZERO).toInt()
-        if (amount <= 0) return backingItems
+    override fun getInventory(): Inventory {
+        val inv = ChestGUI.builder(54, this, false)
+            .title(Text("$${coin.ticker}").color(randomColor(brightness = 0.6f)).component)
+            .build()
 
-        val itemMat = coin.backing ?: return backingItems
-        val blockMat = coin.backingBlock
+        val amount = (p.wallet?.balance?.get(coin) ?: BigDecimal.ZERO).toInt()
+        if (amount > 0) {
+            val itemMat = coin.backing ?: return inv
+            val blockMat = coin.backingBlock
 
-        // need to separate stacks, so it's not all put into one slot
-        if (blockMat != null) {
-            // if theres a backing block, use it here
-            val blocks = amount / 9
-            val remainder = amount % 9
+            if (blockMat != null) {
+                val blocks = amount / 9
+                val remainder = amount % 9
 
-            if (blocks > 0) {
-                var remainingBlocks = blocks
-                while (remainingBlocks > 0) {
-                    val stackSize = minOf(remainingBlocks, blockMat.maxStackSize)
-                    backingItems.add(ItemStack(blockMat, stackSize))
-                    remainingBlocks -= stackSize
-                }
-            }
-
-            if (remainder > 0) {
-                backingItems.add(ItemStack(itemMat, remainder))
-            }
-        } else {
-            // no backing block use items. fixes $AD menu issue
-            var remainingItems = amount
-            while (remainingItems > 0) {
-                val stackSize = minOf(remainingItems, itemMat.maxStackSize)
-                backingItems.add(ItemStack(itemMat, stackSize))
-                remainingItems -= stackSize
+                if (blocks > 0) inv.addItem(ItemStack(blockMat, blocks))
+                if (remainder > 0) inv.addItem(ItemStack(itemMat, remainder))
+            } else {
+                inv.addItem(ItemStack(itemMat, amount))
             }
         }
 
-        return backingItems
-    }
-
-    override fun getInventory(): Inventory {
-        return ChestGUI.builder(54, this, false)
-            .title(Text("$${coin.ticker}").color(randomColor(brightness = 0.6f)).component)
-            .setItems(0..53, showBal())
-            .build()
+        return inv
     }
 }

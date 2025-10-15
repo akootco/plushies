@@ -6,4 +6,4 @@ prefix: '${name}'
 authors: [ IndiaPaleAle ]
 description: Custom Items
 website: 'https://maltsburg.com/plugins/${name}'
-softdepend: [ 'BlueFox', 'Geyser-Spigot' ]
+softdepend: [ 'BlueFox', 'Geyser-Spigot', 'HeadDatabase' ]
