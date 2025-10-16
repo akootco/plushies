@@ -9,6 +9,7 @@ import co.akoot.plugins.plushies.util.Items.placeableKey
 import co.akoot.plugins.plushies.util.builders.EquippableBuilder
 import co.akoot.plugins.plushies.util.builders.FoodBuilder
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation
 import me.arcaniax.hdb.api.HeadDatabaseAPI
 import org.bukkit.Material
@@ -23,48 +24,43 @@ object ItemCreator {
     fun createItem(config: FoxConfig, path: String, namespacedKey: NamespacedKey): ItemStack? {
         val material = when (config) {
             customMusicDiscConfig -> Material.MUSIC_DISC_11
-            else -> Material.getMaterial(config.getString("$path.material") ?: return null) ?: return null
+            else -> config.getString("$path.material")
+                ?.let(Material::getMaterial)
+                ?: return null
         }
 
-        val headId = config.getString("$path.hdb")
-
-        var itemStack = if (headId != null) {
-            HeadDatabaseAPI().getItemHead(headId) ?: return null
-        } else {
-            ItemStack(material)
-        }
-
-        itemStack = itemData(config, path, itemStack, namespacedKey)
-        itemStack = equippable(config, path, itemStack)
-        itemStack = food(config, path, itemStack)
-
-        return itemStack
+        return ItemStack(material)
+            .let { itemData(config, path, it, namespacedKey) }
+            .let { equippable(config, path, it) }
+            .let { food(config, path, it) }
     }
 
-    private fun itemData(
-        config: FoxConfig,
-        path: String,
-        itemStack: ItemStack,
-        namespacedKey: NamespacedKey
-    ): ItemStack {
+    private fun itemData(config: FoxConfig, path: String, itemStack: ItemStack, namespacedKey: NamespacedKey): ItemStack {
         return ItemBuilder.builder(itemStack).apply {
 
             if (config == customBlockConfig) {
-                val hdb = HeadDatabaseAPI().getItemID(itemStack)
+                val hdb = config.getString("$path.hdb")
                 val textures = config.getString("$path.textures")
-                val customModelData = config.getString("$path.customModelData")
-
-                rarity(ItemRarity.COMMON)
+                val cmd = config.getString("$path.customModelData")
 
                 when {
                     textures != null -> {
                         pdc(blockKey, "$path|$textures")
                         itemModel( "player_head")
                     }
-                    customModelData != null -> pdc(texturedkKey, "$path|$customModelData")
-                    hdb != null -> pdc(blockKey, "$path|${hdb}")
+                    cmd != null -> pdc(texturedkKey, "$path|$cmd")
+                    hdb != null ->{
+                        pdc(blockKey, "$path|${hdb}")
+                        itemModel( "player_head")
+                        copyOf(HeadDatabaseAPI().getItemHead(hdb))
+                        unsetData(DataComponentTypes.EQUIPPABLE)
+                        unsetData(DataComponentTypes.ATTRIBUTE_MODIFIERS)
+                        resetData(DataComponentTypes.CUSTOM_NAME) // thanks
+                    }
                     else -> pdc(blockKey, path)
                 }
+
+                rarity(ItemRarity.COMMON)
             }
 
             pdc(namespacedKey, path)

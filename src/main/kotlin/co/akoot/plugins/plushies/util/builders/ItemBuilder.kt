@@ -297,7 +297,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @return The modified `Item` instance.
      */
     fun copyOf(itemStack: ItemStack): ItemBuilder {
-        this.itemStack.itemMeta = itemStack.itemMeta
+        this.itemStack.copyDataFrom(itemStack) { true }
         return this
     }
 
