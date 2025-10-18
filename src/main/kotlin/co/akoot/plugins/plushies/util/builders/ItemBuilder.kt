@@ -301,6 +301,12 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
         return this
     }
 
+    fun copyOf(itemStack: ItemStack, vararg components: DataComponentType): ItemBuilder {
+        val allowed = components.toSet()
+        this.itemStack.copyDataFrom(itemStack) { type -> allowed.contains(type) }
+        return this
+    }
+
     /**
      * Copies data of the book to the builder's item.
      *

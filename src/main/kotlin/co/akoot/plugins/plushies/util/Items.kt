@@ -1,5 +1,6 @@
 package co.akoot.plugins.plushies.util
 
+import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
@@ -13,10 +14,15 @@ import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.registry.keys.tags.DamageTypeTagKeys
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import kotlin.collections.mutableMapOf
 
 object Items {
+
+    data class PendingHead(val config: FoxConfig, val path: String, val key: NamespacedKey)
+    val pendingHeads = mutableListOf<PendingHead>()
 
     val itemKey = key("item")
     val placeableKey = key("placeable")
@@ -39,7 +45,7 @@ object Items {
         }
 
     var plushies = plushieConf.getKeys().map { name -> name to (plushieConf.getString(name).takeUnless { it == "0" } ?: name) }
-    val customItems: MutableMap<String, ItemStack> = HashMap()
+    val customItems = mutableMapOf<String, ItemStack>()
 
     fun loadItems() {
         // Load ItemConfig

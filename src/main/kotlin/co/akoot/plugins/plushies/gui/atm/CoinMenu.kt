@@ -2,7 +2,6 @@ package co.akoot.plugins.plushies.gui.atm
 
 import co.akoot.plugins.bluefox.api.economy.Coin
 import co.akoot.plugins.bluefox.api.economy.Economy
-import co.akoot.plugins.bluefox.api.economy.Wallet
 import co.akoot.plugins.bluefox.api.economy.Wallet.Companion.WORLD
 import co.akoot.plugins.bluefox.extensions.wallet
 import co.akoot.plugins.bluefox.util.ColorUtil.randomColor
@@ -49,7 +48,7 @@ class CoinMenu(private val p: Player, val coin: Coin) : InventoryHolder {
                 if (total > balance) {
                     WORLD.send(wallet, holder.coin, BigDecimal(total - balance))
                 } else {
-                    wallet.send(Wallet.WORLD, holder.coin, BigDecimal(balance - total))
+                    wallet.send(WORLD, holder.coin, BigDecimal(balance - total))
                 }
 
                 Economy.sendBalance(player, wallet, holder.coin)

@@ -2,9 +2,10 @@ package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.util.Text
-import co.akoot.plugins.plushies.Plushies.Companion.customBlockConfig
 import co.akoot.plugins.plushies.Plushies.Companion.customMusicDiscConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
+import co.akoot.plugins.plushies.Plushies.Companion.pluginEnabled
+import co.akoot.plugins.plushies.util.Items.pendingHeads
 import co.akoot.plugins.plushies.util.Items.placeableKey
 import co.akoot.plugins.plushies.util.builders.EquippableBuilder
 import co.akoot.plugins.plushies.util.builders.FoodBuilder
@@ -31,36 +32,43 @@ object ItemCreator {
 
         return ItemStack(material)
             .let { itemData(config, path, it, namespacedKey) }
-            .let { equippable(config, path, it) }
-            .let { food(config, path, it) }
+            ?.let { equippable(config, path, it) }
+            ?.let { food(config, path, it) }
     }
 
-    private fun itemData(config: FoxConfig, path: String, itemStack: ItemStack, namespacedKey: NamespacedKey): ItemStack {
+    private fun itemData(config: FoxConfig, path: String, itemStack: ItemStack, namespacedKey: NamespacedKey): ItemStack? {
         return ItemBuilder.builder(itemStack).apply {
 
-            if (config == customBlockConfig) {
+            if (config.getBoolean("$path.isBlock") == true) {
                 val hdb = config.getString("$path.hdb")
                 val textures = config.getString("$path.textures")
                 val cmd = config.getString("$path.customModelData")
 
                 when {
+                    hdb != null-> { pdc(blockKey, "$path|$hdb") }
+
                     textures != null -> {
                         pdc(blockKey, "$path|$textures")
                         itemModel( "player_head")
                     }
                     cmd != null -> pdc(texturedkKey, "$path|$cmd")
-                    hdb != null ->{
-                        pdc(blockKey, "$path|${hdb}")
-                        itemModel( "player_head")
-                        copyOf(HeadDatabaseAPI().getItemHead(hdb))
-                        unsetData(DataComponentTypes.EQUIPPABLE)
-                        unsetData(DataComponentTypes.ATTRIBUTE_MODIFIERS)
-                        resetData(DataComponentTypes.CUSTOM_NAME) // thanks
-                    }
                     else -> pdc(blockKey, path)
                 }
 
                 rarity(ItemRarity.COMMON)
+            }
+
+            config.getString("$path.hdb")?.let { hdb ->
+                if (pluginEnabled("HeadDatabase")) {
+                    HeadDatabaseAPI().getItemHead(hdb)?.let { head ->
+                        copyOf(head, DataComponentTypes.PROFILE)
+                        itemModel("player_head")
+                    }
+                } else {
+                    pendingHeads += Items.PendingHead(config, path, namespacedKey)
+                    println(path)
+                    return null
+                }
             }
 
             pdc(namespacedKey, path)
