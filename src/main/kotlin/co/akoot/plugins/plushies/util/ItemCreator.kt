@@ -7,6 +7,7 @@ import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.pluginEnabled
 import co.akoot.plugins.plushies.util.Items.pendingHeads
 import co.akoot.plugins.plushies.util.Items.placeableKey
+import co.akoot.plugins.plushies.util.Util.resolvePlaceholders
 import co.akoot.plugins.plushies.util.builders.EquippableBuilder
 import co.akoot.plugins.plushies.util.builders.FoodBuilder
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
@@ -81,7 +82,7 @@ object ItemCreator {
                 ?.let { pdc(key("attributes"), it) }
 
             // name
-            config.getString("$path.itemName")?.let { name -> itemName(Text(name).component) }
+            config.getString("$path.itemName")?.let { name -> itemName(resolvePlaceholders(name)) }
 
             // set amount
             config.getInt("$path.amount").takeIf { it != 1 }?.let { itemStack.amount = it }
@@ -112,7 +113,7 @@ object ItemCreator {
             config.getString("$path.customModelData")?.let { customModelData(if (it == "0") path else it) }
 
             //set lore
-            lore(config.getStringList("$path.lore").map { Text(it).component })
+            lore(config.getStringList("$path.lore").map { Text(resolvePlaceholders(it)).component })
 
             // stackSize needs to be 1-99 or else the server will explode (real)
             config.getInt("$path.stackSize").takeIf { it in 1..99 }?.let { stackSize(it) }

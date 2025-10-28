@@ -7,6 +7,7 @@ import co.akoot.plugins.plushies.Plushies
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
 import org.bukkit.configuration.file.FileConfiguration
@@ -62,5 +63,21 @@ object Util {
     fun getBlockPDC(location: Location, plugin: String = "plushies"): NamespacedKey {
         val key = "${location.world.name.lowercase()}.${location.blockX}.${location.blockY}.${location.blockZ}"
         return NamespacedKey(plugin, key)
+    }
+
+    fun resolvePlaceholders(string: String): Component {
+        val words = string.split(" ")
+        val result = Text()
+
+        for (word in words) {
+            when {
+                word.startsWith("p:") -> result.playerHead(word.drop(2))
+                word.startsWith("i:") -> result.sprite(word.drop(2))
+                else -> result += Text(word)
+            }
+            result += Text.space
+        }
+
+        return result.component
     }
 }
