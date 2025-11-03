@@ -69,13 +69,16 @@ object Util {
         val words = string.split(" ")
         val result = Text()
 
-        for (word in words) {
+        for ((index, word) in words.withIndex()) {
             when {
                 word.startsWith("p:") -> result.playerHead(word.drop(2))
                 word.startsWith("i:") -> result.sprite(word.drop(2))
                 else -> result += Text(word)
             }
-            result += Text.space
+
+            if(index < words.size - 1) {
+                result += Text.space
+            }
         }
 
         return result.component
