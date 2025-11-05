@@ -43,7 +43,7 @@ object ItemCreator {
             if (config.getBoolean("$path.isBlock") == true) {
                 val hdb = config.getString("$path.hdb")
                 val textures = config.getString("$path.textures")
-                val cmd = config.getString("$path.customModelData")
+                val cmd = config.getString("$path.customModelData")?.let { if (it == "0") path else it }
 
                 when {
                     hdb != null-> { pdc(blockKey, "$path|$hdb") }
