@@ -31,7 +31,6 @@ class Plushies : FoxPlugin("plushies") {
         lateinit var smithRecipeConf: FoxConfig
         lateinit var customItemConfig: FoxConfig
         lateinit var customMusicDiscConfig: FoxConfig
-        lateinit var customBlockConfig: FoxConfig
         lateinit var customDialogConfig: FoxConfig
         lateinit var merchantConfig: FoxConfig
 
@@ -113,7 +112,6 @@ class Plushies : FoxPlugin("plushies") {
         cookRecipeConf = registerConfig("cookRecipes", "recipes/cook_recipes.conf")
         smithRecipeConf = registerConfig("smithRecipes", "recipes/smithing.conf")
         customItemConfig = registerConfig("customItems", "data/items.conf")
-        customBlockConfig = registerConfig("customBlocks", "data/blocks.conf")
         customMusicDiscConfig = registerConfig("customMusicDiscs", "data/music_discs.conf")
         customDialogConfig = registerConfig("customDialogs", "data/dialogs.conf")
         merchantConfig = registerConfig("merchantConfig", "data/merchant.conf")

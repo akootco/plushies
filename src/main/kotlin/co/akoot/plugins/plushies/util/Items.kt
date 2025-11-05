@@ -5,7 +5,6 @@ import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
 import co.akoot.plugins.bluefox.util.Text
-import co.akoot.plugins.plushies.Plushies.Companion.customBlockConfig
 import co.akoot.plugins.plushies.Plushies.Companion.customItemConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.plushieConf
@@ -51,10 +50,6 @@ object Items {
         // Load ItemConfig
         for (key in customItemConfig.getKeys()) {
             customItems[key.lowercase()] = createItem(customItemConfig, key, itemKey) ?: continue
-        }
-        // Load BlockConfig
-        for (key in customBlockConfig.getKeys()) {
-            customItems[key.lowercase()] = createItem(customBlockConfig, key, itemKey) ?: continue
         }
 
         customItems["wrench"] = ItemBuilder.builder(Material.POISONOUS_POTATO) // lol
