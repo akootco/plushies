@@ -3,28 +3,42 @@ package co.akoot.plugins.plushies.events
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.api.events.FoxEventCancellable
 import co.akoot.plugins.plushies.util.Recipes.getMaterial
+import org.bukkit.entity.Villager
 import org.bukkit.inventory.Merchant
 import org.bukkit.inventory.MerchantRecipe
 
 class ModifyMerchantEvent(val merchant: Merchant) : FoxEventCancellable() {
 
-    fun addTrades(vararg recipes: MerchantRecipe) {
-        val current = merchant.recipes.toMutableList()
-        current.addAll(recipes)
-        merchant.recipes = current
-    }
-
     fun addTrades(type: String, config: FoxConfig) {
         val current = merchant.recipes.toMutableList()
+        val trades = mutableListOf<String>()
 
-        for (key in config.getKeys(type)) {
-            val sell = config.getString("$type.$key.sell")?.split("/") ?: continue
-            val buy = config.getString("$type.$key.buy")?.split("/") ?: continue
+        if (type == "wandering_trader") {
+            trades.addAll(config.getStringList(type))
+        } else {
+            val villager = merchant as? Villager ?: return
+            val lvl = villager.villagerLevel
+            val recipes = config.getStringList("$type.$lvl")
 
-            val sellItem = getMaterial(sell[0], sell.getOrNull(1)?.toIntOrNull() ?: 1) ?: continue
-            val buyItem = getMaterial(buy[0], buy.getOrNull(1)?.toIntOrNull() ?: 1) ?: continue
+            trades.addAll(recipes)
+        }
 
-            current.add(MerchantRecipe(sellItem, Int.MAX_VALUE).apply { addIngredient(buyItem) })
+        for (trade in trades) {
+            val recipe = trade.split(":")
+            if (recipe.size != 2) continue
+
+            val buyMat = recipe[0].split("/")
+            val sellMat = recipe[1].split("/")
+
+            val buyItem = getMaterial(buyMat[0], buyMat.getOrNull(1)?.toIntOrNull() ?: 1) ?: continue
+            val sellItem = getMaterial(sellMat[0], sellMat.getOrNull(1)?.toIntOrNull() ?: 1) ?: continue
+
+            current.add(MerchantRecipe(sellItem, 12).apply {
+                villagerExperience = (merchant as? Villager)?.villagerLevel?.times(5) ?: 10
+                addIngredient(buyItem)
+                setExperienceReward(true)
+                setIgnoreDiscounts(false)
+            })
         }
 
         merchant.recipes = current

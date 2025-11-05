@@ -33,6 +33,7 @@ class Plushies : FoxPlugin("plushies") {
         lateinit var customMusicDiscConfig: FoxConfig
         lateinit var customBlockConfig: FoxConfig
         lateinit var customDialogConfig: FoxConfig
+        lateinit var merchantConfig: FoxConfig
 
         fun key(key: String): NamespacedKey {
             return NamespacedKey("plushies", key)
@@ -99,6 +100,7 @@ class Plushies : FoxPlugin("plushies") {
         registerEventListener(Events())
         registerEventListener(HDB())
         registerEventListener(BlockEvents())
+        registerEventListener(MerchantEvents())
     }
 
     override fun registerConfigs() {
@@ -114,5 +116,6 @@ class Plushies : FoxPlugin("plushies") {
         customBlockConfig = registerConfig("customBlocks", "data/blocks.conf")
         customMusicDiscConfig = registerConfig("customMusicDiscs", "data/music_discs.conf")
         customDialogConfig = registerConfig("customDialogs", "data/dialogs.conf")
+        merchantConfig = registerConfig("merchantConfig", "data/merchant.conf")
     }
 }
