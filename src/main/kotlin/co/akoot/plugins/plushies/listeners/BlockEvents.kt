@@ -36,7 +36,7 @@ class BlockEvents : Listener {
         if (block.isCustomBlock) {
             val drops = block.state.drops
             if (drops.isNotEmpty()) {
-                dropItems(block.location, drops.count())
+                dropItems(block, drops.count())
                 isDropItems = false
             }
         }
@@ -49,7 +49,7 @@ class BlockEvents : Listener {
         val drops = block.state.drops
         if (drops.isNotEmpty()) {
             setWillDrop(false)
-            dropItems(block.location, drops.count())
+            dropItems(block, drops.count())
         }
         removeCustomBlock(block.location)
     }
@@ -59,7 +59,7 @@ class BlockEvents : Listener {
         if (!block.isCustomBlock) return
         val drops = block.state.drops
         if (drops.isNotEmpty()) {
-            dropItems(block.location, drops.count())
+            dropItems(block, drops.count())
             drops.clear()
         }
         removeCustomBlock(block.location)
@@ -72,7 +72,7 @@ class BlockEvents : Listener {
             .forEach {
                 val drops = it.state.drops
                 if (drops.isNotEmpty()) {
-                    dropItems(it.location, drops.count())
+                    dropItems(it, drops.count())
                     drops.clear()
                 }
                 removeCustomBlock(it.location)
@@ -86,7 +86,7 @@ class BlockEvents : Listener {
             .forEach {
                 val drops = it.state.drops
                 if (drops.isNotEmpty()) {
-                    dropItems(it.location, drops.count())
+                    dropItems(it, drops.count())
                     drops.clear()
                 }
                 removeCustomBlock(it.location)

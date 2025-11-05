@@ -14,6 +14,7 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Container
 import org.bukkit.block.data.Directional
 import org.bukkit.entity.Display.Brightness
 import org.bukkit.entity.EntityType
@@ -88,10 +89,17 @@ fun removeCustomBlock(location: Location) {
     }
 }
 
-fun dropItems(location: Location, amount: Int) {
-    val key = location.id?.split("|")?.get(0) ?: return
+fun dropItems(block: Block, amount: Int) {
+    val loc = block.location
+    val key = loc.id?.split("|")?.get(0) ?: return
     repeat(amount) {
-        location.world.dropItemNaturally(location.toCenterLocation(), customItems[key] ?: return)
+        loc.world.dropItemNaturally(block.location.toCenterLocation(), customItems[key] ?: return)
+    }
+
+    (block.state as? Container)?.inventory?.forEach { item ->
+        if (item != null) {
+            loc.world.dropItemNaturally(loc.toCenterLocation(), item)
+        }
     }
 }
 
