@@ -9,7 +9,7 @@ import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.runLater
 import co.akoot.plugins.plushies.Plushies.Companion.key
-import co.akoot.plugins.plushies.Plushies.Companion.merchantConfig
+import co.akoot.plugins.plushies.Plushies.Companion.tradeSource
 import co.akoot.plugins.plushies.events.ModifyMerchantEvent
 import co.akoot.plugins.plushies.util.id
 import org.bukkit.entity.Villager
@@ -37,13 +37,13 @@ class MerchantEvents : Listener {
 
     @EventHandler
     fun onModifyMerchant(event: ModifyMerchantEvent) {
-        val type = when(val merchant = event.merchant) {
+        val type = when (val merchant = event.merchant) {
             is Villager -> merchant.customProfession ?: return
             is WanderingTrader -> "wandering_trader"
             else -> return
         }
 
-        event.addTrades(type, merchantConfig)
+        tradeSource.forEach { conf -> event.addTrades(type, conf) }
     }
 
     @EventHandler
@@ -56,7 +56,7 @@ class MerchantEvents : Listener {
         val jobSite = entity.getMemory(MemoryKey.JOB_SITE)?.block?.location?.id ?: return
         val id = jobSite.substringBefore('|')
 
-        if (entity.profession == Villager.Profession.NONE && merchantConfig.getKeys().contains(id)) {
+        if (entity.profession == Villager.Profession.NONE && tradeSource.any { it.getKeys().contains(id) }) {
             entity.customProfession = id
             return
         }

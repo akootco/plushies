@@ -40,6 +40,8 @@ class Plushies : FoxPlugin("plushies") {
 
         private fun checkPlugin(name: String): Plugin? = Bukkit.getPluginManager().getPlugin(name)
         fun pluginEnabled(name: String): Boolean = checkPlugin(name)?.isEnabled == true
+
+        val tradeSource = mutableSetOf<FoxConfig>()
     }
 
     override fun load() {
@@ -54,6 +56,8 @@ class Plushies : FoxPlugin("plushies") {
             downloadBedrockPack()
             GeyserRegistrar()
         }
+
+        tradeSource.add(merchantConfig)
     }
 
     override fun unload() {
