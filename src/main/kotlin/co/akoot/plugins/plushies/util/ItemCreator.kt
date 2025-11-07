@@ -52,7 +52,10 @@ object ItemCreator {
                         pdc(blockKey, "$path|$textures")
                         itemModel( "player_head")
                     }
-                    cmd != null -> pdc(texturedkKey, "$path|$cmd")
+                    cmd != null -> {
+                        pdc(texturedkKey, "$path|$cmd")
+                        itemModel("barrel")
+                    }
                     else -> pdc(blockKey, path)
                 }
 

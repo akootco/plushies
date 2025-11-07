@@ -4,6 +4,7 @@ import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.bluefox.extensions.setPDC
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.runLater
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.util.Items.customItems
@@ -42,7 +43,12 @@ val Location.id: String?
 fun createDisplay(location: Location, id: String, textured: Boolean = false) {
     val item = ItemBuilder.builder(if (textured) Material.OAK_PRESSURE_PLATE else Material.PLAYER_HEAD)
         .apply {
-            if (textured) { customModelData(id); itemModel("air") } // e
+            if (textured) {
+                val name = id.split("_").joinToString(" ") { it.replaceFirstChar { c -> c.titlecase() } }
+                customModelData(id)
+                itemModel("air")
+                itemName(Text(name).component)
+            } // e
             else {
                 val headItem = HeadDatabaseAPI().getItemHead(id)
                 if (headItem != null) copyOf(headItem)
