@@ -15,7 +15,6 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
-import org.bukkit.inventory.ItemStack
 import java.math.BigDecimal
 
 class CoinMenu(private val p: Player, val coin: Coin) : InventoryHolder {
@@ -24,10 +23,10 @@ class CoinMenu(private val p: Player, val coin: Coin) : InventoryHolder {
         fun onClick(holder: CoinMenu, event: InventoryClickEvent) {
             val allowedTypes = arrayOf(holder.coin.backing, holder.coin.backingBlock)
 
-            if ((!event.cursor.isEmpty && event.cursor.isOf(*allowedTypes)) ||
-                (event.currentItem !in allowedTypes)) {
-                event.isCancelled = true
-            }
+            val cursor = event.cursor.isEmpty.not() && !event.cursor.isOf(*allowedTypes)
+            val item = event.currentItem != null && event.currentItem?.isOf(*allowedTypes) == false
+
+            event.isCancelled = (cursor || item)
         }
 
         fun onClose(holder: CoinMenu, player: Player, event: InventoryCloseEvent) {
@@ -37,7 +36,7 @@ class CoinMenu(private val p: Player, val coin: Coin) : InventoryHolder {
                 event.inventory.contents.filterNotNull().forEach { item ->
                     when {
                         item.isOf(holder.coin.backing) -> total += item.amount
-                        item.isOf(holder.coin.backingBlock) -> total += item.amount * 9
+                        item.isOf(holder.coin.backingBlock) -> total += item.amount * holder.coin.backingBlockValue
                         else -> player.dropItem(item)
                     }
                 }
@@ -65,12 +64,12 @@ class CoinMenu(private val p: Player, val coin: Coin) : InventoryHolder {
 
         val amount = (p.wallet?.balance?.get(coin) ?: BigDecimal.ZERO).toInt()
         if (amount > 0) {
-            val itemMat = coin.backing ?: return inv
-            val blockMat = coin.backingBlock
+            val itemMat = coin.backing?.clone() ?: return inv
+            val blockMat = coin.backingBlock?.clone()
 
             if (blockMat != null) {
-                val blocks = amount / 9
-                val remainder = amount % 9
+                val blocks = amount / coin.backingBlockValue
+                val remainder = amount % coin.backingBlockValue
 
                 if (blocks > 0) inv.addItem(blockMat.withAmount(blocks))
                 if (remainder > 0) inv.addItem(itemMat.withAmount(remainder))
