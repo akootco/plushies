@@ -3,7 +3,9 @@ package co.akoot.plugins.plushies.gui.atm
 import co.akoot.plugins.bluefox.api.economy.Coin
 import co.akoot.plugins.bluefox.api.economy.Economy
 import co.akoot.plugins.bluefox.api.economy.Wallet.Companion.WORLD
+import co.akoot.plugins.bluefox.extensions.isOf
 import co.akoot.plugins.bluefox.extensions.wallet
+import co.akoot.plugins.bluefox.extensions.withAmount
 import co.akoot.plugins.bluefox.util.ColorUtil.randomColor
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.runLater
@@ -20,10 +22,10 @@ class CoinMenu(private val p: Player, val coin: Coin) : InventoryHolder {
 
     companion object {
         fun onClick(holder: CoinMenu, event: InventoryClickEvent) {
-            val allowedTypes = listOfNotNull(holder.coin.backing, holder.coin.backingBlock)
+            val allowedTypes = arrayOf(holder.coin.backing, holder.coin.backingBlock)
 
-            if ((!event.cursor.isEmpty && event.cursor.type !in allowedTypes) ||
-                (event.currentItem?.type !in allowedTypes)) {
+            if ((!event.cursor.isEmpty && event.cursor.isOf(*allowedTypes)) ||
+                (event.currentItem !in allowedTypes)) {
                 event.isCancelled = true
             }
         }
@@ -33,9 +35,9 @@ class CoinMenu(private val p: Player, val coin: Coin) : InventoryHolder {
                 var total = 0
 
                 event.inventory.contents.filterNotNull().forEach { item ->
-                    when (item.type) {
-                        holder.coin.backing -> total += item.amount
-                        holder.coin.backingBlock -> total += item.amount * 9
+                    when {
+                        item.isOf(holder.coin.backing) -> total += item.amount
+                        item.isOf(holder.coin.backingBlock) -> total += item.amount * 9
                         else -> player.dropItem(item)
                     }
                 }
@@ -70,10 +72,10 @@ class CoinMenu(private val p: Player, val coin: Coin) : InventoryHolder {
                 val blocks = amount / 9
                 val remainder = amount % 9
 
-                if (blocks > 0) inv.addItem(ItemStack(blockMat, blocks))
-                if (remainder > 0) inv.addItem(ItemStack(itemMat, remainder))
+                if (blocks > 0) inv.addItem(blockMat.withAmount(blocks))
+                if (remainder > 0) inv.addItem(itemMat.withAmount(remainder))
             } else {
-                inv.addItem(ItemStack(itemMat, amount))
+                inv.addItem(itemMat.withAmount(amount))
             }
         }
 
