@@ -1,5 +1,6 @@
 package co.akoot.plugins.plushies.util.builders
 
+import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.Text
@@ -84,7 +85,9 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
         if (!lore.isNullOrEmpty()) {
             val loreBuilder = ItemLore.lore()
             for (line in lore) {
-                loreBuilder.addLine(line)
+                loreBuilder.addLine(Text(line)
+                    .color(Kolor.TEXT).component
+                    .decoration(TextDecoration.ITALIC, false))
             }
             val finalLore = loreBuilder.build()
             itemStack.setData(DataComponentTypes.LORE, finalLore)

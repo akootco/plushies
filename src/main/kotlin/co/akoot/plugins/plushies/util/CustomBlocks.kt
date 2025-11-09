@@ -4,6 +4,7 @@ import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.bluefox.extensions.setPDC
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.runLater
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.util.Items.customItems
@@ -14,6 +15,7 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Container
 import org.bukkit.block.data.Directional
 import org.bukkit.entity.Display.Brightness
 import org.bukkit.entity.EntityType
@@ -41,7 +43,12 @@ val Location.id: String?
 fun createDisplay(location: Location, id: String, textured: Boolean = false) {
     val item = ItemBuilder.builder(if (textured) Material.OAK_PRESSURE_PLATE else Material.PLAYER_HEAD)
         .apply {
-            if (textured) { customModelData(id); itemModel("air") } // e
+            if (textured) {
+                val name = id.split("_").joinToString(" ") { it.replaceFirstChar { c -> c.titlecase() } }
+                customModelData(id)
+                itemModel("air")
+                itemName(Text(name).component)
+            } // e
             else {
                 val headItem = HeadDatabaseAPI().getItemHead(id)
                 if (headItem != null) copyOf(headItem)
@@ -88,10 +95,17 @@ fun removeCustomBlock(location: Location) {
     }
 }
 
-fun dropItems(location: Location, amount: Int) {
-    val key = location.id?.split("|")?.get(0) ?: return
+fun dropItems(block: Block, amount: Int) {
+    val loc = block.location
+    val key = loc.id?.split("|")?.get(0) ?: return
     repeat(amount) {
-        location.world.dropItemNaturally(location.toCenterLocation(), customItems[key] ?: return)
+        loc.world.dropItemNaturally(block.location.toCenterLocation(), customItems[key] ?: return)
+    }
+
+    (block.state as? Container)?.inventory?.forEach { item ->
+        if (item != null) {
+            loc.world.dropItemNaturally(loc.toCenterLocation(), item)
+        }
     }
 }
 

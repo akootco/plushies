@@ -31,8 +31,8 @@ class Plushies : FoxPlugin("plushies") {
         lateinit var smithRecipeConf: FoxConfig
         lateinit var customItemConfig: FoxConfig
         lateinit var customMusicDiscConfig: FoxConfig
-        lateinit var customBlockConfig: FoxConfig
         lateinit var customDialogConfig: FoxConfig
+        lateinit var merchantConfig: FoxConfig
 
         fun key(key: String): NamespacedKey {
             return NamespacedKey("plushies", key)
@@ -40,6 +40,8 @@ class Plushies : FoxPlugin("plushies") {
 
         private fun checkPlugin(name: String): Plugin? = Bukkit.getPluginManager().getPlugin(name)
         fun pluginEnabled(name: String): Boolean = checkPlugin(name)?.isEnabled == true
+
+        val tradeSource = mutableSetOf<FoxConfig>()
     }
 
     override fun load() {
@@ -54,6 +56,8 @@ class Plushies : FoxPlugin("plushies") {
             downloadBedrockPack()
             GeyserRegistrar()
         }
+
+        tradeSource.add(merchantConfig)
     }
 
     override fun unload() {
@@ -99,6 +103,7 @@ class Plushies : FoxPlugin("plushies") {
         registerEventListener(Events())
         registerEventListener(HDB())
         registerEventListener(BlockEvents())
+        registerEventListener(MerchantEvents())
     }
 
     override fun registerConfigs() {
@@ -111,8 +116,8 @@ class Plushies : FoxPlugin("plushies") {
         cookRecipeConf = registerConfig("cookRecipes", "recipes/cook_recipes.conf")
         smithRecipeConf = registerConfig("smithRecipes", "recipes/smithing.conf")
         customItemConfig = registerConfig("customItems", "data/items.conf")
-        customBlockConfig = registerConfig("customBlocks", "data/blocks.conf")
         customMusicDiscConfig = registerConfig("customMusicDiscs", "data/music_discs.conf")
         customDialogConfig = registerConfig("customDialogs", "data/dialogs.conf")
+        merchantConfig = registerConfig("merchantConfig", "data/merchant.conf")
     }
 }

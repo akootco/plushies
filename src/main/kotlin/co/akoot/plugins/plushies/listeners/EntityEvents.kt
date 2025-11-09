@@ -10,6 +10,7 @@ import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.Text.Companion.asString
 import co.akoot.plugins.bluefox.util.Text.Companion.now
 import co.akoot.plugins.plushies.Plushies.Companion.key
+import co.akoot.plugins.plushies.events.ModifyMerchantEvent
 import co.akoot.plugins.plushies.listeners.handlers.dropHead
 import co.akoot.plugins.plushies.listeners.handlers.petNeglect
 import co.akoot.plugins.plushies.listeners.tasks.Golf
@@ -26,6 +27,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.event.entity.EntityTargetEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
@@ -141,5 +143,11 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    fun EntitySpawnEvent.onTraderSpawn() {
+        val trader = entity as? WanderingTrader ?: return
+        ModifyMerchantEvent(trader).fire() ?: return
     }
 }

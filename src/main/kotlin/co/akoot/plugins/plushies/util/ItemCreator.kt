@@ -7,6 +7,7 @@ import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.pluginEnabled
 import co.akoot.plugins.plushies.util.Items.pendingHeads
 import co.akoot.plugins.plushies.util.Items.placeableKey
+import co.akoot.plugins.plushies.util.Util.resolvePlaceholders
 import co.akoot.plugins.plushies.util.builders.EquippableBuilder
 import co.akoot.plugins.plushies.util.builders.FoodBuilder
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
@@ -42,7 +43,7 @@ object ItemCreator {
             if (config.getBoolean("$path.isBlock") == true) {
                 val hdb = config.getString("$path.hdb")
                 val textures = config.getString("$path.textures")
-                val cmd = config.getString("$path.customModelData")
+                val cmd = config.getString("$path.customModelData")?.let { if (it == "0") path else it }
 
                 when {
                     hdb != null-> { pdc(blockKey, "$path|$hdb") }
@@ -51,7 +52,10 @@ object ItemCreator {
                         pdc(blockKey, "$path|$textures")
                         itemModel( "player_head")
                     }
-                    cmd != null -> pdc(texturedkKey, "$path|$cmd")
+                    cmd != null -> {
+                        pdc(texturedkKey, "$path|$cmd")
+                        itemModel("barrel")
+                    }
                     else -> pdc(blockKey, path)
                 }
 
@@ -81,7 +85,7 @@ object ItemCreator {
                 ?.let { pdc(key("attributes"), it) }
 
             // name
-            config.getString("$path.itemName")?.let { name -> itemName(Text(name).component) }
+            config.getString("$path.itemName")?.let { name -> itemName(resolvePlaceholders(name)) }
 
             // set amount
             config.getInt("$path.amount").takeIf { it != 1 }?.let { itemStack.amount = it }
@@ -112,7 +116,7 @@ object ItemCreator {
             config.getString("$path.customModelData")?.let { customModelData(if (it == "0") path else it) }
 
             //set lore
-            lore(config.getStringList("$path.lore").map { Text(it).component })
+            lore(config.getStringList("$path.lore").map { Text(resolvePlaceholders(it)).component })
 
             // stackSize needs to be 1-99 or else the server will explode (real)
             config.getInt("$path.stackSize").takeIf { it in 1..99 }?.let { stackSize(it) }

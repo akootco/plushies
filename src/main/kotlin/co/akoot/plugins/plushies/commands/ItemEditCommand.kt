@@ -2,15 +2,12 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
-import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.plushies.util.Items.hitSound
-import co.akoot.plugins.plushies.util.Items.hitSoundKey
+import co.akoot.plugins.plushies.util.Util.resolvePlaceholders
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
-import net.kyori.adventure.text.TextReplacementConfig
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.*
 import org.bukkit.command.CommandSender
 
@@ -66,18 +63,11 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
                     return false
                 }
 
-                val newName = LegacyComponentSerializer.legacyAmpersand()
-                    .deserialize(args.drop(1).joinToString(" ").replace("&&", "*&#&*"))
-
-                // erm
-                val replace = TextReplacementConfig.builder()
-                    .matchLiteral("*&#&*")
-                    .replacement("&")
-                    .build()
-
+                val newName = resolvePlaceholders(args.drop(1).joinToString(" "))
                 ItemBuilder.builder(item)
-                    .itemName(newName.replaceText(replace))
+                    .itemName(newName)
                     .build()
+
                 return true
             }
 
@@ -95,18 +85,11 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
                     return Result.success("Lore cleared.").getAndSend(p)
                 }
 
-                // what the freak man
-                val lore = args.drop(1).joinToString(" ").replace("&&", "*&#&*").split("\\n").map {
-                    LegacyComponentSerializer.legacyAmpersand().deserialize(it)
-                }
-
-                val replace = TextReplacementConfig.builder()
-                    .matchLiteral("*&#&*")
-                    .replacement("&")
-                    .build()
+                val input = args.drop(1).joinToString(" ")
+                val lore = input.split("\\n").map { resolvePlaceholders(it) }
 
                 ItemBuilder.builder(item)
-                    .lore(lore.map { it.replaceText(replace) })
+                    .lore(lore)
                     .build()
 
                 return true
