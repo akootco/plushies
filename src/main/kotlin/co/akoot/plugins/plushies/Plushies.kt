@@ -93,7 +93,7 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(ChunkPDCCommand(this))
         registerCommand(LocatorCommand(this))
         registerCommand(ATMCommand(this))
-        registerCommand(SellItemsCommand(this))
+        registerCommand(SellHeadsCommand(this))
         // bluemap commands
         registerCommand(ShowCommand(this))
         registerCommand(HideCommand(this))
