@@ -11,6 +11,7 @@ import co.akoot.plugins.plushies.geyser.GeyserUtil.downloadBedrockPack
 import co.akoot.plugins.plushies.listeners.*
 import co.akoot.plugins.plushies.util.DataPack.createDiscFiles
 import co.akoot.plugins.plushies.util.DataPack.createDiscItems
+import co.akoot.plugins.plushies.util.Items.hopcoin
 import co.akoot.plugins.plushies.util.Items.loadItems
 import co.akoot.plugins.plushies.util.Recipes.registerPlushieRecipes
 import co.akoot.plugins.plushies.util.ResourcePack.getJavaPack
@@ -50,6 +51,8 @@ class Plushies : FoxPlugin("plushies") {
 
         loadItems()
         createDiscItems() // attempt to create music discs
+        hopcoin()
+
         registerPlushieRecipes()
 
         geyser?.let {

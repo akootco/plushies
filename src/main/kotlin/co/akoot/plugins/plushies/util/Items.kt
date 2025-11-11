@@ -1,6 +1,10 @@
 package co.akoot.plugins.plushies.util
 
+import co.akoot.plugins.bluefox.BlueFox
 import co.akoot.plugins.bluefox.api.FoxConfig
+import co.akoot.plugins.bluefox.api.Kolor
+import co.akoot.plugins.bluefox.api.economy.Coin
+import co.akoot.plugins.bluefox.api.economy.Market
 import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
@@ -83,5 +87,25 @@ object Items {
             .damageResistance(DamageTypeTagKeys.IS_FIRE)
             .deathProtection(false) // cannot believe i was using a listener for this
             .build()
+    }
+
+    val hopcoin = ItemBuilder.builder(Material.POISONOUS_POTATO)
+        .unsetData(DataComponentTypes.CONSUMABLE)
+        .itemName(Text("HopCoin", Kolor.NUMBER).component)
+        .pdc(BlueFox.key("ticker"), "hopcoin")
+        .customModelData("hopcoin")
+        .glint()
+        .build()
+
+    fun hopcoin() {
+        Market.getCoin("hopcoin")?.let {
+            Market.coins["hopcoin"] = Coin(
+                id = it.id,
+                ticker = it.ticker,
+                name = "HopCoin™",
+                description = "the world’s most valuable coin",
+                backing = hopcoin
+            )
+        }
     }
 }
