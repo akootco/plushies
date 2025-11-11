@@ -3,6 +3,7 @@ package co.akoot.plugins.plushies.gui.atm
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.api.economy.Economy.rounded
 import co.akoot.plugins.bluefox.api.economy.Market
+import co.akoot.plugins.bluefox.extensions.isSurventure
 import co.akoot.plugins.bluefox.extensions.wallet
 import co.akoot.plugins.bluefox.util.ColorUtil.randomColor
 import co.akoot.plugins.bluefox.util.Text
@@ -22,7 +23,7 @@ class ATMMenu(private val p: Player) : InventoryHolder {
         fun atmMainMenu(item: ItemStack, p: Player) {
             val name = item.itemMeta.itemName().asString()
             val coin = Market.getCoin(name.substring(1))?: return
-            p.openInventory(CoinMenu(p, coin).inventory)
+            if (p.isSurventure) p.openInventory(CoinMenu(p, coin).inventory)
         }
     }
 

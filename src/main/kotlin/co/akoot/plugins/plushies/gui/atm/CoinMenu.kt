@@ -37,7 +37,7 @@ class CoinMenu(private val p: Player, val coin: Coin) : InventoryHolder {
                     when {
                         item.isOf(holder.coin.backing) -> total += item.amount
                         item.isOf(holder.coin.backingBlock) -> total += item.amount * holder.coin.backingBlockValue
-                        else -> player.dropItem(item)
+                        else -> player.give(item)
                     }
                 }
 

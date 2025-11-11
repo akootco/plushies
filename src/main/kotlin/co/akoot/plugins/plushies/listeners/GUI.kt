@@ -8,6 +8,7 @@ import co.akoot.plugins.plushies.gui.CustomItemMenu
 import co.akoot.plugins.plushies.gui.CustomItemMenu.Companion.customItemMenu
 import co.akoot.plugins.plushies.gui.PlushieMenu
 import co.akoot.plugins.plushies.gui.PlushieMenu.Companion.plushMenu
+import co.akoot.plugins.plushies.gui.SellItemMenu
 import co.akoot.plugins.plushies.gui.atm.ATMMenu
 import co.akoot.plugins.plushies.gui.atm.ATMMenu.Companion.atmMainMenu
 import co.akoot.plugins.plushies.gui.atm.CoinMenu
@@ -54,6 +55,7 @@ class GUI : Listener {
             }
 
             is CoinMenu -> CoinMenu.onClick(holder, event)
+            is SellItemMenu -> SellItemMenu.onClick(p, event)
 
             else -> return
         }
@@ -64,6 +66,7 @@ class GUI : Listener {
         val p = event.player as Player
         when (val holder = event.inventory.holder) {
             is CoinMenu -> CoinMenu.onClose(holder, p, event)
+            is SellItemMenu -> SellItemMenu.onClose(p, event)
         }
     }
 }
