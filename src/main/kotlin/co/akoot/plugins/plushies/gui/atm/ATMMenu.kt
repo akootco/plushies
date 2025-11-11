@@ -9,6 +9,7 @@ import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.Text.Companion.asString
 import co.akoot.plugins.plushies.util.builders.ChestGUI
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
@@ -20,7 +21,7 @@ class ATMMenu(private val p: Player) : InventoryHolder {
     companion object {
         fun atmMainMenu(item: ItemStack, p: Player) {
             val name = item.itemMeta.itemName().asString()
-            val coin = Market.getCoin(name)?: return
+            val coin = Market.getCoin(name.substring(1))?: return
             p.openInventory(CoinMenu(p, coin).inventory)
         }
     }
@@ -33,9 +34,10 @@ class ATMMenu(private val p: Player) : InventoryHolder {
             .apply {
                 // set buttons, will take player to balance when clicked
                 coins.values.forEachIndexed { slot, coin ->
-                    val backingItem = coin.backing!!
-                    val item = ItemBuilder.builder(ItemStack(backingItem))
-                        .itemName(Kolor.ACCENT(coin.ticker).component)
+                    val backingItem = coin.backing?.clone()!!
+                    val item = ItemBuilder.builder(backingItem)
+                        .itemName(Kolor.ACCENT("$${coin.ticker}").component)
+                        .unsetData(DataComponentTypes.CUSTOM_NAME)
                         .lore(listOf((p.wallet?.balance?.get(coin)?: BigDecimal.ZERO).rounded.component))
                         .build()
                     setItem(slot, item)
