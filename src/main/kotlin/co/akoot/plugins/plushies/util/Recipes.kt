@@ -37,18 +37,13 @@ object Recipes {
     }
 
     // get recipe input items
-    private fun getInput(input: String): RecipeChoice? {
+    fun getInput(input: String): RecipeChoice? {
         if (input.startsWith("tag.")) {
-            val tag = when (input.removePrefix("tag.").uppercase()) {
-                "WOOL" -> Tag.WOOL
-                "LEAVES" -> Tag.LEAVES
-                "PLANKS" -> Tag.PLANKS
-                "LOGS" -> Tag.LOGS
-                else -> {
-                    return null
-                }
-            }
-            return MaterialChoice(tag)
+            val tag = Bukkit.getTag(Tag.REGISTRY_ITEMS,
+                NamespacedKey.minecraft( input.removePrefix("tag.").trim().lowercase()),
+                Material::class.java)
+
+            return tag?.let { MaterialChoice(it) }
         }
         // if no prefix, check for custom item or vanilla material.
         customItems.keys.find { it.equals(input, ignoreCase = true) }?.let { key ->
