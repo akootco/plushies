@@ -69,8 +69,8 @@ object Items {
         val id = item.itemMeta?.getPDC<String>(itemKey) ?: return null
         val customItem = customItems[id] ?: return null
 
-        if (item.isSimilar(customItem)) return null
-        return customItem.clone().apply { amount = item.amount }
+        if (item.type == customItem.type) return null
+        return item.withType(customItem.type)
     }
 
     fun updateInventory(inv: Inventory) {
