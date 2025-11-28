@@ -4,6 +4,7 @@ import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.extensions.isSurventure
 import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.plushies.Plushies.Companion.key
+import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.attribute.Attribute
 import org.bukkit.entity.*
@@ -20,10 +21,11 @@ class Throwable(private val shouldDrop: Boolean, private val snowBall: Snowball,
     override fun run() {
         val loc = snowBall.location
 
-        if (!snowBall.isValid) {
+        if (!snowBall.isValid || loc.block.type == Material.BUBBLE_COLUMN) {
             if (shouldDrop) loc.world.dropItemNaturally(loc.add(0.0, 0.5, 0.0), display.itemStack)
             loc.world.playSound(loc, Sound.ITEM_TRIDENT_HIT, 0.2f, 1f)
             display.remove()
+            snowBall.remove()
             return cancel()
         }
 
