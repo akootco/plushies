@@ -19,18 +19,22 @@ import co.akoot.plugins.plushies.util.ResourcePack.isPackEnabled
 import co.akoot.plugins.plushies.util.ResourcePack.packDeniers
 import co.akoot.plugins.plushies.util.ResourcePack.sendPackMsg
 import co.akoot.plugins.plushies.util.ResourcePack.setPack
+import co.akoot.plugins.plushies.util.Util.inValidWorld
+import co.akoot.plugins.plushies.util.Util.isDefault
 import co.akoot.plugins.plushies.util.Util.setAttributes
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import com.destroystokyo.paper.MaterialTags
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.event.player.AsyncChatEvent
 import org.bukkit.Material
+import org.bukkit.attribute.Attribute
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Container
 import org.bukkit.block.data.Directional
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
+import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerJoinEvent
@@ -47,7 +51,7 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
         val meta = event.item.itemMeta ?: return
 
         when {
-            meta.hasPDC(key("attributes")) ->
+            event.player.world.isDefault && meta.hasPDC(key("attributes")) ->
                 setAttributes(event.item, event.player)
 
             meta.hasPDC(axeKey) -> {
@@ -70,6 +74,12 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
         if (isPackEnabled) {
             setPack(player)
         }
+    }
+
+    @EventHandler
+    fun PlayerChangedWorldEvent.onWorldChange() {
+        val scale = player.getAttribute(Attribute.SCALE) ?: return
+        if (!player.inValidWorld()) scale.baseValue = 1.0
     }
 
     @EventHandler

@@ -1,5 +1,7 @@
 package co.akoot.plugins.plushies.util
 
+import co.akoot.plugins.bluefox.BlueFox
+import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.util.Text
@@ -10,6 +12,7 @@ import io.papermc.paper.registry.RegistryKey
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
+import org.bukkit.World
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
@@ -82,5 +85,15 @@ object Util {
         }
 
         return result.component
+    }
+
+    val World.isDefault: Boolean
+        get() = name in BlueFox.instance.settings.getStringList("wallet.worlds")
+
+    fun Player.inValidWorld(context: FoxCommand? = null): Boolean {
+        return if (!world.isDefault) {
+            if (context != null) sendMessage(Text("/${context.id} is not allowed in this world!", Kolor.ERROR).component)
+            false
+        } else true
     }
 }

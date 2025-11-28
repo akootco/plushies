@@ -8,6 +8,7 @@ import co.akoot.plugins.bluefox.extensions.wallet
 import co.akoot.plugins.bluefox.util.ColorUtil.randomColor
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.Text.Companion.asString
+import co.akoot.plugins.plushies.util.Util.inValidWorld
 import co.akoot.plugins.plushies.util.builders.ChestGUI
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -23,7 +24,7 @@ class ATMMenu(private val p: Player) : InventoryHolder {
         fun atmMainMenu(item: ItemStack, p: Player) {
             val name = item.itemMeta.itemName().asString()
             val coin = Market.getCoin(name.substring(1))?: return
-            if (p.isSurventure) p.openInventory(CoinMenu(p, coin).inventory)
+            if (p.inValidWorld() && p.isSurventure) p.openInventory(CoinMenu(p, coin).inventory)
         }
     }
 

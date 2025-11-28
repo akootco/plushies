@@ -80,7 +80,7 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
 
         val chance = when {
             entity is Player -> if (entity.world.moonPhase == MoonPhase.FULL_MOON) 1.0 else 0.14
-            entity is Enderman -> 0.03
+            entity is Enderman -> if (entity.world.name == "world_the_end") 0.005 else 0.14
             entity.type in listOf(EntityType.WANDERING_TRADER, EntityType.WARDEN, EntityType.HAPPY_GHAST) -> 1.0
             else -> 0.08
         }
