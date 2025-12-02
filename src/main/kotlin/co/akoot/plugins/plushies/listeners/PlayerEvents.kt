@@ -13,7 +13,7 @@ import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowable
 import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.Items.isPlaceable
-import co.akoot.plugins.plushies.util.Items.updateInventory
+//import co.akoot.plugins.plushies.util.Items.updateInventory
 import co.akoot.plugins.plushies.util.Recipes.unlockRecipes
 import co.akoot.plugins.plushies.util.ResourcePack.isPackEnabled
 import co.akoot.plugins.plushies.util.ResourcePack.packDeniers
@@ -73,7 +73,7 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
     @EventHandler
     fun PlayerJoinEvent.onJoin() {
-        updateInventory(player.inventory)
+//        updateInventory(player.inventory)
         unlockRecipes(player)
         if (isPackEnabled) {
             setPack(player)
@@ -127,9 +127,9 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
                         ItemBuilder.builder(item).unsetData(DataComponentTypes.DYED_COLOR).build()
                     }
 
-                    block.state is Container -> {
-                        updateInventory((block.state as Container).inventory)
-                    }
+//                    block.state is Container -> {
+//                        updateInventory((block.state as Container).inventory)
+//                    }
 
                     block.state is Sign -> {
                         val sign = block.state as Sign

@@ -64,21 +64,21 @@ object Items {
             .build()
     }
 
-    fun updateItem(item: ItemStack?): ItemStack? {
-        if (item == null) return null
-        val id = item.itemMeta?.getPDC<String>(itemKey) ?: return null
-        val customItem = customItems[id] ?: return null
-
-        if (item.type == customItem.type) return null
-        return item.withType(customItem.type)
-    }
-
-    fun updateInventory(inv: Inventory) {
-        for (i in 0 until inv.size) {
-            val new = updateItem(inv.getItem(i))
-            if (new != null) inv.setItem(i, new)
-        }
-    }
+//    fun updateItem(item: ItemStack?): ItemStack? {
+//        if (item == null) return null
+//        val id = item.itemMeta?.getPDC<String>(itemKey) ?: return null
+//        val customItem = customItems[id] ?: return null
+//
+//        if (item.type == customItem.type) return null
+//        return item.withType(customItem.type)
+//    }
+//
+//    fun updateInventory(inv: Inventory) {
+//        for (i in 0 until inv.size) {
+//            val new = updateItem(inv.getItem(i))
+//            if (new != null) inv.setItem(i, new)
+//        }
+//    }
 
     fun createPlushie(name: String, customModelData: String): ItemStack {
         return ItemBuilder.builder(ItemStack(Material.TOTEM_OF_UNDYING))

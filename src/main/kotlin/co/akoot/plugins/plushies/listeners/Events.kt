@@ -9,7 +9,7 @@ import co.akoot.plugins.plushies.listeners.handlers.dropItem
 import co.akoot.plugins.plushies.listeners.handlers.plushieFrame
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.golfKey
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.spawnGolfBall
-import co.akoot.plugins.plushies.util.Items.updateItem
+//import co.akoot.plugins.plushies.util.Items.updateItem
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import co.akoot.plugins.plushies.util.isCustomBlock
 import com.destroystokyo.paper.MaterialTags
@@ -34,18 +34,18 @@ import org.bukkit.potion.PotionEffectType
 
 class Events : Listener {
 
-    @EventHandler
-    fun updateDisplays(event: ChunkLoadEvent) {
-        for (entity in event.chunk.entities) {
-            when (entity) {
-                is ItemFrame -> updateItem(entity.item)?.let { entity.setItem(it) }
-//                is ItemDisplay -> {
-//                    if (!entity.location.block.isCustomBlock)
-//                        updateItem(entity.itemStack)?.let { entity.setItemStack(it) }
-//                }
-            }
-        }
-    }
+//    @EventHandler
+//    fun updateDisplays(event: ChunkLoadEvent) {
+//        for (entity in event.chunk.entities) {
+//            when (entity) {
+//                is ItemFrame -> updateItem(entity.item)?.let { entity.setItem(it) }
+////                is ItemDisplay -> {
+////                    if (!entity.location.block.isCustomBlock)
+////                        updateItem(entity.itemStack)?.let { entity.setItemStack(it) }
+////                }
+//            }
+//        }
+//    }
 
     @EventHandler
     fun PrepareItemCraftEvent.elytra() {
