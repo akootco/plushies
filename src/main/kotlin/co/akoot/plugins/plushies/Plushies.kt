@@ -51,7 +51,7 @@ class Plushies : FoxPlugin("plushies") {
 
         loadItems()
         createDiscItems() // attempt to create music discs
-        hopcoin()
+//        hopcoin()
 
         registerPlushieRecipes()
 
