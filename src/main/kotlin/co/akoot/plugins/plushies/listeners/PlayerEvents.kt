@@ -26,11 +26,15 @@ import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import com.destroystokyo.paper.MaterialTags
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.event.player.AsyncChatEvent
+import org.bukkit.Effect
 import org.bukkit.Material
+import org.bukkit.Tag
 import org.bukkit.attribute.Attribute
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Container
+import org.bukkit.block.Sign
 import org.bukkit.block.data.Directional
+import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -125,6 +129,19 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
                     block.state is Container -> {
                         updateInventory((block.state as Container).inventory)
+                    }
+
+                    block.state is Sign -> {
+                        val sign = block.state as Sign
+                        val loc = sign.location
+
+                        if (!Tag.ITEMS_AXES.isTagged(item.type)) return
+                        if (sign.isWaxed) {
+                            event.setUseInteractedBlock(Event.Result.DENY)
+                            loc.world.playEffect(loc, Effect.COPPER_WAX_OFF, 0)
+                            sign.isWaxed = false
+                            sign.update()
+                        }
                     }
                 }
             }
