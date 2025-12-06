@@ -29,6 +29,7 @@ object Recipes {
         smithingRecipes()
         wingRecipes()
         shulkers() // why is nobody licking my brains?!?
+        coloredShulker()
 
         CraftRecipe.builder("wrench", customItems["wrench"]?: return)
             .ingredient(MaterialChoice(Material.LIGHTNING_ROD))
@@ -104,6 +105,17 @@ object Recipes {
             CraftRecipe.builder("${baseName.lowercase()}.elytra",
                 ItemBuilder(Material.ELYTRA).dye(DyeColor.valueOf(dye.name.removeSuffix("_DYE")).color).build())
                 .ingredient(MaterialChoice(Material.ELYTRA))
+                .ingredient(MaterialChoice(dye))
+                .shapeless()
+        }
+    }
+
+    private fun coloredShulker() {
+        MaterialTags.DYES.values.forEach { dye ->
+            val color = dye.name.removeSuffix("_DYE")
+            CraftRecipe.builder("${color.lowercase()}.shulker", getMaterial("${color.lowercase()}_shulker_box", 1) ?: return@forEach)
+                .ingredient(MaterialChoice(Material.CHEST))
+                .ingredient(MaterialChoice(Material.SHULKER_SHELL),2)
                 .ingredient(MaterialChoice(dye))
                 .shapeless()
         }
