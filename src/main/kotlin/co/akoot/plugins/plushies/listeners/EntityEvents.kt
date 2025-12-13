@@ -31,6 +31,7 @@ import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.event.entity.EntityTargetEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
+import org.bukkit.inventory.EquipmentSlot
 import kotlin.random.Random
 
 class EntityEvents(private val plugin: FoxPlugin) : Listener {
@@ -106,6 +107,7 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
     @EventHandler
     fun interactEntity(event: PlayerInteractEntityEvent) {
         if (event.isCancelled) return
+        if (event.hand != EquipmentSlot.HAND) return // dumb
         val item = event.player.inventory.itemInMainHand
 
         if (item.type == Material.NAME_TAG) {
