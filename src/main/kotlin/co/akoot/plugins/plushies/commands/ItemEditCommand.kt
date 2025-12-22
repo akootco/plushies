@@ -2,8 +2,8 @@ package co.akoot.plugins.plushies.commands
 
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.util.Items.hitSound
-import co.akoot.plugins.plushies.util.Util.resolvePlaceholders
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.registry.RegistryAccess
@@ -62,20 +62,15 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
                     sendError(p, "Name cannot be empty.")
                     return false
                 }
-
-                val newName = resolvePlaceholders(args.drop(1).joinToString(" "))
                 ItemBuilder.builder(item)
-                    .itemName(newName)
+                    .itemName(Text(args.drop(1).joinToString(" ")).component)
                     .build()
 
                 return true
             }
 
             "lore" -> {
-                if (arg1 == null) {
-                    sendError(p, "Lore cannot be empty.")
-                    return false
-                }
+                if (arg1 == null) { return false }
 
                 if (args[1] == "-c") {
                     ItemBuilder.builder(item)
@@ -85,8 +80,7 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
                     return Result.success("Lore cleared.").getAndSend(p)
                 }
 
-                val input = args.drop(1).joinToString(" ")
-                val lore = input.split("\\n").map { resolvePlaceholders(it) }
+                val lore = args.drop(1).joinToString(" ").split("\\n").map { Text(it).component }
 
                 ItemBuilder.builder(item)
                     .lore(lore)
