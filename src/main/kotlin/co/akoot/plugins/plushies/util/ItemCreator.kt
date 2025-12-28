@@ -7,6 +7,7 @@ import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.pluginEnabled
 import co.akoot.plugins.plushies.util.Items.pendingHeads
 import co.akoot.plugins.plushies.util.Items.placeableKey
+import co.akoot.plugins.plushies.util.Items.swingSound
 import co.akoot.plugins.plushies.util.builders.EquippableBuilder
 import co.akoot.plugins.plushies.util.builders.FoodBuilder
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
@@ -120,6 +121,9 @@ object ItemCreator {
             // stackSize needs to be 1-99 or else the server will explode (real)
             config.getInt("$path.stackSize").takeIf { it in 1..99 }?.let { stackSize(it) }
 
+            config.getString("$path.hitSound")?.let { id -> hitSound(id.lowercase()) }
+
+            config.getString("$path.swingSound")?.let { id -> itemStack.swingSound = id }
         }.build()
     }
 

@@ -36,7 +36,7 @@ class ATMMenu(private val p: Player) : InventoryHolder {
             .apply {
                 // set buttons, will take player to balance when clicked
                 coins.values.forEachIndexed { slot, coin ->
-                    val backingItem = coin.backing?.clone()!!
+                    val backingItem = coin.backing?.clone()?.asOne()!!
                     val item = ItemBuilder.builder(backingItem)
                         .itemName(Kolor.ACCENT("$${coin.ticker}").component)
                         .unsetData(DataComponentTypes.CUSTOM_NAME)

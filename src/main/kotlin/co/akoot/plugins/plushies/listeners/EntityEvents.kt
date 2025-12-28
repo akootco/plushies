@@ -56,23 +56,31 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
     }
 
     @EventHandler
-    fun entityDamage(event: EntityDamageByEntityEvent) {
+    fun onEntityDamage(event: EntityDamageByEntityEvent) {
+        val attacker = event.damager as? Player ?: return
         val target = event.entity
-        val attacker = event.damager
-        if (attacker is Player) {
+        val item = attacker.inventory.itemInMainHand
+        val world = target.world
+        val location = target.location
 
-            attacker.inventory.itemInMainHand.hitSound?.let { sound ->
-                target.world.playSound(target.location, sound, 1.0f, 1.0f)
-            }
+        item.hitSound?.let { sound ->
+            world.playSound(location, sound, 1.0f, 1.0f)
+        }
 
-            if (target is ArmorStand && target.hasPDC(golfKey)) {
-                event.damage = 0.0
-                if (golfSwing(target, attacker)) {
-                    Golf(attacker, target, target.location).runTaskTimer(plugin, 20, 20)
-                }
+        if (item.isPlushie) {
+            world.playSound(location, "plushies:squeak", 1.0f, 1.0f)
+        }
+
+        if (target is ArmorStand && target.hasPDC(golfKey)) {
+            event.damage = 0.0
+
+            if (golfSwing(target, attacker)) {
+                Golf(attacker, target, location)
+                    .runTaskTimer(plugin, 20L, 20L)
             }
         }
     }
+
 
     @EventHandler
     fun EntityDeathEvent.onEntityDeath() {

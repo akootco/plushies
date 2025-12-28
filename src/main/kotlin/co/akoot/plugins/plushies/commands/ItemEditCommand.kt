@@ -4,6 +4,7 @@ import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.util.Items.hitSound
+import co.akoot.plugins.plushies.util.Items.swingSound
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.registry.RegistryAccess
@@ -14,6 +15,7 @@ import org.bukkit.command.CommandSender
 class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
 
     private val songs: Registry<JukeboxSong> = RegistryAccess.registryAccess().getRegistry(RegistryKey.JUKEBOX_SONG)
+    private val sounds: Registry<Sound> = RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT)
 
     override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
 
@@ -25,7 +27,8 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
             "dye",
             "model",
             "disc",
-            "hitsound"
+            "hitsound",
+            "swingsound"
         )
 
         when (args[0]) {
@@ -92,6 +95,12 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
             "hitsound" -> {
                 if (arg1 == null) { return sendError(p, "what sound should this make?") }
                 item.hitSound = args[1]
+                return true
+            }
+
+            "swingsound" -> {
+                if (arg1 == null) { return sendError(p, "what sound should this make?") }
+                item.swingSound = args[1]
                 return true
             }
 

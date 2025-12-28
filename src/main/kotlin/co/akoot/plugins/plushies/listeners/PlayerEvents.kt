@@ -13,6 +13,7 @@ import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowable
 import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.Items.isPlaceable
+import co.akoot.plugins.plushies.util.Items.swingSound
 //import co.akoot.plugins.plushies.util.Items.updateInventory
 import co.akoot.plugins.plushies.util.Recipes.unlockRecipes
 import co.akoot.plugins.plushies.util.ResourcePack.isPackEnabled
@@ -102,6 +103,11 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
         if (event.hand != EquipmentSlot.HAND) return // dumb
         val player = event.player
         val item = player.inventory.itemInMainHand
+
+        if (event.action.isLeftClick) {
+            item.swingSound?.let { sound -> player.world.playSound(player.location, sound, 1f, 1f) }
+        }
+
         val block = event.clickedBlock ?: return
         val face = event.blockFace
 

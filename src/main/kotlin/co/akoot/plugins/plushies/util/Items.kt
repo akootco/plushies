@@ -7,6 +7,8 @@ import co.akoot.plugins.bluefox.api.economy.Coin
 import co.akoot.plugins.bluefox.api.economy.Market
 import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.hasPDC
+import co.akoot.plugins.bluefox.extensions.removePDC
+import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.customItemConfig
@@ -20,6 +22,7 @@ import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import kotlin.collections.listOf
 import kotlin.collections.mutableMapOf
 
 object Items {
@@ -30,6 +33,7 @@ object Items {
     val itemKey = key("item")
     val placeableKey = key("placeable")
     val hitSoundKey = key("hit.sound")
+    val swingSoundKey = key("swing.sound")
 
     val ItemStack.isCustomItem: Boolean
         get() = itemMeta?.hasPDC(itemKey) == true
@@ -45,6 +49,17 @@ object Items {
         set(value) {
             if (value != null) { ItemBuilder.builder(this).hitSound(value).build()
             }
+        }
+
+    var ItemStack.swingSound: String?
+        get() = itemMeta?.getPDC(swingSoundKey)
+        set(value) {
+            val meta = itemMeta ?: return
+            if (value == null || value in setOf("none", "-c", "null"))
+                meta.removePDC(swingSoundKey)
+            else
+                meta.setPDC(swingSoundKey, value)
+            itemMeta = meta
         }
 
     var plushies = plushieConf.getKeys().map { name -> name to (plushieConf.getString(name).takeUnless { it == "0" } ?: name) }
