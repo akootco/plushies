@@ -1,5 +1,6 @@
 package co.akoot.plugins.plushies.util
 
+import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.plushies.Plushies.Companion.cookRecipeConf
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.recipeConf
@@ -30,6 +31,7 @@ object Recipes {
         wingRecipes()
         shulkers() // why is nobody licking my brains?!?
         coloredShulker()
+        deepslate()
 
         CraftRecipe.builder("wrench", customItems["wrench"]?: return)
             .ingredient(MaterialChoice(Material.LIGHTNING_ROD))
@@ -60,8 +62,9 @@ object Recipes {
         // if no prefix, check for flugin item or vanilla material.
         customItems.keys.find { it.equals(input, ignoreCase = true) }?.let { key ->
             customItems[key]?.let {
-                it.amount = amount
-                return it
+                val copy = it.clone()  // clone first smh
+                copy.amount = amount
+                return copy
             }
         }
 
@@ -171,6 +174,39 @@ object Recipes {
                 }
             }
         }
+
+        Bukkit.addRecipe(
+            StonecuttingRecipe(
+                key("quartz_pillar_slab"),
+                ItemStack(Material.QUARTZ_SLAB, 2),
+                MaterialChoice(Material.QUARTZ_PILLAR)
+            )
+        )
+
+        Bukkit.addRecipe(
+            StonecuttingRecipe(
+                key("quartz_pillar_stairs"),
+                ItemStack(Material.QUARTZ_STAIRS),
+                MaterialChoice(Material.QUARTZ_PILLAR)
+            )
+        )
+    }
+
+    private fun deepslate() {
+        Bukkit.recipeIterator().forEach { recipe ->
+            if (recipe is StonecuttingRecipe && recipe.inputChoice is MaterialChoice) {
+                val inputChoice = recipe.inputChoice as MaterialChoice
+                if (inputChoice.choices.any { it.name.startsWith("COBBLED_DEEPSLATE") }) {
+                    val result = recipe.result.clone()
+                    val key = NamespacedKey("plushies", result.type.name.lowercase())
+
+                    Bukkit.addRecipe(
+                        StonecuttingRecipe(key, result,
+                            RecipeChoice.MaterialChoice(Material.DEEPSLATE))
+                    )
+                }
+            }
+        }
     }
 
     private fun smeltingRecipes() {
@@ -218,18 +254,19 @@ object Recipes {
         }
     }
 
-    private fun configRecipes() {
-        for (key in recipeConf.getKeys()) {
-            val shape = recipeConf.getStringList("$key.shape")
-            val result = recipeConf.getString("$key.result") ?: continue
+    fun configRecipes(config: FoxConfig = recipeConf, namespace: String = "plushies") {
+        for (key in config.getKeys()) {
+            val shape = config.getStringList("$key.shape")
+            val result = config.getString("$key.result") ?: continue
             val parts = result.split("/")
             val amount = parts.getOrNull(1)?.toIntOrNull() ?: 1
 
             if (shape.isEmpty()) {
                 // shapeless recipe
-                CraftRecipe.builder(key, ItemStack(getMaterial(parts[0], amount) ?: continue))// skip if output is invalid
+                val output = getMaterial(parts[0], amount) ?: continue // skip if output is invalid
+                CraftRecipe.builder(key, output)
                     .apply {
-                        for (ingredient in recipeConf.getStringList("$key.ingredients")) {
+                        for (ingredient in config.getStringList("$key.ingredients")) {
                             val ingparts = ingredient.split("/")
                             val ingamount = ingparts.getOrNull(1)?.toIntOrNull() ?: 1
 
@@ -238,25 +275,26 @@ object Recipes {
                             // nice!, add ingredient to recipe
                             ingredient(material, ingamount)
                         }
-                    }.shapeless()
+                    }.shapeless(namespace)
             } else {
 
                 if (shape.size != 3)  {
-                    logger("Plushies").warn("Invalid shape for recipe $key")
+                    logger("Plushies").warn("Invalid shape for recipe $key in '$namespace'")
                     continue // skip if shape is invalid
                 }
 
-                CraftRecipe.builder(key, ItemStack(getMaterial(parts[0], amount) ?: continue)) // skip if output is invalid
+                val output = getMaterial(parts[0], amount) ?: continue
+                CraftRecipe.builder(key, output)
                     .shape(shape[0], shape[1], shape[2])
                     .apply {
-                        for (ingredient in recipeConf.getKeys("$key.ingredients")) {
-                            val material = recipeConf.getString("$key.ingredients.$ingredient")
+                        for (ingredient in config.getKeys("$key.ingredients")) {
+                            val material = config.getString("$key.ingredients.$ingredient")
                                 ?.let { getInput(it) } ?: continue // skip if input is invalid
 
                             // all valid, add ingredient
                             ingredient(ingredient[0], material)
                         }
-                    }.shaped()
+                    }.shaped(namespace)
             }
         }
     }
