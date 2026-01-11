@@ -7,6 +7,7 @@ import co.akoot.plugins.plushies.util.Items.hitSound
 import co.akoot.plugins.plushies.util.Items.swingSound
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.SwingAnimation
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import org.bukkit.*
@@ -16,6 +17,7 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
 
     private val songs: Registry<JukeboxSong> = RegistryAccess.registryAccess().getRegistry(RegistryKey.JUKEBOX_SONG)
     private val sounds: Registry<Sound> = RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT)
+    private val animation = SwingAnimation.Animation.entries.map { it.name.lowercase() }
 
     override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
 
@@ -28,18 +30,16 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
             "model",
             "disc",
             "hitsound",
-            "swingsound"
+            "swingsound",
+            "swinganimation"
         )
 
-        when (args[0]) {
-            "dye", "lore" -> return arrayListOf("-c")
-            "disc" -> {
-                val songList = songs.map { it.key.key }.toMutableList()
-                return songList
-            }
+        return when (args[0]) {
+            "dye", "lore" -> arrayListOf("-c")
+            "disc" -> songs.map { it.key.key }.toMutableList()
+            "swinganimation" -> animation.toMutableList()
+            else -> mutableListOf()
         }
-
-        return mutableListOf()
     }
 
     override fun onCommand(sender: CommandSender, alias: String, args: Array<out String>): Boolean {
@@ -195,6 +195,23 @@ class ItemEditCommand(plugin: FoxPlugin) : FoxCommand(plugin, "edititem") {
                         return true
                     }
                 }
+                return true
+            }
+
+            "swinganimation" -> {
+                if (arg1 == null) {
+                    sendError(p, "swing animation is missing.")
+                    return false
+                }
+                ItemBuilder.builder(item)
+                    .apply {
+                        val animation = args.getOrNull(1)
+                            ?.uppercase()
+                            ?.let { SwingAnimation.Animation.values().find { anim -> anim.name == it } }
+
+                        animation?.let { swingAnimation(it) }
+                    }
+                    .build()
                 return true
             }
 

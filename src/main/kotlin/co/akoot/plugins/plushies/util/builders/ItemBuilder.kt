@@ -667,6 +667,12 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
         return this
     }
 
+    fun swingAnimation(animation: SwingAnimation.Animation): ItemBuilder {
+        itemStack.setData(DataComponentTypes.SWING_ANIMATION,
+            SwingAnimation.swingAnimation().type(animation).build())
+        return this
+    }
+
     /**
      * Builds and returns the final `ItemStack`.
      *
