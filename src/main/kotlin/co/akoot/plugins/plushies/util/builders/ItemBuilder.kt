@@ -593,7 +593,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      */
     fun throwable(): ItemBuilder {
         FoodBuilder.builder(pdc(axeKey).build())
-            .animation(ItemUseAnimation.SPEAR)
+            .animation(ItemUseAnimation.TRIDENT)
             .hunger(0,0f,0.1f)
             .isSnack()
             .noCrumbs()
