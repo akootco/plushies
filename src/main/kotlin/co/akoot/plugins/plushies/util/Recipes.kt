@@ -42,16 +42,15 @@ object Recipes {
     }
 
     fun tag(tag: String): RecipeChoice? {
-        val namespace = NamespacedKey.minecraft("ITEMS_$tag".trim().lowercase())
-        val tagKey = TagKey.create(RegistryKey.ITEM, namespace.key)
+        val key = NamespacedKey.minecraft(tag.trim().lowercase())
+        val tagKey = TagKey.create(RegistryKey.ITEM, key)
+        val tag = Registry.ITEM.getTag(tagKey)
 
-        return if (Registry.ITEM.hasTag(tagKey))
-            RecipeChoice.itemType(Registry.ITEM.getTag(tagKey))
-         else null
+        return if (tag.isEmpty) null else RecipeChoice.itemType(tag)
     }
 
     fun getInput(input: String): RecipeChoice? {
-        if (input.startsWith("tag.")) { return tag(input) }
+        if (input.startsWith("tag.")) { return tag(input.substring(4)) }
         customItems[input.lowercase()]?.let { return RecipeChoice.ExactChoice(it) }
         return Material.getMaterial(input.uppercase())?.asItemType()?.let { RecipeChoice.itemType(it) }
     }
