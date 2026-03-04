@@ -11,10 +11,13 @@ import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import co.akoot.plugins.plushies.util.builders.SmithRecipe
 import com.destroystokyo.paper.MaterialTags
+import io.papermc.paper.registry.RegistryKey
+import io.papermc.paper.registry.tag.TagKey
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.ItemType
 import org.bukkit.inventory.RecipeChoice
 import org.bukkit.inventory.RecipeChoice.MaterialChoice
 import org.bukkit.inventory.StonecuttingRecipe
@@ -22,7 +25,6 @@ import org.bukkit.inventory.StonecuttingRecipe
 object Recipes {
 
     fun registerPlushieRecipes() {
-        coloredRecipes()
         woodCutterRecipes()
         strippedWoodRecipe()
         configRecipes()
@@ -34,39 +36,33 @@ object Recipes {
         deepslate()
 
         CraftRecipe.builder("wrench", customItems["wrench"]?: return)
-            .ingredient(MaterialChoice(Material.LIGHTNING_ROD))
-            .ingredient(MaterialChoice(Material.COPPER_INGOT))
+            .ingredient(RecipeChoice.itemType(ItemType.LIGHTNING_ROD))
+            .ingredient(RecipeChoice.itemType(ItemType.COPPER_INGOT))
             .shapeless()
     }
 
-    // get recipe input items
-    fun getInput(input: String): RecipeChoice? {
-        if (input.startsWith("tag.")) {
-            val tag = Bukkit.getTag(Tag.REGISTRY_ITEMS,
-                NamespacedKey.minecraft( input.removePrefix("tag.").trim().lowercase()),
-                Material::class.java)
+    fun tag(tag: String): RecipeChoice? {
+        val namespace = NamespacedKey.minecraft("ITEMS_$tag".trim().lowercase())
+        val tagKey = TagKey.create(RegistryKey.ITEM, namespace.key)
 
-            return tag?.let { MaterialChoice(it) }
-        }
-        // if no prefix, check for custom item or vanilla material.
-        customItems.keys.find { it.equals(input, ignoreCase = true) }?.let { key ->
-            customItems[key]?.let {
-                return RecipeChoice.ExactChoice(it)
-            }
-        }
-        Material.getMaterial(input.uppercase())?.let { return MaterialChoice(it) }
-        return null
+        return if (Registry.ITEM.hasTag(tagKey))
+            RecipeChoice.itemType(Registry.ITEM.getTag(tagKey))
+         else null
+    }
+
+    fun getInput(input: String): RecipeChoice? {
+        if (input.startsWith("tag.")) { return tag(input) }
+        customItems[input.lowercase()]?.let { return RecipeChoice.ExactChoice(it) }
+        return Material.getMaterial(input.uppercase())?.asItemType()?.let { RecipeChoice.itemType(it) }
     }
 
     fun getMaterial(input: String, amount: Int = 1): ItemStack? {
         // if no prefix, check for flugin item or vanilla material.
-        customItems.keys.find { it.equals(input, ignoreCase = true) }?.let { key ->
-            customItems[key]?.let {
+        customItems[input.lowercase()]?.let {
                 val copy = it.clone()  // clone first smh
                 copy.amount = amount
                 return copy
             }
-        }
 
         Material.getMaterial(input.uppercase())?.let {
             val itemStack = ItemStack(it)
@@ -92,23 +88,30 @@ object Recipes {
     }
 
     private fun strippedWoodRecipe() {
-        Tag.LOGS.values.plus(Material.BAMBOO_BLOCK).forEach { inputMaterial -> // erm!!!! .plus is cool!
-            val resultMaterial = "STRIPPED_" + inputMaterial.name
+        Tag.LOGS.values.plus(Material.BAMBOO_BLOCK).forEach { input ->
+            val output = Material.entries.find { it.name == "STRIPPED_${input.name}" } ?: return@forEach
+            val type = input.asItemType() ?: return@forEach
 
-            Material.entries.find { it.name == resultMaterial }?.let { output ->
-                Bukkit.addRecipe(StonecuttingRecipe(key( output.name.lowercase()),
-                        ItemStack(output), MaterialChoice(inputMaterial)))
-            }
+            Bukkit.addRecipe(
+                StonecuttingRecipe(
+                    key(output.name.lowercase()),
+                    ItemStack(output),
+                    RecipeChoice.itemType(type)
+                )
+            )
         }
     }
 
     private fun wingRecipes() {
         MaterialTags.DYES.values.forEach { dye ->
-            val baseName = dye.name.removeSuffix("_DYE")
-            CraftRecipe.builder("${baseName.lowercase()}.elytra",
-                ItemBuilder(Material.ELYTRA).dye(DyeColor.valueOf(dye.name.removeSuffix("_DYE")).color).build())
-                .ingredient(MaterialChoice(Material.ELYTRA))
-                .ingredient(MaterialChoice(dye))
+            val color = dye.name.removeSuffix("_DYE")
+            val dyeItem = dye.asItemType() ?: return@forEach
+
+            CraftRecipe.builder(
+                "${color.lowercase()}.elytra",
+                ItemBuilder(Material.ELYTRA).dye(DyeColor.valueOf(color).color).build())
+                .ingredient(RecipeChoice.itemType(ItemType.ELYTRA))
+                .ingredient(RecipeChoice.itemType(dyeItem))
                 .shapeless()
         }
     }
@@ -116,38 +119,14 @@ object Recipes {
     private fun coloredShulker() {
         MaterialTags.DYES.values.forEach { dye ->
             val color = dye.name.removeSuffix("_DYE")
-            CraftRecipe.builder("${color.lowercase()}.shulker", getMaterial("${color.lowercase()}_shulker_box", 1) ?: return@forEach)
-                .ingredient(MaterialChoice(Material.CHEST))
-                .ingredient(MaterialChoice(Material.SHULKER_SHELL),2)
-                .ingredient(MaterialChoice(dye))
+            val dyeItem = dye.asItemType() ?: return@forEach
+            val output = getMaterial("${color.lowercase()}_shulker_box", 1) ?: return@forEach
+
+            CraftRecipe.builder("${color.lowercase()}.shulker", output)
+                .ingredient(RecipeChoice.itemType(ItemType.CHEST))
+                .ingredient(RecipeChoice.itemType(ItemType.SHULKER_SHELL), 2)
+                .ingredient(RecipeChoice.itemType(dyeItem))
                 .shapeless()
-        }
-    }
-
-    private fun coloredRecipes() {
-        val recipes = mapOf(
-            "_TERRACOTTA" to Tag.TERRACOTTA,
-            "_GLAZED_TERRACOTTA" to MaterialTags.GLAZED_TERRACOTTA,
-            "_CONCRETE" to MaterialTags.CONCRETES,
-            "_CONCRETE_POWDER" to Tag.CONCRETE_POWDER,
-            "_STAINED_GLASS" to MaterialTags.STAINED_GLASS,
-            "_STAINED_GLASS_PANE" to MaterialTags.STAINED_GLASS_PANES,
-            "_WOOL" to Tag.WOOL,
-            "_CARPET" to Tag.WOOL_CARPETS
-        )
-
-        recipes.forEach { (suffix, tag) ->
-            val terr = Material.entries
-                .filter { it.name.endsWith("_DYE") }
-                .associateWith { Material.valueOf(it.name.replace("_DYE", suffix)) }
-
-            terr.forEach { (dye: Material, item: Material) ->
-                CraftRecipe.builder(item.name.lowercase(), ItemStack(item, 8))
-                    .shape("TTT", "TDT", "TTT")
-                    .ingredient('T', MaterialChoice(tag))
-                    .ingredient('D', MaterialChoice(dye))
-                    .shaped()
-            }
         }
     }
 
@@ -165,13 +144,16 @@ object Recipes {
         Tag.PLANKS.values.forEach { plank ->
             output.forEach { (suffix, count) ->
                 val resultName = plank.name.replace("_PLANKS", suffix)
-                // if output matches a material, create the recipe
-                Material.entries.find { it.name == resultName }?.let { resultMaterial ->
-                    Bukkit.addRecipe(StonecuttingRecipe(
-                        key( resultMaterial.name.lowercase()),
+                val plankItem = plank.asItemType() ?: return@forEach
+                val resultMaterial = Material.entries.find { it.name == resultName } ?: return@forEach
+
+                Bukkit.addRecipe(
+                    StonecuttingRecipe(
+                        key(resultMaterial.name.lowercase()),
                         ItemStack(resultMaterial, count),
-                        MaterialChoice(plank)))
-                }
+                        RecipeChoice.itemType(plankItem)
+                    )
+                )
             }
         }
 
@@ -179,7 +161,7 @@ object Recipes {
             StonecuttingRecipe(
                 key("quartz_pillar_slab"),
                 ItemStack(Material.QUARTZ_SLAB, 2),
-                MaterialChoice(Material.QUARTZ_PILLAR)
+                RecipeChoice.itemType(ItemType.QUARTZ_PILLAR)
             )
         )
 
@@ -187,7 +169,7 @@ object Recipes {
             StonecuttingRecipe(
                 key("quartz_pillar_stairs"),
                 ItemStack(Material.QUARTZ_STAIRS),
-                MaterialChoice(Material.QUARTZ_PILLAR)
+                RecipeChoice.itemType(ItemType.QUARTZ_PILLAR)
             )
         )
     }
@@ -202,7 +184,7 @@ object Recipes {
 
                     Bukkit.addRecipe(
                         StonecuttingRecipe(key, result,
-                            RecipeChoice.MaterialChoice(Material.DEEPSLATE))
+                            RecipeChoice.itemType(ItemType.DEEPSLATE))
                     )
                 }
             }
