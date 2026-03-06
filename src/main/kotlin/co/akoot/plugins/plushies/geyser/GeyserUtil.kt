@@ -6,23 +6,36 @@ import org.bukkit.Tag
 import org.bukkit.Material
 import org.geysermc.geyser.api.GeyserApi
 import org.geysermc.geyser.api.event.lifecycle.GeyserDefineCustomItemsEvent
-import org.geysermc.geyser.api.item.custom.CustomItemData
-import org.geysermc.geyser.api.item.custom.CustomItemOptions
+import org.geysermc.geyser.api.item.custom.v2.CustomItemBedrockOptions
+import org.geysermc.geyser.api.item.custom.v2.CustomItemDefinition
+import org.geysermc.geyser.api.predicate.item.ItemMatchPredicate
+import org.geysermc.geyser.api.predicate.item.ItemRangeDispatchPredicate
+import org.geysermc.geyser.api.util.CreativeCategory
+import org.geysermc.geyser.api.util.Identifier
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
 object GeyserUtil {
 
-    fun register(event: GeyserDefineCustomItemsEvent, itemName: String, customModelData: Int, material: String) {
-        val data = CustomItemData.builder()
-            .customItemOptions(CustomItemOptions.builder().customModelData(customModelData).build())
-            // add item to creative category, so they show up in crafting book
-            .creativeCategory(1) // this sucks, why is it always construction
-            .name(itemName.lowercase())
+    fun register(event: GeyserDefineCustomItemsEvent, itemName: String, cmd: Any, material: String) {
+        val id = Identifier.of(material.lowercase())
+        val brItem = CustomItemBedrockOptions.builder()
+            .creativeCategory(CreativeCategory.ITEMS)
             .allowOffhand(true)
             .displayHandheld(material.isHandheld())
 
-        event.register("minecraft:${material.lowercase()}", data.build())
+        val item = CustomItemDefinition.builder(Identifier.of("plushies", itemName.lowercase()), id)
+            .bedrockOptions(brItem)
+            .apply {
+                when (cmd) {
+                    is String -> predicate(ItemMatchPredicate.customModelData(0, cmd))
+                    is Int, is Float -> predicate(ItemRangeDispatchPredicate.customModelData(0, (cmd as Number).toFloat()))
+                    else -> return
+                }
+            }
+            .displayName(itemName)
+
+        event.register(id, item.build())
     }
 
     private fun String.isHandheld(): Boolean {

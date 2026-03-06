@@ -19,10 +19,12 @@ class GeyserRegistrar : EventRegistrar {
 
     fun registerItems(event: GeyserDefineCustomItemsEvent) {
         // register plushies
-        for (key in Items.plushies.sortedBy { it.second }) {
-            val asInt = key.second.toIntOrNull() ?: continue
-            register(event, key.first, asInt, "totem_of_undying")
-            register(event, "${key.first}.st", asInt + 1, "totem_of_undying")
+        for ((name, value) in Items.plushies) {
+            val asInt = value.toIntOrNull()
+            register(event, name, asInt ?: value, "totem_of_undying")
+            if (asInt != null) {
+                register(event, "$name.st", asInt + 1, "totem_of_undying")
+            }
         }
 
         // book covers
@@ -32,12 +34,18 @@ class GeyserRegistrar : EventRegistrar {
 
         // everything else
         for ((material, keys) in customItems.entries.groupBy { it.value.type }) {
-            val sortedItems = keys.filter { it.value.itemMeta?.hasCustomModelData() == true }
-                .sortedBy { it.value.itemMeta.customModelData }
+            val sortedItems = keys.filter { it.value.itemMeta?.hasCustomModelDataComponent() == true }
 
             for (key in sortedItems) {
-                val cmd = key.value.itemMeta.customModelData
-                register(event, key.key, cmd, material.name.lowercase())
+                val cmd = key.value.itemMeta.customModelDataComponent
+
+                cmd.strings.firstOrNull()?.let {
+                    register(event, key.key, it, material.name.lowercase())
+                }
+
+                cmd.floats.firstOrNull()?.let {
+                    register(event, key.key, it, material.name.lowercase())
+                }
             }
         }
     }
