@@ -1,6 +1,7 @@
 package co.akoot.plugins.plushies.util.builders
 
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.*
 
@@ -13,8 +14,8 @@ import org.bukkit.inventory.*
  */
 class CraftRecipe private constructor(val name: String, private val result: ItemStack) {
 
-    private val ingredients = mutableMapOf<Char, RecipeChoice>()
-    private val shapelessIngredients = mutableListOf<RecipeChoice>()
+    private val ingredients = mutableMapOf<Char, Any>()
+    private val shapelessIngredients = mutableListOf<Any>()
     private val shape = mutableListOf<String>()
 
     /**
@@ -36,19 +37,23 @@ class CraftRecipe private constructor(val name: String, private val result: Item
      * @param input
      * @return
      */
-    fun ingredient(key: Char, input: RecipeChoice): CraftRecipe {
-        ingredients[key] = input
+    fun ingredient(key: Char, material: Material): CraftRecipe {
+        ingredients[key] = material
         return this
     }
 
-    /**
-     * Shapeless Ingredient
-     *
-     * @param input
-     * @return
-     */
-    fun ingredient(input: RecipeChoice, amount: Int = 1): CraftRecipe {
-        repeat(amount) { shapelessIngredients.add(input) }
+    fun ingredient(key: Char, choice: RecipeChoice): CraftRecipe {
+        ingredients[key] = choice
+        return this
+    }
+
+    fun ingredient(material: Material, amount: Int = 1): CraftRecipe {
+        repeat(amount) { shapelessIngredients.add(material) }
+        return this
+    }
+
+    fun ingredient(choice: RecipeChoice, amount: Int = 1): CraftRecipe {
+        repeat(amount) { shapelessIngredients.add(choice) }
         return this
     }
 
@@ -65,7 +70,10 @@ class CraftRecipe private constructor(val name: String, private val result: Item
 
         // Set the ingredients
         shapelessIngredients.forEach { ingredient ->
-            shapelessRecipe.addIngredient(ingredient)
+            when (ingredient) {
+                is Material -> shapelessRecipe.addIngredient(ingredient)
+                is RecipeChoice -> shapelessRecipe.addIngredient(ingredient)
+            }
         }
 
         // Register the recipe
@@ -83,8 +91,11 @@ class CraftRecipe private constructor(val name: String, private val result: Item
         shapedRecipe.shape(shape[0], shape[1], shape[2])
 
         // Set the ingredients
-        ingredients.forEach { (key, itemStack) ->
-            shapedRecipe.setIngredient(key, itemStack)
+        ingredients.forEach { (key, ingredient) ->
+            when (ingredient) {
+                is Material -> shapedRecipe.setIngredient(key, ingredient)
+                is RecipeChoice -> shapedRecipe.setIngredient(key, ingredient)
+            }
         }
 
         // Register the recipe

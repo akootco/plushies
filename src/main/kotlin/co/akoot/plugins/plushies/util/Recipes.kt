@@ -17,7 +17,6 @@ import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.ItemType
 import org.bukkit.inventory.RecipeChoice
 import org.bukkit.inventory.RecipeChoice.MaterialChoice
 import org.bukkit.inventory.StonecuttingRecipe
@@ -36,8 +35,8 @@ object Recipes {
         deepslate()
 
         CraftRecipe.builder("wrench", customItems["wrench"]?: return)
-            .ingredient(RecipeChoice.itemType(ItemType.LIGHTNING_ROD))
-            .ingredient(RecipeChoice.itemType(ItemType.COPPER_INGOT))
+            .ingredient(Material.LIGHTNING_ROD)
+            .ingredient(Material.COPPER_INGOT)
             .shapeless()
     }
 
@@ -89,13 +88,12 @@ object Recipes {
     private fun strippedWoodRecipe() {
         Tag.LOGS.values.plus(Material.BAMBOO_BLOCK).forEach { input ->
             val output = Material.entries.find { it.name == "STRIPPED_${input.name}" } ?: return@forEach
-            val type = input.asItemType() ?: return@forEach
 
             Bukkit.addRecipe(
                 StonecuttingRecipe(
                     key(output.name.lowercase()),
                     ItemStack(output),
-                    RecipeChoice.itemType(type)
+                    input
                 )
             )
         }
@@ -104,13 +102,12 @@ object Recipes {
     private fun wingRecipes() {
         MaterialTags.DYES.values.forEach { dye ->
             val color = dye.name.removeSuffix("_DYE")
-            val dyeItem = dye.asItemType() ?: return@forEach
 
             CraftRecipe.builder(
                 "${color.lowercase()}.elytra",
                 ItemBuilder(Material.ELYTRA).dye(DyeColor.valueOf(color).color).build())
-                .ingredient(RecipeChoice.itemType(ItemType.ELYTRA))
-                .ingredient(RecipeChoice.itemType(dyeItem))
+                .ingredient(Material.ELYTRA)
+                .ingredient(dye)
                 .shapeless()
         }
     }
@@ -118,13 +115,12 @@ object Recipes {
     private fun coloredShulker() {
         MaterialTags.DYES.values.forEach { dye ->
             val color = dye.name.removeSuffix("_DYE")
-            val dyeItem = dye.asItemType() ?: return@forEach
             val output = getMaterial("${color.lowercase()}_shulker_box", 1) ?: return@forEach
 
             CraftRecipe.builder("${color.lowercase()}.shulker", output)
-                .ingredient(RecipeChoice.itemType(ItemType.CHEST))
-                .ingredient(RecipeChoice.itemType(ItemType.SHULKER_SHELL), 2)
-                .ingredient(RecipeChoice.itemType(dyeItem))
+                .ingredient(Material.CHEST)
+                .ingredient(Material.SHULKER_SHELL, 2)
+                .ingredient(dye)
                 .shapeless()
         }
     }
@@ -143,14 +139,13 @@ object Recipes {
         Tag.PLANKS.values.forEach { plank ->
             output.forEach { (suffix, count) ->
                 val resultName = plank.name.replace("_PLANKS", suffix)
-                val plankItem = plank.asItemType() ?: return@forEach
                 val resultMaterial = Material.entries.find { it.name == resultName } ?: return@forEach
 
                 Bukkit.addRecipe(
                     StonecuttingRecipe(
                         key(resultMaterial.name.lowercase()),
                         ItemStack(resultMaterial, count),
-                        RecipeChoice.itemType(plankItem)
+                        plank
                     )
                 )
             }
@@ -160,7 +155,7 @@ object Recipes {
             StonecuttingRecipe(
                 key("quartz_pillar_slab"),
                 ItemStack(Material.QUARTZ_SLAB, 2),
-                RecipeChoice.itemType(ItemType.QUARTZ_PILLAR)
+                Material.QUARTZ_PILLAR
             )
         )
 
@@ -168,7 +163,7 @@ object Recipes {
             StonecuttingRecipe(
                 key("quartz_pillar_stairs"),
                 ItemStack(Material.QUARTZ_STAIRS),
-                RecipeChoice.itemType(ItemType.QUARTZ_PILLAR)
+                Material.QUARTZ_PILLAR
             )
         )
     }
@@ -181,10 +176,7 @@ object Recipes {
                     val result = recipe.result.clone()
                     val key = NamespacedKey("plushies", result.type.name.lowercase())
 
-                    Bukkit.addRecipe(
-                        StonecuttingRecipe(key, result,
-                            RecipeChoice.itemType(ItemType.DEEPSLATE))
-                    )
+                    Bukkit.addRecipe(StonecuttingRecipe(key, result, Material.DEEPSLATE))
                 }
             }
         }
