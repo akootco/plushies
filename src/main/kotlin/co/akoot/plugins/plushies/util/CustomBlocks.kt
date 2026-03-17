@@ -20,6 +20,7 @@ import org.bukkit.block.data.Directional
 import org.bukkit.entity.Display.Brightness
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.ItemDisplay
+import org.bukkit.inventory.ItemStack
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Transformation
 import org.joml.AxisAngle4f
@@ -40,23 +41,12 @@ val Location.id: String?
         chunk.getPDC<String>(getBlockPDC(this, ns))
     }
 
-fun createDisplay(location: Location, id: String, textured: Boolean = false) {
-    val item = ItemBuilder.builder(if (textured) Material.OAK_PRESSURE_PLATE else Material.PLAYER_HEAD)
-        .apply {
-            if (textured) {
-                val name = id.split("_").joinToString(" ") { it.replaceFirstChar { c -> c.titlecase() } }
-                customModelData(id)
-                itemModel("air")
-                itemName(Text(name).component)
-            } // e
-            else {
-                val headItem = HeadDatabaseAPI().getItemHead(id)
-                if (headItem != null) copyOf(headItem)
-                else headTexture(id)
-            }
-        }.build()
-
-    val blockYaw = (location.block.blockData as? Directional)?.facing?.let { facing ->
+fun spawnItemDisplay(
+    location: Location,
+    item: ItemStack,
+    display: Transformation? = null
+): ItemDisplay {
+    val fixedYaw = (location.block.blockData as? Directional)?.facing?.let { facing ->
         when (facing) {
             BlockFace.EAST -> -90f
             BlockFace.WEST -> 90f
@@ -65,23 +55,45 @@ fun createDisplay(location: Location, id: String, textured: Boolean = false) {
         }
     } ?: 180f
 
-    val itemDisplay =
-        location.world.spawnEntity(location.toCenterLocation().apply { yaw = blockYaw }, EntityType.ITEM_DISPLAY) as ItemDisplay
+    val itemDisplay = location.world.spawnEntity(
+        location.toCenterLocation().apply { this.yaw = fixedYaw },
+        EntityType.ITEM_DISPLAY
+    ) as ItemDisplay
 
     itemDisplay.itemDisplayTransform = ItemDisplay.ItemDisplayTransform.FIXED
-
     itemDisplay.apply {
         setItemStack(item)
         shadowRadius = 0f
         shadowStrength = 0f
-        brightness = Brightness(5, 10)
-        transformation = Transformation(
+        brightness = Brightness(5, 15)
+        transformation =  display ?: Transformation(
             Vector3f(),
             AxisAngle4f(),
             Vector3f(2.001f, 2.001f, 2.001f),
             AxisAngle4f()
         )
     }
+
+    return itemDisplay
+}
+
+fun createDisplay(location: Location, id: String, textured: Boolean = false) {
+    val item = ItemBuilder.builder(
+        if (textured) Material.OAK_PRESSURE_PLATE else Material.PLAYER_HEAD
+    ).apply {
+        if (textured) {
+            val name = id.split("_").joinToString(" ") { it.replaceFirstChar { c -> c.titlecase() } }
+            customModelData(id)
+            itemModel("air")
+            itemName(Text(name).component)
+        } else {
+            val headItem = HeadDatabaseAPI().getItemHead(id)
+            if (headItem != null) copyOf(headItem)
+            else headTexture(id)
+        }
+    }.build()
+
+    spawnItemDisplay(location, item)
 }
 
 fun removeCustomBlock(location: Location) {
