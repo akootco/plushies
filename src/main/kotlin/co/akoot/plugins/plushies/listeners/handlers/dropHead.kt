@@ -34,13 +34,13 @@ val headTexture: (Entity) -> String = { victim ->
         is Axolotl -> "axolotl.${victim.variant.name}"
         is Fox -> "fox.${victim.foxType.name}${if (victim.isSleeping) "_sleeping" else null}"
         // 1.21.5+
-//            is Cow -> "cow.${victim.variant.key.key}"
         is HappyGhast -> { // what the heck is this all about?
             val color = victim.equipment?.getItem(EquipmentSlot.BODY)?.type?.name?.substringBeforeLast("_")
                 ?.lowercase().takeIf { it != "air" } ?: "default"
             "happy_ghast.$color"
         }
         is Chicken -> "chicken.${victim.variant.key.key}"
+        is Cow -> "cow.${victim.variant.key.key}"
         is Pig -> "pig.${victim.variant.key.key}"
 
         else -> victim.type.name

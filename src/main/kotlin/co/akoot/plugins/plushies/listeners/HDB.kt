@@ -29,8 +29,10 @@ class HDB : Listener {
 
     @EventHandler
     fun PlayerClickHeadEvent.buyHead() {
-        if (!player.isSurventure) return
+        if (isCancelled || !player.isSurventure) return
         val price = categoryEnum.price
+
+        isCancelled = true
 
         when (player.wallet?.send(Wallet.WORLD, Coin.DIA, price)) {
             MISSING_COIN, INSUFFICIENT_BALANCE -> {
@@ -39,18 +41,18 @@ class HDB : Listener {
                         .plus(Kolor.NUMBER("$price"))
                         .plus($$" $DIA")
                 }
-                isCancelled = true
                 return
             }
         }
 
         Text(player) {
             Kolor.QUOTE("Purchased ")
-                .plus(Kolor.MONTH(head.displayName().asString()).hover(head))
+                .plus(head.displayName().asString()).hover(head)
                 .plus(" for ")
                 .plus(Kolor.NUMBER("$price"))
                 .plus($$" $DIA")
         }
+        player.give(head) // lmao. grow up
     }
 
     @EventHandler
