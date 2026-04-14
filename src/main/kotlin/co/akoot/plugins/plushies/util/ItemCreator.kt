@@ -2,6 +2,8 @@ package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.plushies.FurnitureUtil.furnHitbox
+import co.akoot.plugins.plushies.FurnitureUtil.furnKey
 import co.akoot.plugins.plushies.Plushies.Companion.customMusicDiscConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.pluginEnabled
@@ -26,9 +28,16 @@ object ItemCreator {
     fun createItem(config: FoxConfig, path: String, namespacedKey: NamespacedKey): ItemStack? {
         val material = when (config) {
             customMusicDiscConfig -> Material.MUSIC_DISC_11
-            else -> config.getString("$path.material")
-                ?.let(Material::getMaterial)
-                ?: return null
+
+            else -> {
+                if (!config.getString("$path.furniture.hitbox").isNullOrEmpty()) {
+                    Material.STRUCTURE_VOID
+                } else {
+                    config.getString("$path.material")
+                        ?.let(Material::getMaterial)
+                        ?: return null
+                }
+            }
         }
 
         return ItemStack(material)
@@ -124,6 +133,17 @@ object ItemCreator {
             config.getString("$path.hitSound")?.let { id -> hitSound(id.lowercase()) }
 
             config.getString("$path.swingSound")?.let { id -> itemStack.swingSound = id }
+
+            if (config.getKeys(path).contains("furniture")) {
+                config.getString("$path.furniture.hitbox")?.let { type -> pdc(furnHitbox, type) }
+                pdc(furnKey, path)
+            }
+
+            if (config.getBoolean("$path.dyeable") == true) {
+                stackSize(1) // dumb but idk how else to fix crafting dupe
+                pdc(key("dyeable"), true)
+            }
+
         }.build()
     }
 

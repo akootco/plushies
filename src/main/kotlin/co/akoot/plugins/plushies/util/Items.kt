@@ -35,6 +35,9 @@ object Items {
     val hitSoundKey = key("hit.sound")
     val swingSoundKey = key("swing.sound")
 
+    val ItemStack.isDyeable: Boolean
+        get() = itemMeta?.hasPDC(key("dyeable")) == true || type == Material.ELYTRA
+
     val ItemStack.isCustomItem: Boolean
         get() = itemMeta?.hasPDC(itemKey) == true
 
