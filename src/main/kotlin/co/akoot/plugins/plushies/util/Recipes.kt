@@ -109,6 +109,13 @@ object Recipes {
                 .ingredient(Material.ELYTRA)
                 .ingredient(dye)
                 .shapeless()
+
+            CraftRecipe.builder(
+                "${color.lowercase()}.furniture_placeholder",
+                ItemBuilder(Material.STRUCTURE_VOID).dye(DyeColor.valueOf(color).color).build())
+                .ingredient(Material.STRUCTURE_VOID)
+                .ingredient(dye)
+                .shapeless()
         }
     }
 
