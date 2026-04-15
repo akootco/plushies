@@ -62,7 +62,7 @@ fun spawnItemDisplay(
 
     itemDisplay.itemDisplayTransform = ItemDisplay.ItemDisplayTransform.FIXED
     itemDisplay.apply {
-        setItemStack(item)
+        setItemStack(item.clone().asOne())
         shadowRadius = 0f
         shadowStrength = 0f
         brightness = Brightness(5, 15)
@@ -101,6 +101,8 @@ fun removeCustomBlock(location: Location) {
     plugins.forEach {
         location.chunk.removePDC(getBlockPDC(location, it))
     }
+
+    location.chunk.removePDC(getBlockPDC(location, "furniture.seat"))
 
     for (entity in location.world.getNearbyEntities(BoundingBox.of(location.block))) {
         if (entity is ItemDisplay) entity.remove()

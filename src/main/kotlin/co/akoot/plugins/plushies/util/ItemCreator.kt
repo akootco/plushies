@@ -4,6 +4,7 @@ import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.FurnitureUtil.furnHitbox
 import co.akoot.plugins.plushies.FurnitureUtil.furnKey
+import co.akoot.plugins.plushies.FurnitureUtil.seatKey
 import co.akoot.plugins.plushies.Plushies.Companion.customMusicDiscConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.pluginEnabled
@@ -30,13 +31,8 @@ object ItemCreator {
             customMusicDiscConfig -> Material.MUSIC_DISC_11
 
             else -> {
-                if (!config.getString("$path.furniture.hitbox").isNullOrEmpty()) {
-                    Material.STRUCTURE_VOID
-                } else {
-                    config.getString("$path.material")
-                        ?.let(Material::getMaterial)
-                        ?: return null
-                }
+                if (config.getKeys(path).contains("furniture")) Material.STRUCTURE_VOID
+                else config.getString("$path.material")?.let(Material::getMaterial) ?: return null
             }
         }
 
@@ -136,7 +132,9 @@ object ItemCreator {
 
             if (config.getKeys(path).contains("furniture")) {
                 config.getString("$path.furniture.hitbox")?.let { type -> pdc(furnHitbox, type) }
+                if (config.getBoolean("$path.furniture.isSeat") == true) { pdc(seatKey, true) }
                 pdc(furnKey, path)
+                pdc(blockKey, path)
             }
 
             if (config.getBoolean("$path.dyeable") == true) {

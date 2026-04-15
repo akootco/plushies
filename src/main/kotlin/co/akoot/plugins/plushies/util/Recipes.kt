@@ -1,6 +1,8 @@
 package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.bluefox.api.FoxConfig
+import co.akoot.plugins.bluefox.api.Kolor
+import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.Plushies.Companion.cookRecipeConf
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.recipeConf
@@ -29,7 +31,7 @@ object Recipes {
         configRecipes()
         smeltingRecipes()
         smithingRecipes()
-        wingRecipes()
+        dyeRecipes()
         shulkers() // why is nobody licking my brains?!?
         coloredShulker()
         deepslate()
@@ -99,7 +101,7 @@ object Recipes {
         }
     }
 
-    private fun wingRecipes() {
+    private fun dyeRecipes() {
         MaterialTags.DYES.values.forEach { dye ->
             val color = dye.name.removeSuffix("_DYE")
 
@@ -110,9 +112,15 @@ object Recipes {
                 .ingredient(dye)
                 .shapeless()
 
+            val placeholder = ItemBuilder(Material.STRUCTURE_VOID)
+                .itemName(Text("Furniture").component)
+                .lore(listOf(Kolor.QUOTE("PLACEHOLDER").bold().component))
+                .customModelData("couch")
+                .dye(DyeColor.valueOf(color).color).build()
+
             CraftRecipe.builder(
                 "${color.lowercase()}.furniture_placeholder",
-                ItemBuilder(Material.STRUCTURE_VOID).dye(DyeColor.valueOf(color).color).build())
+                placeholder)
                 .ingredient(Material.STRUCTURE_VOID)
                 .ingredient(dye)
                 .shapeless()
