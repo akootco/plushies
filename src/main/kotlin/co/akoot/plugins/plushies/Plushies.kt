@@ -106,6 +106,7 @@ class Plushies : FoxPlugin("plushies") {
         registerEventListener(HDB())
         registerEventListener(BlockEvents())
         registerEventListener(MerchantEvents())
+        registerEventListener(Furniture())
     }
 
     override fun registerConfigs() {
