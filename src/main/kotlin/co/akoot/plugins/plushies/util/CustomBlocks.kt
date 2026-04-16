@@ -127,7 +127,7 @@ fun dropItems(block: Block, amount: Int) {
             BoundingBox.of(block)).filterIsInstance<ItemDisplay>().firstOrNull()
         val item = itemDisplay?.itemStack ?: return
 
-        loc.world.dropItemNaturally(loc, item)
+        loc.world.dropItemNaturally(loc.toCenterLocation(), item)
     } else {
         val key = loc.id?.split("|")?.get(0) ?: return
         repeat(amount) {

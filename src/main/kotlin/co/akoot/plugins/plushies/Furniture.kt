@@ -3,7 +3,6 @@ package co.akoot.plugins.plushies
 import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.extensions.setPDC
-import co.akoot.plugins.bluefox.util.runLater
 import co.akoot.plugins.plushies.FurnitureUtil.createHalfBlock
 import co.akoot.plugins.plushies.FurnitureUtil.furnitureHitBox
 import co.akoot.plugins.plushies.FurnitureUtil.isFurniture
@@ -43,10 +42,10 @@ class Furniture : Listener {
 
         block.chunk.setPDC(getBlockPDC(block.location, "furniture.seat"), itemInHand.isSeat) // true or false for GSit event
 
-        runLater(2) { when (itemInHand.furnitureHitBox) {
+        when (itemInHand.furnitureHitBox) {
             "half" -> createHalfBlock(blockPlaced)
             "full" -> {} // soon
-        } }
+        }
     }
 }
 
