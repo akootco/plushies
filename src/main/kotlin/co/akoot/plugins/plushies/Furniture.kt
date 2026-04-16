@@ -15,7 +15,6 @@ import dev.geco.gsit.api.event.PreEntitySitEvent
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.key.Key
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.Skull
 import org.bukkit.event.EventHandler
@@ -53,7 +52,6 @@ class Furniture : Listener {
 
 
 object FurnitureUtil {
-    val furnKey = key("furniture")
     val furnHitbox = key("furniture.hitbox")
     val seatKey = key("furniture.seat")
 
@@ -63,14 +61,15 @@ object FurnitureUtil {
     val Location.isSeat: Boolean?
         get() = chunk.getPDC<Boolean>(getBlockPDC(this, "furniture.seat"))
 
+    val Block.isFurniture get() = location.isSeat != null
+
     val ItemStack.isFurniture: Boolean
-        get() = itemMeta?.hasPDC(furnKey) == true
+        get() = itemMeta?.run { hasPDC(furnHitbox) || hasPDC(seatKey) } == true
 
     val ItemStack.furnitureHitBox: String?
         get() = itemMeta?.getPDC(furnHitbox)
 
     fun createHalfBlock(block: Block) {
-        block.type = Material.PLAYER_HEAD
         val state = block.state as? Skull ?: return
 
         val profile = ResolvableProfile.resolvableProfile()

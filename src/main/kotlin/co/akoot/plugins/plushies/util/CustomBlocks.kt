@@ -6,6 +6,7 @@ import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.runLater
+import co.akoot.plugins.plushies.FurnitureUtil.isFurniture
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.Util.getBlockPDC
@@ -17,6 +18,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Container
 import org.bukkit.block.data.Directional
+import org.bukkit.block.data.Rotatable
 import org.bukkit.entity.Display.Brightness
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.ItemDisplay
@@ -46,14 +48,22 @@ fun spawnItemDisplay(
     item: ItemStack,
     display: Transformation? = null
 ): ItemDisplay {
-    val fixedYaw = (location.block.blockData as? Directional)?.facing?.let { facing ->
-        when (facing) {
-            BlockFace.EAST -> -90f
-            BlockFace.WEST -> 90f
-            BlockFace.SOUTH -> 0f
-            else -> 180f
-        }
-    } ?: 180f
+    val rotationMap = mapOf(
+        BlockFace.SOUTH to 180f,
+        BlockFace.SOUTH_EAST to 135f,
+        BlockFace.EAST to 90f,
+        BlockFace.NORTH_EAST to 45f,
+        BlockFace.NORTH to 0f,
+        BlockFace.NORTH_WEST to 315f,
+        BlockFace.WEST to 270f,
+        BlockFace.SOUTH_WEST to 225f
+    )
+
+    val fixedYaw = when (val blockData = location.block.blockData) {
+        is Directional -> rotationMap[blockData.facing] ?: 0f
+        is Rotatable -> rotationMap[blockData.rotation] ?: 0f
+        else -> 180f
+    }
 
     val itemDisplay = location.world.spawnEntity(
         location.toCenterLocation().apply { this.yaw = fixedYaw },
@@ -111,9 +121,18 @@ fun removeCustomBlock(location: Location) {
 
 fun dropItems(block: Block, amount: Int) {
     val loc = block.location
-    val key = loc.id?.split("|")?.get(0) ?: return
-    repeat(amount) {
-        loc.world.dropItemNaturally(block.location.toCenterLocation(), customItems[key] ?: return)
+
+    if (block.isFurniture) {
+        val itemDisplay = loc.world.getNearbyEntities(
+            BoundingBox.of(block)).filterIsInstance<ItemDisplay>().firstOrNull()
+        val item = itemDisplay?.itemStack ?: return
+
+        loc.world.dropItemNaturally(loc, item)
+    } else {
+        val key = loc.id?.split("|")?.get(0) ?: return
+        repeat(amount) {
+            loc.world.dropItemNaturally(block.location.toCenterLocation(), customItems[key] ?: return)
+        }
     }
 
     (block.state as? Container)?.inventory?.forEach { item ->

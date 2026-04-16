@@ -3,7 +3,6 @@ package co.akoot.plugins.plushies.util
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.FurnitureUtil.furnHitbox
-import co.akoot.plugins.plushies.FurnitureUtil.furnKey
 import co.akoot.plugins.plushies.FurnitureUtil.seatKey
 import co.akoot.plugins.plushies.Plushies.Companion.customMusicDiscConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
@@ -31,13 +30,12 @@ object ItemCreator {
             customMusicDiscConfig -> Material.MUSIC_DISC_11
 
             else -> {
-                if (config.getKeys(path).contains("furniture")) Material.STRUCTURE_VOID
+                if (config.getKeys(path).contains("furniture")) Material.PLAYER_HEAD
                 else config.getString("$path.material")?.let(Material::getMaterial) ?: return null
             }
         }
 
-        return ItemStack(material)
-            .let { itemData(config, path, it, namespacedKey) }
+        return itemData(config, path, ItemStack(material), namespacedKey)
             ?.let { equippable(config, path, it) }
             ?.let { food(config, path, it) }
     }
@@ -131,9 +129,10 @@ object ItemCreator {
             config.getString("$path.swingSound")?.let { id -> itemStack.swingSound = id }
 
             if (config.getKeys(path).contains("furniture")) {
-                config.getString("$path.furniture.hitbox")?.let { type -> pdc(furnHitbox, type) }
-                if (config.getBoolean("$path.furniture.isSeat") == true) { pdc(seatKey, true) }
-                pdc(furnKey, path)
+                itemModel("structure_void")
+                val hitbox = config.getString("$path.furniture.hitbox") ?: "none"
+                pdc(furnHitbox, hitbox)
+                if (config.getBoolean("$path.furniture.isSeat") == true) pdc(seatKey, true)
                 pdc(blockKey, path)
             }
 

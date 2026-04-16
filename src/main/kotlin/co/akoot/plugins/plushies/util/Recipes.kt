@@ -115,13 +115,13 @@ object Recipes {
             val placeholder = ItemBuilder(Material.STRUCTURE_VOID)
                 .itemName(Text("Furniture").component)
                 .lore(listOf(Kolor.QUOTE("PLACEHOLDER").bold().component))
-                .customModelData("couch")
+                .customModelData("arm_chair")
                 .dye(DyeColor.valueOf(color).color).build()
 
             CraftRecipe.builder(
                 "${color.lowercase()}.furniture_placeholder",
                 placeholder)
-                .ingredient(Material.STRUCTURE_VOID)
+                .ingredient(Material.PLAYER_HEAD)
                 .ingredient(dye)
                 .shapeless()
         }
