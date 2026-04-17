@@ -11,6 +11,7 @@ import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.bluefox.util.Text.Companion.plus
 import co.akoot.plugins.plushies.Plushies.Companion.customItemConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.plushieConf
@@ -20,9 +21,8 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.registry.keys.tags.DamageTypeTagKeys
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.inventory.Inventory
+import org.bukkit.Tag
 import org.bukkit.inventory.ItemStack
-import kotlin.collections.listOf
 import kotlin.collections.mutableMapOf
 
 object Items {
@@ -71,7 +71,23 @@ object Items {
     fun loadItems() {
         // Load ItemConfig
         for (key in customItemConfig.getKeys()) {
-            customItems[key.lowercase()] = createItem(customItemConfig, key, itemKey) ?: continue
+            val item = createItem(customItemConfig, key, itemKey) ?: continue
+            when (customItemConfig.getString("$key.variants")) {
+                "wood" -> {
+                    Tag.PLANKS.values.forEach { wood ->
+                        val woodName = wood.name.removeSuffix("_PLANKS").lowercase()
+                        val newKey = "${woodName}_${key.lowercase()}"
+                        val newWood = woodName.split("_")
+                            .joinToString(" ") { it.replaceFirstChar(Char::uppercase) }
+
+                        customItems[newKey] = ItemBuilder.builder(item.clone())
+                            .itemName(Text("$newWood ").component + item.effectiveName())
+                            .customModelData(newKey)
+                            .pdc(itemKey, newKey)
+                            .build()
+                    } }
+                else -> { customItems[key.lowercase()] = item }
+            }
         }
 
         customItems["wrench"] = ItemBuilder.builder(Material.POISONOUS_POTATO) // lol
