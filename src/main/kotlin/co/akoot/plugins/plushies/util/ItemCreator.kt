@@ -28,11 +28,9 @@ object ItemCreator {
     fun createItem(config: FoxConfig, path: String, namespacedKey: NamespacedKey): ItemStack? {
         val material = when (config) {
             customMusicDiscConfig -> Material.MUSIC_DISC_11
-
-            else -> {
-                if (config.getKeys(path).contains("furniture")) Material.PLAYER_HEAD
-                else config.getString("$path.material")?.let(Material::getMaterial) ?: return null
-            }
+            else -> config.getString("$path.material")
+                ?.let(Material::getMaterial)
+                ?: if ("furniture" in config.getKeys(path)) Material.PLAYER_HEAD else return null
         }
 
         return itemData(config, path, ItemStack(material), namespacedKey)

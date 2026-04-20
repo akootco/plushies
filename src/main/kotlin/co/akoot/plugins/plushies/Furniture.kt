@@ -45,10 +45,10 @@ class Furniture : Listener {
         when (itemInHand.furnitureHitBox) {
             "half" -> createHalfBlock(blockPlaced)
             "full" -> {} // soon
+            "none" -> return
         }
     }
 }
-
 
 object FurnitureUtil {
     val furnHitbox = key("furniture.hitbox")
