@@ -75,8 +75,8 @@ class Golf(private val player: Player, private val golfBall: ArmorStand, private
                 isVisible = false
                 isSmall = true
 
-                equipment.helmet = golfBall
-                equipment.chestplate = item // store the original item in the chest
+                equipment.setItem(EquipmentSlot.HEAD, golfBall)
+                equipment.setItem(EquipmentSlot.CHEST, item)
 
                 for (slot in EquipmentSlot.entries) {
                     if (slot != EquipmentSlot.CHEST) { // lock all slots but the chest

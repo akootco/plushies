@@ -1,8 +1,7 @@
 package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.bluefox.api.FoxConfig
-import co.akoot.plugins.bluefox.api.Kolor
-import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.bluefox.extensions.withAmount
 import co.akoot.plugins.plushies.Plushies.Companion.cookRecipeConf
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.recipeConf
@@ -13,6 +12,7 @@ import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import co.akoot.plugins.plushies.util.builders.SmithRecipe
 import com.destroystokyo.paper.MaterialTags
+import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.tag.TagKey
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
@@ -31,8 +31,8 @@ object Recipes {
         configRecipes()
         smeltingRecipes()
         smithingRecipes()
-        dyeRecipes()
-        shulkers() // why is nobody licking my brains?!?
+        wingRecipes()
+//        shulkers() // why is nobody licking my brains?!?
         coloredShulker()
         deepslate()
 
@@ -101,7 +101,7 @@ object Recipes {
         }
     }
 
-    private fun dyeRecipes() {
+    private fun wingRecipes() {
         MaterialTags.DYES.values.forEach { dye ->
             val color = dye.name.removeSuffix("_DYE")
 
@@ -109,19 +109,6 @@ object Recipes {
                 "${color.lowercase()}.elytra",
                 ItemBuilder(Material.ELYTRA).dye(DyeColor.valueOf(color).color).build())
                 .ingredient(Material.ELYTRA)
-                .ingredient(dye)
-                .shapeless()
-
-            val placeholder = ItemBuilder(Material.STRUCTURE_VOID)
-                .itemName(Text("Furniture").component)
-                .lore(listOf(Kolor.QUOTE("PLACEHOLDER").bold().component))
-                .customModelData("arm_chair")
-                .dye(DyeColor.valueOf(color).color).build()
-
-            CraftRecipe.builder(
-                "${color.lowercase()}.furniture_placeholder",
-                placeholder)
-                .ingredient(Material.PLAYER_HEAD)
                 .ingredient(dye)
                 .shapeless()
         }
@@ -247,12 +234,14 @@ object Recipes {
             val shape = config.getStringList("$key.shape")
             val result = config.getString("$key.result") ?: continue
             val parts = result.split("/")
-            val amount = parts.getOrNull(1)?.toIntOrNull() ?: 1
+            var amount = parts.getOrNull(1)?.toIntOrNull() ?: 1
+
+            val output = getMaterial(parts[0]) ?: continue // skip if output is invalid
+            if (output.hasData(DataComponentTypes.DAMAGE)) amount = 1
 
             if (shape.isEmpty()) {
-                // shapeless recipe
-                val output = getMaterial(parts[0], amount) ?: continue // skip if output is invalid
-                CraftRecipe.builder(key, output)
+
+                CraftRecipe.builder(key, output.clone().withAmount(amount))
                     .apply {
                         for (ingredient in config.getStringList("$key.ingredients")) {
                             val ingparts = ingredient.split("/")
@@ -271,8 +260,7 @@ object Recipes {
                     continue // skip if shape is invalid
                 }
 
-                val output = getMaterial(parts[0], amount) ?: continue
-                CraftRecipe.builder(key, output)
+                CraftRecipe.builder(key, output.clone().withAmount(amount))
                     .shape(shape[0], shape[1], shape[2])
                     .apply {
                         for (ingredient in config.getKeys("$key.ingredients")) {
