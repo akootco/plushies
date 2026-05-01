@@ -10,7 +10,6 @@ import co.akoot.plugins.plushies.FurnitureUtil.isSeat
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.util.Util.getBlockPDC
 import co.akoot.plugins.plushies.util.spawnItemDisplay
-import dev.geco.gsit.api.event.PreEntitySitEvent
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import net.kyori.adventure.key.Key
 import org.bukkit.Location
@@ -25,9 +24,6 @@ import org.joml.AxisAngle4f
 import org.joml.Vector3f
 
 class Furniture : Listener {
-
-    @EventHandler // GSit
-    fun PreEntitySitEvent.cancelSit() { isCancelled = block.location.isSeat == false }
 
     @EventHandler
     fun BlockPlaceEvent.placeFurniture() {
