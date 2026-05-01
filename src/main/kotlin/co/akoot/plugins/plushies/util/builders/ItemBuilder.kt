@@ -14,6 +14,8 @@ import io.papermc.paper.datacomponent.item.*
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
+import io.papermc.paper.registry.keys.tags.DamageTypeTagKeys
+import io.papermc.paper.registry.set.RegistryKeySet
 import io.papermc.paper.registry.tag.TagKey
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
@@ -399,7 +401,11 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @return The modified `Item` instance.
      */
     fun damageResistance(damageType: TagKey<DamageType>): ItemBuilder {
-        itemStack.setData(DataComponentTypes.DAMAGE_RESISTANT, DamageResistant.damageResistant(damageType))
+        val dmg = RegistryAccess.registryAccess()
+            .getRegistry(RegistryKey.DAMAGE_TYPE)
+            .getTag(damageType)
+
+        itemStack.setData(DataComponentTypes.DAMAGE_RESISTANT, DamageResistant.damageResistant(dmg))
         return this
     }
 
@@ -488,6 +494,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @return           The updated `Item` with the specified stack size applied.
      */
     fun stackSize(stackSize: Int): ItemBuilder {
+        if (itemStack.hasData(DataComponentTypes.DAMAGE)) return this
         itemStack.setData(DataComponentTypes.MAX_STACK_SIZE, stackSize)
         return this
     }
