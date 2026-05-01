@@ -4,8 +4,6 @@ import co.akoot.plugins.bluefox.BlueFox.Companion.geyser
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.plushies.commands.*
-import co.akoot.plugins.plushies.commands.bluemap.HideCommand
-import co.akoot.plugins.plushies.commands.bluemap.ShowCommand
 import co.akoot.plugins.plushies.geyser.GeyserRegistrar
 import co.akoot.plugins.plushies.geyser.GeyserUtil.downloadBedrockPack
 import co.akoot.plugins.plushies.listeners.*
@@ -93,9 +91,6 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(ChunkPDCCommand(this))
         registerCommand(LocatorCommand(this))
 //        registerCommand(ATMCommand(this))
-        // bluemap commands
-        registerCommand(ShowCommand(this))
-        registerCommand(HideCommand(this))
     }
 
     override fun registerEvents() {
