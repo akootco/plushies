@@ -2,6 +2,8 @@ package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.plushies.FurnitureUtil.furnHitbox
+import co.akoot.plugins.plushies.FurnitureUtil.seatKey
 import co.akoot.plugins.plushies.Plushies.Companion.customMusicDiscConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.pluginEnabled
@@ -28,11 +30,10 @@ object ItemCreator {
             customMusicDiscConfig -> Material.MUSIC_DISC_11
             else -> config.getString("$path.material")
                 ?.let(Material::getMaterial)
-                ?: return null
+                ?: if ("furniture" in config.getKeys(path)) Material.PLAYER_HEAD else return null
         }
 
-        return ItemStack(material)
-            .let { itemData(config, path, it, namespacedKey) }
+        return itemData(config, path, ItemStack(material), namespacedKey)
             ?.let { equippable(config, path, it) }
             ?.let { food(config, path, it) }
     }
@@ -124,6 +125,20 @@ object ItemCreator {
             config.getString("$path.hitSound")?.let { id -> hitSound(id.lowercase()) }
 
             config.getString("$path.swingSound")?.let { id -> itemStack.swingSound = id }
+
+            if (config.getKeys(path).contains("furniture")) {
+                itemModel("structure_void")
+                val hitbox = config.getString("$path.furniture.hitbox") ?: "none"
+                pdc(furnHitbox, hitbox)
+                if (config.getBoolean("$path.furniture.isSeat") == true) pdc(seatKey, true)
+                pdc(blockKey, path)
+            }
+
+            if (config.getBoolean("$path.dyeable") == true) {
+                stackSize(1) // dumb but idk how else to fix crafting dupe
+                pdc(key("dyeable"), true)
+            }
+
         }.build()
     }
 

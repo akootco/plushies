@@ -12,6 +12,7 @@ import co.akoot.plugins.plushies.listeners.handlers.placeItem
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowable
 import co.akoot.plugins.plushies.util.Items.customItems
+import co.akoot.plugins.plushies.util.Items.isDyeable
 import co.akoot.plugins.plushies.util.Items.isPlaceable
 import co.akoot.plugins.plushies.util.Items.swingSound
 //import co.akoot.plugins.plushies.util.Items.updateInventory
@@ -128,9 +129,10 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
                         block.blockData = data
                     }
 
-                    (block.type == Material.WATER_CAULDRON && item.type == Material.ELYTRA && item.hasData(DataComponentTypes.DYED_COLOR)) -> {
+                    (block.type == Material.WATER_CAULDRON && item.isDyeable) -> {
                         event.isCancelled = true
                         ItemBuilder.builder(item).unsetData(DataComponentTypes.DYED_COLOR).build()
+                        event.setUseInteractedBlock(Event.Result.DENY)
                     }
 
 //                    block.state is Container -> {

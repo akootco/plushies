@@ -4,12 +4,19 @@ import co.akoot.plugins.bluefox.BlueFox
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.getPDC
+import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.bluefox.util.toBukkitColor
 import co.akoot.plugins.plushies.Plushies
 import co.akoot.plugins.plushies.Plushies.Companion.key
+import co.akoot.plugins.plushies.util.Items.isDyeable
+import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import com.destroystokyo.paper.MaterialTags
+import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import net.kyori.adventure.text.Component
+import org.bukkit.DyeColor
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
 import org.bukkit.World
@@ -95,5 +102,39 @@ object Util {
             if (context != null) sendMessage(Text("/${context.id} is not allowed in this world!", Kolor.ERROR).component)
             false
         } else true
+    }
+
+    fun isDyeRecipe(matrix: Array<ItemStack?>): Boolean {
+        val items = matrix.filterNotNull()
+
+        if (items.size != 2) return false
+
+        val hasDyeable = items.any { it.isDyeable }
+        val hasDye = items.any { MaterialTags.DYES.isTagged(it.type) }
+
+        return hasDyeable && hasDye
+    }
+
+    fun dyeItem(matrix: Array<ItemStack?>): ItemStack? {
+        val items = matrix.filterNotNull()
+
+        val dyeable = items.firstOrNull { it.isDyeable } ?: return null
+        val dye = items.firstOrNull { MaterialTags.DYES.isTagged(it.type) } ?: return null
+
+        val dyeColor = DyeColor.valueOf(dye.type.name.removeSuffix("_DYE")).color
+        val baseColor = dyeable.getData(DataComponentTypes.DYED_COLOR)?.color()
+
+        val finalColor = when {
+            dye.itemMeta?.hasPDC(NamespacedKey("choco", "rgb_dye")) == true ->
+                dye.itemMeta?.displayName()?.color()?.toBukkitColor()
+
+            baseColor != null -> baseColor.mixColors(dyeColor)
+
+            else -> dyeColor
+        }
+
+        return ItemBuilder.builder(dyeable.clone().asOne())
+            .dye(finalColor ?: return null)
+            .build()
     }
 }
