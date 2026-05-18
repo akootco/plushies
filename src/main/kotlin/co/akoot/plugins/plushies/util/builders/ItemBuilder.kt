@@ -401,11 +401,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @return The modified `Item` instance.
      */
     fun damageResistance(damageType: TagKey<DamageType>): ItemBuilder {
-        val dmg = RegistryAccess.registryAccess()
-            .getRegistry(RegistryKey.DAMAGE_TYPE)
-            .getTag(damageType)
-
-        itemStack.setData(DataComponentTypes.DAMAGE_RESISTANT, DamageResistant.damageResistant(dmg))
+        itemStack.setData(DataComponentTypes.DAMAGE_RESISTANT, DamageResistant.damageResistant(damageType))
         return this
     }
 
