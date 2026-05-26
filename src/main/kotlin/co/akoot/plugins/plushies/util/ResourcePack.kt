@@ -41,7 +41,7 @@ object ResourcePack {
         }
 
     fun getJavaPack(): Boolean {
-        val jsonString = WebUtil.getJsonString("https://maltsburg.com/packs/java/notes") ?: return false
+        val jsonString = WebUtil.getJsonString("https://api.github.com/repos/akootco/java-textures/releases/latest") ?: return false
         val jsonObject = JsonParser.parseString(jsonString).asJsonObject
 
         val url = jsonObject["assets"].asJsonArray[0].asJsonObject["browser_download_url"].asString

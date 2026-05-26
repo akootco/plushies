@@ -31,12 +31,18 @@ object GeyserUtil {
     }
 
     fun downloadBedrockPack() {
-        val pack = WebUtil.getUrl("https://maltsburg.com/packs/bedrock") ?: return
-        // download and replace bedrock pack
-        pack.openStream().use { input ->
-            Files.copy(input, GeyserApi.api().packDirectory().resolve("bedrock.zip"),
-                StandardCopyOption.REPLACE_EXISTING)
+        try {
+            val pack = WebUtil.getUrl("https://github.com/akootco/bedrock-textures/releases/latest/download/bedrock.zip") ?: return
+            // download and replace bedrock pack
+            pack.openStream().use { input ->
+                Files.copy(
+                    input, GeyserApi.api().packDirectory().resolve("bedrock.zip"),
+                    StandardCopyOption.REPLACE_EXISTING
+                )
+            }
+            pl.logger.info("Geyser pack downloaded")
+        } catch (e: Exception) {
+            pl.logger.warning("Failed to download Geyser pack")
         }
-        pl.logger.info("Geyser pack downloaded")
     }
 }
