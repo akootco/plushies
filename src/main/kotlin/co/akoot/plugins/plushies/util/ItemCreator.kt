@@ -3,7 +3,6 @@ package co.akoot.plugins.plushies.util
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.FurnitureUtil.furnHitbox
-import co.akoot.plugins.plushies.FurnitureUtil.seatKey
 import co.akoot.plugins.plushies.Plushies.Companion.customMusicDiscConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.pluginEnabled
@@ -130,7 +129,6 @@ object ItemCreator {
                 itemModel("structure_void")
                 val hitbox = config.getString("$path.furniture.hitbox") ?: "none"
                 pdc(furnHitbox, hitbox)
-                if (config.getBoolean("$path.furniture.isSeat") == true) pdc(seatKey, true)
                 pdc(blockKey, path)
             }
 
