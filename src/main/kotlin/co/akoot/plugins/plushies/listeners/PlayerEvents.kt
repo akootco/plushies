@@ -24,7 +24,10 @@ import co.akoot.plugins.plushies.util.Util.inValidWorld
 import co.akoot.plugins.plushies.util.Util.isDefault
 import co.akoot.plugins.plushies.util.Util.setAttributes
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import co.akoot.plugins.plushies.util.consumeEverLastRocket
 import com.destroystokyo.paper.MaterialTags
+import com.destroystokyo.paper.event.player.PlayerElytraBoostEvent
+import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.event.player.AsyncChatEvent
 import org.bukkit.Effect
@@ -154,4 +157,10 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
             else -> return
         }
     }
+
+    @EventHandler
+    fun PlayerLaunchProjectileEvent.rocket() { setShouldConsume(!itemStack.consumeEverLastRocket()) }
+
+    @EventHandler
+    fun PlayerElytraBoostEvent.rocket() { setShouldConsume(!itemStack.consumeEverLastRocket()) }
 }

@@ -32,7 +32,7 @@ object Recipes {
         smeltingRecipes()
         smithingRecipes()
         wingRecipes()
-//        shulkers() // why is nobody licking my brains?!?
+        shulkers() // why is nobody licking my brains?!?
         coloredShulker()
         deepslate()
 
