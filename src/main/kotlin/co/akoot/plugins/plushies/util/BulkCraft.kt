@@ -3,6 +3,7 @@ package co.akoot.plugins.plushies.util
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.datacomponent.item.Fireworks
 import io.papermc.paper.datacomponent.item.ItemContainerContents
 import org.bukkit.Material
@@ -55,6 +56,7 @@ fun ItemStack.consumeEverLastRocket(): Boolean {
 
 fun ItemStack.makeEverlastingRocket(duration: Int) = apply {
     setData(DataComponentTypes.ITEM_NAME, Text("Everlasting Rocket").component)
+    setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData().addString("el.rocket.${duration}").build())
     setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
     setData(DataComponentTypes.MAX_STACK_SIZE, 1)
     setData(DataComponentTypes.MAX_DAMAGE, 5184)
