@@ -1,5 +1,6 @@
 package co.akoot.plugins.plushies.listeners
 
+//import co.akoot.plugins.plushies.util.Items.updateInventory
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.hasPDC
@@ -14,7 +15,6 @@ import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowa
 import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.Items.isPlaceable
 import co.akoot.plugins.plushies.util.Items.swingSound
-//import co.akoot.plugins.plushies.util.Items.updateInventory
 import co.akoot.plugins.plushies.util.Recipes.unlockRecipes
 import co.akoot.plugins.plushies.util.ResourcePack.isPackEnabled
 import co.akoot.plugins.plushies.util.ResourcePack.packDeniers
@@ -24,10 +24,7 @@ import co.akoot.plugins.plushies.util.Util.inValidWorld
 import co.akoot.plugins.plushies.util.Util.isDefault
 import co.akoot.plugins.plushies.util.Util.setAttributes
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
-import co.akoot.plugins.plushies.util.consumeEverLastRocket
 import com.destroystokyo.paper.MaterialTags
-import com.destroystokyo.paper.event.player.PlayerElytraBoostEvent
-import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.event.player.AsyncChatEvent
 import org.bukkit.Effect
@@ -35,7 +32,6 @@ import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.attribute.Attribute
 import org.bukkit.block.BlockFace
-import org.bukkit.block.Container
 import org.bukkit.block.Sign
 import org.bukkit.block.data.Directional
 import org.bukkit.event.Event
@@ -157,10 +153,4 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
             else -> return
         }
     }
-
-    @EventHandler
-    fun PlayerLaunchProjectileEvent.rocket() { setShouldConsume(!itemStack.consumeEverLastRocket()) }
-
-    @EventHandler
-    fun PlayerElytraBoostEvent.rocket() { setShouldConsume(!itemStack.consumeEverLastRocket()) }
 }
