@@ -184,10 +184,10 @@ object Recipes {
         }
     }
 
-    private fun smeltingRecipes() {
-        for (key in cookRecipeConf.getKeys()) {
-            val result = cookRecipeConf.getString("$key.output") ?: return
-            val input = cookRecipeConf.getString("$key.input") ?: return
+    fun smeltingRecipes(config: FoxConfig = cookRecipeConf, namespace: String = "plushies") {
+        for (key in config.getKeys()) {
+            val result = config.getString("$key.output") ?: return
+            val input = config.getString("$key.input") ?: return
 
             val parts = result.split("/")
 
@@ -195,26 +195,26 @@ object Recipes {
                 key,
                 getInput(input) ?: return,
                 getMaterial(parts[0]) ?: return,
-                cookRecipeConf.getString("$key.cookTime"),
-                cookRecipeConf.getDouble("$key.xp")
+                config.getString("$key.cookTime"),
+                config.getDouble("$key.xp")
             ).apply {
-                cookRecipeConf.getStringList("$key.type").forEach { type ->
+                config.getStringList("$key.type").forEach { type ->
                     when (type.lowercase()) {
                         "smoke" -> smoke() // smoker / campfire
                         "blast" -> blast()
                         "all" -> blast().smoke() // blast furnace
                     }
                 }
-            }.smelt()
+            }.smelt(namespace)
         }
     }
 
-    private fun smithingRecipes() {
-        for (key in smithRecipeConf.getKeys()) {
-            val result = smithRecipeConf.getString("$key.output") ?: return
-            val base = smithRecipeConf.getString("$key.base") ?: return
-            val template = smithRecipeConf.getString("$key.template") ?: return
-            val addition = smithRecipeConf.getString("$key.addition") ?: return
+    fun smithingRecipes(config: FoxConfig = smithRecipeConf, namespace: String = "plushies") {
+        for (key in config.getKeys()) {
+            val result = config.getString("$key.output") ?: return
+            val base = config.getString("$key.base") ?: return
+            val template = config.getString("$key.template") ?: return
+            val addition = config.getString("$key.addition") ?: return
 
             val parts = result.split("/")
             val amount = parts.getOrNull(1)?.toIntOrNull() ?: 1
@@ -225,7 +225,7 @@ object Recipes {
                 getInput(base) ?: return,
                 getInput(addition) ?: return,
                 getMaterial(parts[0], amount) ?: return
-            ).add()
+            ).add(namespace)
         }
     }
 
