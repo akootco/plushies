@@ -36,6 +36,8 @@ class EverlastRocket() : Listener {
 }
 
 fun ItemStack.consumeEverLastRocket(): Boolean {
+    if (type != Material.FIREWORK_ROCKET) return false
+
     val maxDamage = getData(DataComponentTypes.MAX_DAMAGE) ?: return false
     val damage = getData(DataComponentTypes.DAMAGE) ?: 0
     if (damage >= maxDamage - 1) return false
