@@ -1,9 +1,9 @@
 package co.akoot.plugins.plushies.util.builders
 
-import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.bluefox.extensions.setPDC
-import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.bluefox.util.quote
+import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.util.Items.hitSoundKey
@@ -17,6 +17,7 @@ import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.keys.tags.DamageTypeTagKeys
 import io.papermc.paper.registry.set.RegistryKeySet
 import io.papermc.paper.registry.tag.TagKey
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
@@ -86,11 +87,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
     fun lore(lore: List<Component>?): ItemBuilder {
         if (!lore.isNullOrEmpty()) {
             val loreBuilder = ItemLore.lore()
-            for (line in lore) {
-                loreBuilder.addLine(Text(line)
-                    .color(Kolor.TEXT).component
-                    .decoration(TextDecoration.ITALIC, false))
-            }
+            for (line in lore) { loreBuilder.addLine(line) }
             val finalLore = loreBuilder.build()
             itemStack.setData(DataComponentTypes.LORE, finalLore)
         }
@@ -98,7 +95,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
     }
 
     fun filler(): ItemBuilder {
-        itemName(Text().component)
+        itemName(Component.empty())
         itemModel("air")
         hideTooltip()
         return this
@@ -374,8 +371,16 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @param instrument
      * @return
      */
-    fun instrument(instrument: MusicInstrument): ItemBuilder {
-        if (itemStack.type != Material.GOAT_HORN) return this
+    fun instrument(sound: String, desc: String, dur: Float): ItemBuilder {
+        val instrument = MusicInstrument.create { factory ->
+            factory.empty()
+                .soundEvent { soundFactory ->
+                    soundFactory.empty().location(Key.key(sound))
+                }
+                .description(quote(desc))
+                .duration(dur)
+                .range(100f)
+        }
 
         itemStack.setData(DataComponentTypes.INSTRUMENT, instrument)
         return this
