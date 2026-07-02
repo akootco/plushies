@@ -1,7 +1,7 @@
 package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.bluefox.api.FoxConfig
-import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.bluefox.util.parse
 import co.akoot.plugins.plushies.Plushies.Companion.customMusicDiscConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.pluginEnabled
@@ -85,7 +85,7 @@ object ItemCreator {
                 ?.let { pdc(key("attributes"), it) }
 
             // name
-            config.getString("$path.itemName")?.let { name -> itemName(Text(name).component) }
+            config.getString("$path.itemName")?.let { name -> itemName( name.parse() ) }
 
             // set amount
             config.getInt("$path.amount").takeIf { it != 1 }?.let { itemStack.amount = it }
@@ -116,7 +116,7 @@ object ItemCreator {
             config.getString("$path.customModelData")?.let { customModelData(if (it == "0") path else it) }
 
             //set lore
-            lore(config.getStringList("$path.lore").map { Text(it).component })
+            lore(config.getStringList("$path.lore").map { it.parse() })
 
             // stackSize needs to be 1-99 or else the server will explode (real)
             config.getInt("$path.stackSize").takeIf { it in 1..99 }?.let { stackSize(it) }
@@ -124,6 +124,12 @@ object ItemCreator {
             config.getString("$path.hitSound")?.let { id -> hitSound(id.lowercase()) }
 
             config.getString("$path.swingSound")?.let { id -> itemStack.swingSound = id }
+
+            config.getString("$path.instrument.sound")?.let { sound ->
+                val desc = config.getString("$path.instrument.desc") ?: path
+                val dur = config.getDouble("$path.instrument.dur") ?: 5.0
+                instrument(sound, desc, dur.toFloat())
+            }
         }.build()
     }
 
