@@ -5,6 +5,7 @@ import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.bluefox.util.head
 import co.akoot.plugins.plushies.Plushies
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import io.papermc.paper.registry.RegistryAccess
@@ -74,7 +75,7 @@ object Util {
 
         for ((index, word) in words.withIndex()) {
             when {
-                word.startsWith("p:") -> result.playerHead(word.drop(2))
+                word.startsWith("p:") -> head(word.drop(2))
                 word.startsWith("i:") -> result.sprite(word.drop(2))
                 else -> result += Text(word)
             }
