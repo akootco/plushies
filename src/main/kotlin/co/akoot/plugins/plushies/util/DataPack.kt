@@ -16,8 +16,7 @@ object DataPack {
 
     private val dataPack: File
         get() {
-            val worldFolder = pl.server.getWorld("world")?.worldFolder
-            val dataPackFolder = File(worldFolder, "datapacks")
+            val dataPackFolder = File(pl.server.worldContainer, "world/datapacks")
             return File(dataPackFolder, "plushies")
         }
 
