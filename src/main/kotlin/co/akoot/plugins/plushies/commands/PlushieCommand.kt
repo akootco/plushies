@@ -4,7 +4,7 @@ import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.plushies.Plushies.Companion.plushieConf
 import co.akoot.plugins.plushies.gui.PlushieMenu
-import co.akoot.plugins.plushies.util.Items.createPlushie
+import co.akoot.plugins.plushies.gui.PlushieMenu.Companion.createPlushie
 import co.akoot.plugins.plushies.util.Items.plushies
 import co.akoot.plugins.plushies.util.Util.plushMsg
 import org.bukkit.Material

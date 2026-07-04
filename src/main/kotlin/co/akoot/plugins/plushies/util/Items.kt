@@ -35,6 +35,51 @@ object Items {
     val hitSoundKey = key("hit.sound")
     val swingSoundKey = key("swing.sound")
 
+    var plushies = plushieConf.getKeys().map { name -> name to (plushieConf.getString(name).takeUnless { it == "0" } ?: name) }
+    val customItems = mutableMapOf<String, ItemStack>()
+
+    fun registerItem(id: String, item: ItemStack) {
+        customItems[id.lowercase()] = item
+    }
+
+    fun getItem(id: String): ItemStack? {
+        return customItems[id.lowercase()]?.clone()
+    }
+
+    fun getItems(predicate: (ItemStack) -> Boolean): List<ItemStack> {
+        return customItems.values.filter(predicate).map { it.clone() }
+    }
+
+    fun getRandomItem(predicate: (ItemStack) -> Boolean): ItemStack? {
+        return getItems(predicate).randomOrNull()
+    }
+
+    fun getRandomItem(): ItemStack? {
+        return getAllItems().randomOrNull()
+    }
+
+    fun getAllItems(): List<ItemStack> {
+        return customItems.values.map { it.clone() }
+    }
+
+    fun loadItems() {
+        // Load ItemConfig
+        for (key in customItemConfig.getKeys()) {
+            customItems[key.lowercase()] = createItem(customItemConfig, key, itemKey) ?: continue
+        }
+
+        registerItem("wrench", ItemBuilder.builder(Material.POISONOUS_POTATO) // lol
+            .itemName(Text("Wrench").component)
+            .unsetData(DataComponentTypes.CONSUMABLE)
+            .pdc(itemKey, "wrench")
+            .customModelData("wrench")
+            .itemModel("trial_key")
+            .build())
+    }
+
+    val ItemStack.itemId: String?
+        get() = itemMeta?.getPDC(itemKey)
+
     val ItemStack.isCustomItem: Boolean
         get() = itemMeta?.hasPDC(itemKey) == true
 
@@ -62,27 +107,10 @@ object Items {
             itemMeta = meta
         }
 
-    var plushies = plushieConf.getKeys().map { name -> name to (plushieConf.getString(name).takeUnless { it == "0" } ?: name) }
-    val customItems = mutableMapOf<String, ItemStack>()
-
-    fun loadItems() {
-        // Load ItemConfig
-        for (key in customItemConfig.getKeys()) {
-            customItems[key.lowercase()] = createItem(customItemConfig, key, itemKey) ?: continue
-        }
-
-        customItems["wrench"] = ItemBuilder.builder(Material.POISONOUS_POTATO) // lol
-            .itemName(Text("Wrench").component)
-            .unsetData(DataComponentTypes.CONSUMABLE)
-            .pdc(itemKey, "wrench")
-            .itemModel("trial_key")
-            .build()
-    }
-
 //    fun updateItem(item: ItemStack?): ItemStack? {
 //        if (item == null) return null
 //        val id = item.itemMeta?.getPDC<String>(itemKey) ?: return null
-//        val customItem = customItems[id] ?: return null
+//        val customItem = getItem(id) ?: return null
 //
 //        if (item.type == customItem.type) return null
 //        return item.withType(customItem.type)
@@ -95,24 +123,15 @@ object Items {
 //        }
 //    }
 
-    fun createPlushie(name: String, customModelData: String): ItemStack {
-        return ItemBuilder.builder(ItemStack(Material.TOTEM_OF_UNDYING))
-            .itemName((Text(name).color(MONTH_COLOR)).component)
-            .customModelData(customModelData)
-            .damageResistance(DamageTypeTagKeys.IS_FIRE)
-            .deathProtection(false) // cannot believe i was using a listener for this
-            .build()
-    }
-
-    val hopcoin = ItemBuilder.builder(Material.POISONOUS_POTATO)
-        .unsetData(DataComponentTypes.CONSUMABLE)
-        .itemName(Text("HopCoin", Kolor.NUMBER).component)
-        .pdc(BlueFox.key("ticker"), "hopcoin")
-        .customModelData("hopcoin")
-        .glint()
-        .build()
-
     fun hopcoin() {
+        val hopcoin = ItemBuilder.builder(Material.POISONOUS_POTATO)
+            .unsetData(DataComponentTypes.CONSUMABLE)
+            .itemName(Text("HopCoin", Kolor.NUMBER).component)
+            .pdc(BlueFox.key("ticker"), "hopcoin")
+            .customModelData("hopcoin")
+            .glint()
+            .build()
+
         Market.getCoin("hopcoin")?.let {
             Market.coins["hopcoin"] = Coin(
                 id = it.id,

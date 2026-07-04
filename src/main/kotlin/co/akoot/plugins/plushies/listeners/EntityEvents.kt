@@ -17,7 +17,7 @@ import co.akoot.plugins.plushies.listeners.tasks.Golf
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.golfKey
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.golfSwing
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
-import co.akoot.plugins.plushies.util.Items.customItems
+import co.akoot.plugins.plushies.util.Items
 import co.akoot.plugins.plushies.util.Items.hitSound
 import co.akoot.plugins.plushies.util.Items.isPlushie
 import io.papermc.paper.world.MoonPhase
@@ -27,6 +27,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.entity.EntityDropItemEvent
 import org.bukkit.event.entity.EntitySpawnEvent
 import org.bukkit.event.entity.EntityTargetEvent
 import org.bukkit.event.entity.ProjectileHitEvent
@@ -102,11 +103,13 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
         if (entity is Creeper) {
             val disc = drops.find { it.type.isRecord }
             if (disc != null && Random.nextDouble() < 0.51) {
-                drops.apply {
-                    remove(disc)
-                    add(customItems.filter { it.value.type.isRecord }
-                        .values.random().clone())
+                Items.getRandomItem { it.type.isRecord }?.let {
+                    drops.apply {
+                        remove(disc)
+                        add(it)
+                    }
                 }
+
                 return
             }
         }
@@ -159,5 +162,16 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
     fun EntitySpawnEvent.onTraderSpawn() {
         val trader = entity as? WanderingTrader ?: return
         ModifyMerchantEvent(trader).fire() ?: return
+    }
+
+    @EventHandler
+    fun EntityDropItemEvent.handleDrops() {
+        val item = itemDrop.itemStack
+
+        if (item.type == Material.GOAT_HORN && Random.nextDouble() <= 0.51) {
+            Items.getRandomItem { it.type == Material.GOAT_HORN }
+                ?.let { itemDrop.itemStack = it }
+            return
+        }
     }
 }

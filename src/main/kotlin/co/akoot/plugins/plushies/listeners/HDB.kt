@@ -12,6 +12,7 @@ import co.akoot.plugins.bluefox.util.Text.Companion.asString
 import co.akoot.plugins.plushies.util.ItemCreator.createItem
 import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.Items.pendingHeads
+import co.akoot.plugins.plushies.util.Items.registerItem
 import me.arcaniax.hdb.api.DatabaseLoadEvent
 import me.arcaniax.hdb.api.PlayerClickHeadEvent
 import me.arcaniax.hdb.enums.CategoryEnum
@@ -59,7 +60,7 @@ class HDB : Listener {
     fun DatabaseLoadEvent.hdbLoad() {
         pendingHeads.forEach { head ->
             createItem(head.config, head.path, head.key)?.let { item ->
-                customItems[head.path.lowercase()] = item
+                registerItem(head.path, item)
             }
         }
         pendingHeads.clear()

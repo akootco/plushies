@@ -2,16 +2,17 @@ package co.akoot.plugins.plushies.gui
 
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.invoke
+import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
 import co.akoot.plugins.bluefox.util.ColorUtil.randomColor
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.Text.Companion.asString
 import co.akoot.plugins.plushies.gui.MenuItems.nextPage
 import co.akoot.plugins.plushies.gui.MenuItems.prevPage
-import co.akoot.plugins.plushies.util.Items.createPlushie
 import co.akoot.plugins.plushies.util.Items.plushies
 import co.akoot.plugins.plushies.util.Util.plushMsg
 import co.akoot.plugins.plushies.util.builders.ChestGUI
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import io.papermc.paper.registry.keys.tags.DamageTypeTagKeys
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -24,6 +25,16 @@ class PlushieMenu(private val page: Int = 1) :
     InventoryHolder {
 
     companion object {
+
+        fun createPlushie(name: String, customModelData: String): ItemStack {
+            return ItemBuilder.builder(ItemStack(Material.TOTEM_OF_UNDYING))
+                .itemName((Text(name).color(MONTH_COLOR)).component)
+                .customModelData(customModelData)
+                .damageResistance(DamageTypeTagKeys.IS_FIRE)
+                .deathProtection(false) // cannot believe i was using a listener for this
+                .build()
+        }
+
         fun plushMenu(item: ItemStack, p: Player, holder: InventoryHolder, clickType: ClickType) {
 
             when (item) {
