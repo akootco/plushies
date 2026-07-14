@@ -7,6 +7,7 @@ import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.runLater
 import co.akoot.plugins.plushies.Plushies.Companion.key
+import co.akoot.plugins.plushies.events.RemoveCustomBlockEvent
 import co.akoot.plugins.plushies.util.Items.getItem
 import co.akoot.plugins.plushies.util.Util.getBlockPDC
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
@@ -97,6 +98,7 @@ fun createDisplay(location: Location, id: String, textured: Boolean = false) {
 }
 
 fun removeCustomBlock(location: Location) {
+    RemoveCustomBlockEvent(location.block).call()
     // good trick!
     plugins.forEach {
         location.chunk.removePDC(getBlockPDC(location, it))
