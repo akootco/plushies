@@ -51,26 +51,20 @@ object Recipes {
     }
 
     fun getInput(input: String): RecipeChoice? {
-        if (input.startsWith("tag.")) { return tag(input.substring(4)) }
+        if (input.startsWith("tag.")) return tag(input.substring(4))
         getItem(input.lowercase())?.let { return RecipeChoice.ExactChoice(it) }
-        return Material.getMaterial(input.uppercase())?.asItemType()?.let { RecipeChoice.itemType(it) }
+
+        return Material.getMaterial(input.uppercase())
+            ?.asItemType()
+            ?.let { RecipeChoice.itemType(it) }
     }
 
     fun getMaterial(input: String, amount: Int = 1): ItemStack? {
-        // if no prefix, check for flugin item or vanilla material.
-        getItem(input.lowercase())?.let {
-                val copy = it.clone()  // clone first smh
-                copy.amount = amount
-                return copy
-            }
+        getItem(input.lowercase())?.let { return it.clone().apply { this.amount = amount } }
 
-        Material.getMaterial(input.uppercase())?.let {
-            val itemStack = ItemStack(it)
-            itemStack.amount = amount
-            return itemStack
+        return Material.getMaterial(input.uppercase())?.let {
+            ItemStack(it, amount)
         }
-
-        return null
     }
 
     fun unlockRecipes(player: Player, id: String = "plushies") {

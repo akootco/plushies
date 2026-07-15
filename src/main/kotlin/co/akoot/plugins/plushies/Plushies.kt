@@ -86,7 +86,6 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(BookArchiveCommand(this))
         registerCommand(CustomItemCommand(this))
         registerCommand(ToggleArmorCommand(this))
-        registerCommand(ReloadRecipesCommand(this))
         registerCommand(IHateJumpBoostCommand(this))
         registerCommand(EditBookCommand(this))
         registerCommand(ChunkPDCCommand(this))
