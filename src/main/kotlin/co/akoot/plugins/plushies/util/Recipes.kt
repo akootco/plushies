@@ -6,7 +6,7 @@ import co.akoot.plugins.plushies.Plushies.Companion.cookRecipeConf
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.recipeConf
 import co.akoot.plugins.plushies.Plushies.Companion.smithRecipeConf
-import co.akoot.plugins.plushies.util.Items.customItems
+import co.akoot.plugins.plushies.util.Items.getItem
 import co.akoot.plugins.plushies.util.builders.CookRecipe
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
@@ -32,11 +32,11 @@ object Recipes {
         smeltingRecipes()
         smithingRecipes()
         wingRecipes()
-//        shulkers() // why is nobody licking my brains?!?
+        shulkers() // why is nobody licking my brains?!?
         coloredShulker()
         deepslate()
 
-        CraftRecipe.builder("wrench", customItems["wrench"]?: return)
+        CraftRecipe.builder("wrench", getItem("wrench") ?: return)
             .ingredient(Material.LIGHTNING_ROD)
             .ingredient(Material.COPPER_INGOT)
             .shapeless()
@@ -51,26 +51,20 @@ object Recipes {
     }
 
     fun getInput(input: String): RecipeChoice? {
-        if (input.startsWith("tag.")) { return tag(input.substring(4)) }
-        customItems[input.lowercase()]?.let { return RecipeChoice.ExactChoice(it) }
-        return Material.getMaterial(input.uppercase())?.asItemType()?.let { RecipeChoice.itemType(it) }
+        if (input.startsWith("tag.")) return tag(input.substring(4))
+        getItem(input.lowercase())?.let { return RecipeChoice.ExactChoice(it) }
+
+        return Material.getMaterial(input.uppercase())
+            ?.asItemType()
+            ?.let { RecipeChoice.itemType(it) }
     }
 
     fun getMaterial(input: String, amount: Int = 1): ItemStack? {
-        // if no prefix, check for flugin item or vanilla material.
-        customItems[input.lowercase()]?.let {
-                val copy = it.clone()  // clone first smh
-                copy.amount = amount
-                return copy
-            }
+        getItem(input.lowercase())?.let { return it.clone().apply { this.amount = amount } }
 
-        Material.getMaterial(input.uppercase())?.let {
-            val itemStack = ItemStack(it)
-            itemStack.amount = amount
-            return itemStack
+        return Material.getMaterial(input.uppercase())?.let {
+            ItemStack(it, amount)
         }
-
-        return null
     }
 
     fun unlockRecipes(player: Player, id: String = "plushies") {
@@ -184,10 +178,10 @@ object Recipes {
         }
     }
 
-    private fun smeltingRecipes() {
-        for (key in cookRecipeConf.getKeys()) {
-            val result = cookRecipeConf.getString("$key.output") ?: return
-            val input = cookRecipeConf.getString("$key.input") ?: return
+    fun smeltingRecipes(config: FoxConfig = cookRecipeConf, namespace: String = "plushies") {
+        for (key in config.getKeys()) {
+            val result = config.getString("$key.output") ?: return
+            val input = config.getString("$key.input") ?: return
 
             val parts = result.split("/")
 
@@ -195,26 +189,26 @@ object Recipes {
                 key,
                 getInput(input) ?: return,
                 getMaterial(parts[0]) ?: return,
-                cookRecipeConf.getString("$key.cookTime"),
-                cookRecipeConf.getDouble("$key.xp")
+                config.getString("$key.cookTime"),
+                config.getDouble("$key.xp")
             ).apply {
-                cookRecipeConf.getStringList("$key.type").forEach { type ->
+                config.getStringList("$key.type").forEach { type ->
                     when (type.lowercase()) {
                         "smoke" -> smoke() // smoker / campfire
                         "blast" -> blast()
                         "all" -> blast().smoke() // blast furnace
                     }
                 }
-            }.smelt()
+            }.smelt(namespace)
         }
     }
 
-    private fun smithingRecipes() {
-        for (key in smithRecipeConf.getKeys()) {
-            val result = smithRecipeConf.getString("$key.output") ?: return
-            val base = smithRecipeConf.getString("$key.base") ?: return
-            val template = smithRecipeConf.getString("$key.template") ?: return
-            val addition = smithRecipeConf.getString("$key.addition") ?: return
+    fun smithingRecipes(config: FoxConfig = smithRecipeConf, namespace: String = "plushies") {
+        for (key in config.getKeys()) {
+            val result = config.getString("$key.output") ?: return
+            val base = config.getString("$key.base") ?: return
+            val template = config.getString("$key.template") ?: return
+            val addition = config.getString("$key.addition") ?: return
 
             val parts = result.split("/")
             val amount = parts.getOrNull(1)?.toIntOrNull() ?: 1
@@ -225,7 +219,7 @@ object Recipes {
                 getInput(base) ?: return,
                 getInput(addition) ?: return,
                 getMaterial(parts[0], amount) ?: return
-            ).add()
+            ).add(namespace)
         }
     }
 
