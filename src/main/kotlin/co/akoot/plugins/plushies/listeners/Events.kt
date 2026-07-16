@@ -9,6 +9,9 @@ import co.akoot.plugins.plushies.listeners.handlers.dropItem
 import co.akoot.plugins.plushies.listeners.handlers.plushieFrame
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.golfKey
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.spawnGolfBall
+import co.akoot.plugins.plushies.util.Items.isDyeable
+import co.akoot.plugins.plushies.util.Util.dyeItem
+import co.akoot.plugins.plushies.util.Util.isDyeRecipe
 //import co.akoot.plugins.plushies.util.Items.updateItem
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import co.akoot.plugins.plushies.util.isCustomBlock
@@ -20,11 +23,14 @@ import io.papermc.paper.event.player.PlayerItemFrameChangeEvent.ItemFrameChangeA
 import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.block.Container
+import org.bukkit.block.data.type.Crafter
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.ItemFrame
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.block.CrafterCraftEvent
 import org.bukkit.event.hanging.HangingBreakEvent
 import org.bukkit.event.hanging.HangingPlaceEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
@@ -48,27 +54,31 @@ class Events : Listener {
 //    }
 
     @EventHandler
-    fun PrepareItemCraftEvent.elytra() {
-        if (inventory.matrix.filterNotNull().size != 2) return
-        val wings = inventory.matrix.firstOrNull { it?.type == Material.ELYTRA } ?: return
+    fun onCrafterCraft(e: CrafterCraftEvent) {
+        val inv = (e.block.state as Container).inventory
+        val matrix = inv.contents
 
-        val dye = inventory.matrix.firstOrNull { item ->
-            item != null && MaterialTags.DYES.isTagged(item.type)
-        } ?: return
-
-        val dyeColor = DyeColor.valueOf(dye.type.name.removeSuffix("_DYE")).color
-        val wingColor = wings.getData(DataComponentTypes.DYED_COLOR)?.color()
-
-        val finalColor = when {
-            dye.itemMeta?.hasPDC(NamespacedKey("choco", "rgb_dye")) == true ->
-                dye.itemMeta?.displayName()?.color()?.toBukkitColor()
-
-            wingColor != null -> wingColor.mixColors(dyeColor)
-
-            else -> dyeColor
+        if (!isDyeRecipe(matrix)) {
+            e.isCancelled = true
+            return
         }
 
-        inventory.result = ItemBuilder.builder(wings.clone()).dye(finalColor?: return).build()
+        e.result = dyeItem(matrix) ?: run {
+            e.isCancelled = true
+            return
+        }
+    }
+
+    @EventHandler
+    fun PrepareItemCraftEvent.dye() {
+        val matrix = inventory.matrix
+
+        if (!isDyeRecipe(matrix)) {
+            inventory.result = null
+            return
+        }
+
+        inventory.result = dyeItem(matrix)
     }
 
     @EventHandler

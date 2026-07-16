@@ -1,6 +1,5 @@
 package co.akoot.plugins.plushies.listeners
 
-//import co.akoot.plugins.plushies.util.Items.updateInventory
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.hasPDC
@@ -12,9 +11,11 @@ import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.listeners.handlers.placeItem
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowable
+import co.akoot.plugins.plushies.util.Items.customItems
+import co.akoot.plugins.plushies.util.Items.isDyeable
 import co.akoot.plugins.plushies.util.Items.isPlaceable
-import co.akoot.plugins.plushies.util.Items.itemId
 import co.akoot.plugins.plushies.util.Items.swingSound
+//import co.akoot.plugins.plushies.util.Items.updateInventory
 import co.akoot.plugins.plushies.util.Recipes.unlockRecipes
 import co.akoot.plugins.plushies.util.ResourcePack.isPackEnabled
 import co.akoot.plugins.plushies.util.ResourcePack.packDeniers
@@ -32,6 +33,7 @@ import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.attribute.Attribute
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Container
 import org.bukkit.block.Sign
 import org.bukkit.block.data.Directional
 import org.bukkit.event.Event
@@ -116,7 +118,7 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
                     (item.isPlaceable && block.isSolid && player.isSneaking && block.getRelative(face).type == Material.AIR) ->
                         placeItem(face, player)
 
-                    (item.itemId == "wrench" && MaterialTags.GLAZED_TERRACOTTA.isTagged(block)) -> {
+                    (item.isSimilar(customItems["wrench"]) && MaterialTags.GLAZED_TERRACOTTA.isTagged(block)) -> {
                         val data = block.blockData as? Directional ?: return
                         val rotation = listOf(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST) // idk
                         val current = rotation.indexOf(data.facing)
@@ -127,9 +129,10 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
                         block.blockData = data
                     }
 
-                    (block.type == Material.WATER_CAULDRON && item.type == Material.ELYTRA && item.hasData(DataComponentTypes.DYED_COLOR)) -> {
+                    (block.type == Material.WATER_CAULDRON && item.isDyeable) -> {
                         event.isCancelled = true
                         ItemBuilder.builder(item).unsetData(DataComponentTypes.DYED_COLOR).build()
+                        event.setUseInteractedBlock(Event.Result.DENY)
                     }
 
 //                    block.state is Container -> {
