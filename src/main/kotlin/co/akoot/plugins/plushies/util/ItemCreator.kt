@@ -175,7 +175,7 @@ object ItemCreator {
             }
 
             // eating animation (i love this)
-            config.getEnum(ItemUseAnimation::class.java, "$path.food.animation")?.let { animation(it) }
+            config.getEnum<ItemUseAnimation>("$path.food.animation")?.let { animation(it) }
 
         }.build()
     }
@@ -184,7 +184,7 @@ object ItemCreator {
         if (!config.getKeys(path).contains("equippable")) return itemStack
 
         val ePath = "$path.equippable"
-        val slot = config.getEnum(EquipmentSlot::class.java, "$ePath.slot") ?: itemStack.type.equipmentSlot
+        val slot = config.getEnum<EquipmentSlot>("$ePath.slot") ?: itemStack.type.equipmentSlot
 
         val item = EquippableBuilder.builder(itemStack, slot).apply {
             config.getBoolean("$ePath.glider")?.let { glider() }
