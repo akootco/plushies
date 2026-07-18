@@ -12,8 +12,8 @@ import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.listeners.handlers.placeItem
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowable
-import co.akoot.plugins.plushies.util.Items.customItems
 import co.akoot.plugins.plushies.util.Items.isPlaceable
+import co.akoot.plugins.plushies.util.Items.itemId
 import co.akoot.plugins.plushies.util.Items.swingSound
 import co.akoot.plugins.plushies.util.Recipes.unlockRecipes
 import co.akoot.plugins.plushies.util.ResourcePack.isPackEnabled
@@ -116,7 +116,7 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
                     (item.isPlaceable && block.isSolid && player.isSneaking && block.getRelative(face).type == Material.AIR) ->
                         placeItem(face, player)
 
-                    (item.isSimilar(customItems["wrench"]) && MaterialTags.GLAZED_TERRACOTTA.isTagged(block)) -> {
+                    (item.itemId == "wrench" && MaterialTags.GLAZED_TERRACOTTA.isTagged(block)) -> {
                         val data = block.blockData as? Directional ?: return
                         val rotation = listOf(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST) // idk
                         val current = rotation.indexOf(data.facing)

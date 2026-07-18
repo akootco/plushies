@@ -7,7 +7,8 @@ import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.runLater
 import co.akoot.plugins.plushies.Plushies.Companion.key
-import co.akoot.plugins.plushies.util.Items.customItems
+import co.akoot.plugins.plushies.events.RemoveCustomBlockEvent
+import co.akoot.plugins.plushies.util.Items.getItem
 import co.akoot.plugins.plushies.util.Util.getBlockPDC
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import me.arcaniax.hdb.api.HeadDatabaseAPI
@@ -97,6 +98,7 @@ fun createDisplay(location: Location, id: String, textured: Boolean = false) {
 }
 
 fun removeCustomBlock(location: Location) {
+    RemoveCustomBlockEvent(location.block).call()
     // good trick!
     plugins.forEach {
         location.chunk.removePDC(getBlockPDC(location, it))
@@ -111,7 +113,7 @@ fun dropItems(block: Block, amount: Int) {
     val loc = block.location
     val key = loc.id?.split("|")?.get(0) ?: return
     repeat(amount) {
-        loc.world.dropItemNaturally(block.location.toCenterLocation(), customItems[key] ?: return)
+        loc.world.dropItemNaturally(block.location.toCenterLocation(), getItem(key) ?: return)
     }
 
     (block.state as? Container)?.inventory?.forEach { item ->

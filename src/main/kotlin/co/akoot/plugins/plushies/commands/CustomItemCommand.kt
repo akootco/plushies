@@ -8,6 +8,7 @@ import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.gui.CustomItemMenu
 import co.akoot.plugins.plushies.util.DataPack.createDiscItems
 import co.akoot.plugins.plushies.util.Items.customItems
+import co.akoot.plugins.plushies.util.Items.getItem
 import co.akoot.plugins.plushies.util.Items.isCustomItem
 import co.akoot.plugins.plushies.util.Items.loadItems
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
@@ -37,7 +38,7 @@ class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
 
             "party_hat" -> {
                 val p = playerCheck(sender)?: return false
-                val item = customItems["party_hat"] ?: return sendError(sender, "Invalid item.")
+                val item = getItem("party_hat") ?: return sendError(sender, "Invalid item.")
                 val hat =
                     if (args.getOrNull(1) != null)
                         ItemBuilder.builder(item.clone())
@@ -58,7 +59,7 @@ class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
                 }
 
                 val outputItem = customItems.keys.find { it.equals(args[0], ignoreCase = true) }
-                    ?.let { customItems[it] } ?: run { return sendError(sender, "Invalid item.") }
+                    ?.let { getItem(it) } ?: run { return sendError(sender, "Invalid item.") }
                 val count = args.getOrNull(2)?.toIntOrNull() ?: 1
 
                 if (!p.isSurventure) p.give(outputItem.clone().apply { amount = count })

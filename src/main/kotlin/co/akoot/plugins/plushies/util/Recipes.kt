@@ -6,7 +6,7 @@ import co.akoot.plugins.plushies.Plushies.Companion.cookRecipeConf
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.recipeConf
 import co.akoot.plugins.plushies.Plushies.Companion.smithRecipeConf
-import co.akoot.plugins.plushies.util.Items.customItems
+import co.akoot.plugins.plushies.util.Items.getItem
 import co.akoot.plugins.plushies.util.builders.CookRecipe
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
@@ -36,7 +36,7 @@ object Recipes {
         coloredShulker()
         deepslate()
 
-        CraftRecipe.builder("wrench", customItems["wrench"]?: return)
+        CraftRecipe.builder("wrench", getItem("wrench") ?: return)
             .ingredient(Material.LIGHTNING_ROD)
             .ingredient(Material.COPPER_INGOT)
             .shapeless()
@@ -51,26 +51,20 @@ object Recipes {
     }
 
     fun getInput(input: String): RecipeChoice? {
-        if (input.startsWith("tag.")) { return tag(input.substring(4)) }
-        customItems[input.lowercase()]?.let { return RecipeChoice.ExactChoice(it) }
-        return Material.getMaterial(input.uppercase())?.asItemType()?.let { RecipeChoice.itemType(it) }
+        if (input.startsWith("tag.")) return tag(input.substring(4))
+        getItem(input.lowercase())?.let { return RecipeChoice.ExactChoice(it) }
+
+        return Material.getMaterial(input.uppercase())
+            ?.asItemType()
+            ?.let { RecipeChoice.itemType(it) }
     }
 
     fun getMaterial(input: String, amount: Int = 1): ItemStack? {
-        // if no prefix, check for flugin item or vanilla material.
-        customItems[input.lowercase()]?.let {
-                val copy = it.clone()  // clone first smh
-                copy.amount = amount
-                return copy
-            }
+        getItem(input.lowercase())?.let { return it.clone().apply { this.amount = amount } }
 
-        Material.getMaterial(input.uppercase())?.let {
-            val itemStack = ItemStack(it)
-            itemStack.amount = amount
-            return itemStack
+        return Material.getMaterial(input.uppercase())?.let {
+            ItemStack(it, amount)
         }
-
-        return null
     }
 
     fun unlockRecipes(player: Player, id: String = "plushies") {
