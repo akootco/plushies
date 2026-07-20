@@ -9,8 +9,10 @@ import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.bluefox.extensions.setPDC
+import co.akoot.plugins.bluefox.util.Color
 import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.Plushies.Companion.customItemConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.plushieConf
@@ -18,6 +20,7 @@ import co.akoot.plugins.plushies.util.ItemCreator.createItem
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.registry.keys.tags.DamageTypeTagKeys
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.Inventory
@@ -105,6 +108,17 @@ object Items {
             else
                 meta.setPDC(swingSoundKey, value)
             itemMeta = meta
+        }
+
+    var ItemStack.xpBottle: Int?
+        get() = itemMeta?.getPDC<Int>(key("stored_xp"))
+        set(value) {
+            if (value != null) {
+                editMeta {
+                    it.setPDC(key("stored_xp"), value)
+                    it.lore(listOf(Component.text("Stored XP: $value points", Color.Green)))
+                }
+            }
         }
 
 //    fun updateItem(item: ItemStack?): ItemStack? {

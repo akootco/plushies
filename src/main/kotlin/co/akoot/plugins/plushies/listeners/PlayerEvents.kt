@@ -15,6 +15,7 @@ import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowa
 import co.akoot.plugins.plushies.util.Items.isPlaceable
 import co.akoot.plugins.plushies.util.Items.itemId
 import co.akoot.plugins.plushies.util.Items.swingSound
+import co.akoot.plugins.plushies.util.Items.xpBottle
 import co.akoot.plugins.plushies.util.Recipes.unlockRecipes
 import co.akoot.plugins.plushies.util.ResourcePack.isPackEnabled
 import co.akoot.plugins.plushies.util.ResourcePack.packDeniers
@@ -38,6 +39,7 @@ import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
+import org.bukkit.event.entity.ExpBottleEvent
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
@@ -49,6 +51,11 @@ import java.util.regex.Pattern
 class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
     private val msgConf = conf.getStringList("kickMsg").toMutableList()
+
+    @EventHandler
+    fun ExpBottleEvent.xpBottle() {
+        experience = entity.item.xpBottle ?: return
+    }
 
     @EventHandler
     fun itemConsume(event: PlayerItemConsumeEvent) {

@@ -91,6 +91,7 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(EditBookCommand(this))
         registerCommand(ChunkPDCCommand(this))
         registerCommand(LocatorCommand(this))
+        registerCommand(XpBottleCommand(this))
 //        registerCommand(ATMCommand(this))
     }
 
