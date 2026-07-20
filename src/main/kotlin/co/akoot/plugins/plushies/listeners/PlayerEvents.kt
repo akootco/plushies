@@ -21,6 +21,7 @@ import co.akoot.plugins.plushies.util.ResourcePack.isPackEnabled
 import co.akoot.plugins.plushies.util.ResourcePack.packDeniers
 import co.akoot.plugins.plushies.util.ResourcePack.sendPackMsg
 import co.akoot.plugins.plushies.util.ResourcePack.setPack
+import co.akoot.plugins.plushies.util.Util.autoMend
 import co.akoot.plugins.plushies.util.Util.inValidWorld
 import co.akoot.plugins.plushies.util.Util.isDefault
 import co.akoot.plugins.plushies.util.Util.setAttributes
@@ -35,6 +36,7 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.Directional
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -43,9 +45,11 @@ import org.bukkit.event.entity.ExpBottleEvent
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
+import org.bukkit.event.player.PlayerItemDamageEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerResourcePackStatusEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.meta.Damageable
 import java.util.regex.Pattern
 
 class PlayerEvents(private val plugin: FoxPlugin) : Listener {
@@ -158,6 +162,22 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
                 }
             }
             else -> return
+        }
+    }
+
+    @EventHandler
+    fun PlayerItemDamageEvent.autoMend() {
+        if (!player.autoMend) return
+
+        item.editMeta { meta ->
+            val damageable = meta as? Damageable ?: return@editMeta
+            if (Enchantment.MENDING !in item.enchantments) return@editMeta
+
+            val xp = player.calculateTotalExperiencePoints()
+            if (damageable.damage <= 1 || xp <= 0) return@editMeta
+
+            player.setExperienceLevelAndProgress(xp - 1)
+            damageable.damage = (damageable.damage - 2).coerceAtLeast(0)
         }
     }
 }

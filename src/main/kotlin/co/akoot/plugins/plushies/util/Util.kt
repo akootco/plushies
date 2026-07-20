@@ -4,6 +4,7 @@ import co.akoot.plugins.bluefox.BlueFox
 import co.akoot.plugins.bluefox.api.FoxCommand
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.getPDC
+import co.akoot.plugins.bluefox.extensions.settings
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.head
 import co.akoot.plugins.plushies.Plushies
@@ -13,6 +14,7 @@ import io.papermc.paper.registry.RegistryKey
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
+import org.bukkit.OfflinePlayer
 import org.bukkit.World
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
@@ -97,4 +99,8 @@ object Util {
             false
         } else true
     }
+
+    var OfflinePlayer.autoMend: Boolean
+        get() = settings.getBoolean("autoMend") ?: false
+        set(value) = settings.set("autoMend", value)
 }
