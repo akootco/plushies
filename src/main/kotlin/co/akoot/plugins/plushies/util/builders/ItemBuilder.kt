@@ -3,7 +3,6 @@ package co.akoot.plugins.plushies.util.builders
 import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.quote
-import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.util.Items.hitSoundKey
@@ -14,8 +13,6 @@ import io.papermc.paper.datacomponent.item.*
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
-import io.papermc.paper.registry.keys.tags.DamageTypeTagKeys
-import io.papermc.paper.registry.set.RegistryKeySet
 import io.papermc.paper.registry.tag.TagKey
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
@@ -34,6 +31,7 @@ import org.bukkit.inventory.ItemRarity
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
 import org.bukkit.inventory.meta.SkullMeta
+import org.bukkit.inventory.meta.trim.ArmorTrim
 import org.bukkit.potion.PotionEffect
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -682,6 +680,28 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
     fun swingAnimation(animation: SwingAnimation.Animation): ItemBuilder {
         itemStack.setData(DataComponentTypes.SWING_ANIMATION,
             SwingAnimation.swingAnimation().type(animation).build())
+        return this
+    }
+
+    fun trim(material: String, pattern: String): ItemBuilder {
+        //snoooooooooooooore
+        val registryAccess = RegistryAccess.registryAccess()
+
+        val mat = registryAccess
+            .getRegistry(RegistryKey.TRIM_MATERIAL)
+            .get(Key.key(material))
+            ?: return this
+
+        val pat = registryAccess
+            .getRegistry(RegistryKey.TRIM_PATTERN)
+            .get(Key.key(pattern))
+            ?: return this
+
+        itemStack.setData(
+            DataComponentTypes.TRIM,
+            ItemArmorTrim.itemArmorTrim(ArmorTrim(mat, pat)).build() // a game theory!
+        )
+
         return this
     }
 
