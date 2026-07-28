@@ -9,7 +9,6 @@ import co.akoot.plugins.plushies.Plushies.Companion.smithRecipeConf
 import co.akoot.plugins.plushies.util.Items.getItem
 import co.akoot.plugins.plushies.util.builders.CookRecipe
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
-import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import co.akoot.plugins.plushies.util.builders.SmithRecipe
 import com.destroystokyo.paper.MaterialTags
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -19,7 +18,6 @@ import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
 import org.bukkit.*
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.ItemType
 import org.bukkit.inventory.RecipeChoice
 import org.bukkit.inventory.RecipeChoice.MaterialChoice
 import org.bukkit.inventory.StonecuttingRecipe
@@ -32,7 +30,7 @@ object Recipes {
         configRecipes()
         smeltingRecipes()
         smithingRecipes()
-        wingRecipes()
+//        wingRecipes()
         shulkers() // why is nobody licking my brains?!?
         coloredShulker()
         deepslate()
@@ -96,49 +94,38 @@ object Recipes {
         }
     }
 
-    private fun wingRecipes() {
-        MaterialTags.DYES.values.forEach { dye ->
-            val color = dye.name.removeSuffix("_DYE")
-
-            CraftRecipe.builder(
-                "${color.lowercase()}.elytra",
-                ItemBuilder(Material.ELYTRA).dye(DyeColor.valueOf(color).color).build())
-                .ingredient(Material.ELYTRA)
-                .ingredient(dye)
-                .shapeless()
-        }
-
-        val trimTemplates = Material.entries
-            .filter { it.name.endsWith("_ARMOR_TRIM_SMITHING_TEMPLATE") }
-
-        Tag.ITEMS_TRIM_MATERIALS.values.forEach { material ->
-            trimTemplates.forEach { template ->
-
-                val templateType = template.asItemType() ?: return@forEach
-                val materialType = material.asItemType() ?: return@forEach
-
-                val pattern = template.name
-                    .lowercase()
-                    .removeSuffix("_armor_trim_smithing_template")
-
-                val material = material.name
-                    .lowercase()
-                    .substringBefore("_")
-
-                val result = ItemBuilder.builder(Material.ELYTRA)
-                    .trim(material, pattern)
-                    .build()
-
-                SmithRecipe.builder(
-                    "elytra.$material.$pattern",
-                    RecipeChoice.itemType(templateType),
-                    RecipeChoice.itemType(ItemType.ELYTRA),
-                    RecipeChoice.itemType(materialType),
-                    result
-                ).add()
-            }
-        }
-    }
+//    private fun wingRecipes() {
+//        val trimTemplates = Material.entries
+//            .filter { it.name.endsWith("_ARMOR_TRIM_SMITHING_TEMPLATE") }
+//
+//        Tag.ITEMS_TRIM_MATERIALS.values.forEach { material ->
+//            trimTemplates.forEach { template ->
+//
+//                val templateType = template.asItemType() ?: return@forEach
+//                val materialType = material.asItemType() ?: return@forEach
+//
+//                val pattern = template.name
+//                    .lowercase()
+//                    .removeSuffix("_armor_trim_smithing_template")
+//
+//                val material = material.name
+//                    .lowercase()
+//                    .substringBefore("_")
+//
+//                val result = ItemBuilder.builder(Material.ELYTRA)
+//                    .trim(material, pattern)
+//                    .build()
+//
+//                SmithRecipe.builder(
+//                    "elytra.$material.$pattern",
+//                    RecipeChoice.itemType(templateType),
+//                    RecipeChoice.itemType(ItemType.ELYTRA),
+//                    RecipeChoice.itemType(materialType),
+//                    result
+//                ).add()
+//            }
+//        }
+//    }
 
     private fun coloredShulker() {
         MaterialTags.DYES.values.forEach { dye ->

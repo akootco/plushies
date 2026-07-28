@@ -138,11 +138,6 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
                         block.blockData = data
                     }
 
-                    (block.type == Material.WATER_CAULDRON && item.type == Material.ELYTRA && item.hasData(DataComponentTypes.DYED_COLOR)) -> {
-                        event.isCancelled = true
-                        ItemBuilder.builder(item).unsetData(DataComponentTypes.DYED_COLOR).build()
-                    }
-
 //                    block.state is Container -> {
 //                        updateInventory((block.state as Container).inventory)
 //                    }

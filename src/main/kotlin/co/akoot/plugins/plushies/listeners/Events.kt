@@ -47,29 +47,6 @@ class Events : Listener {
 //        }
 //    }
 
-    @EventHandler
-    fun PrepareItemCraftEvent.elytra() {
-        if (inventory.matrix.filterNotNull().size != 2) return
-        val wings = inventory.matrix.firstOrNull { it?.type == Material.ELYTRA } ?: return
-
-        val dye = inventory.matrix.firstOrNull { item ->
-            item != null && MaterialTags.DYES.isTagged(item.type)
-        } ?: return
-
-        val dyeColor = DyeColor.valueOf(dye.type.name.removeSuffix("_DYE")).color
-        val wingColor = wings.getData(DataComponentTypes.DYED_COLOR)?.color()
-
-        val finalColor = when {
-            dye.itemMeta?.hasPDC(NamespacedKey("choco", "rgb_dye")) == true ->
-                dye.itemMeta?.displayName()?.color()?.toBukkitColor()
-
-            wingColor != null -> wingColor.mixColors(dyeColor)
-
-            else -> dyeColor
-        }
-
-        inventory.result = ItemBuilder.builder(wings.clone()).dye(finalColor?: return).build()
-    }
 
     @EventHandler
     fun armorStandEdit(event: PlayerArmorStandManipulateEvent) {

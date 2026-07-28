@@ -21,7 +21,6 @@ object DataPack {
         }
 
     private fun createPack(): File {
-        dataPack.deleteRecursively() // delete data pack
         dataPack.mkdirs() // create new
 
         val packMeta = File(dataPack, "pack.mcmeta")
