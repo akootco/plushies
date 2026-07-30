@@ -5,6 +5,7 @@ import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.plushies.commands.*
 import co.akoot.plugins.plushies.coolstuff.ArmoredElytra
+import co.akoot.plugins.plushies.coolstuff.Cushion
 import co.akoot.plugins.plushies.coolstuff.EverlastRocket
 import co.akoot.plugins.plushies.geyser.GeyserRegistrar
 import co.akoot.plugins.plushies.geyser.GeyserUtil.downloadBedrockPack
@@ -107,6 +108,7 @@ class Plushies : FoxPlugin("plushies") {
         registerEventListener(MerchantEvents())
         registerEventListener(EverlastRocket())
         registerEventListener(ArmoredElytra())
+        registerEventListener(Cushion())
     }
 
     override fun registerConfigs() {

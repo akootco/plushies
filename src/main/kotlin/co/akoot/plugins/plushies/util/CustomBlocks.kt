@@ -45,8 +45,8 @@ val Location.id: String?
 fun spawnItemDisplay(
     location: Location,
     item: ItemStack,
-    display: Transformation? = null
-): ItemDisplay {
+    display: Transformation? = null,
+    transform: ItemDisplay.ItemDisplayTransform = ItemDisplay.ItemDisplayTransform.FIXED): ItemDisplay {
     val fixedYaw = (location.block.blockData as? Directional)?.facing?.let { facing ->
         when (facing) {
             BlockFace.EAST -> -90f
@@ -57,11 +57,13 @@ fun spawnItemDisplay(
     } ?: 180f
 
     val itemDisplay = location.world.spawnEntity(
-        location.toCenterLocation().apply { this.yaw = fixedYaw },
+        location.toCenterLocation().apply {
+            y = location.y
+            this.yaw = fixedYaw },
         EntityType.ITEM_DISPLAY
     ) as ItemDisplay
 
-    itemDisplay.itemDisplayTransform = ItemDisplay.ItemDisplayTransform.FIXED
+    itemDisplay.itemDisplayTransform = transform
     itemDisplay.apply {
         setItemStack(item)
         shadowRadius = 0f

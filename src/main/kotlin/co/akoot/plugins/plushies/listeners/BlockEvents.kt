@@ -37,8 +37,8 @@ class BlockEvents : Listener {
                 dropItems(block, drops.count())
                 isDropItems = false
             }
+            removeCustomBlock(block.location)
         }
-        removeCustomBlock(block.location)
     }
 
     @EventHandler
