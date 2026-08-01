@@ -4,8 +4,8 @@ import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.bluefox.extensions.setPDC
-import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.runLater
+import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.events.RemoveCustomBlockEvent
 import co.akoot.plugins.plushies.util.Items.getItem
@@ -45,8 +45,8 @@ val Location.id: String?
 fun spawnItemDisplay(
     location: Location,
     item: ItemStack,
-    display: Transformation? = null,
-    transform: ItemDisplay.ItemDisplayTransform = ItemDisplay.ItemDisplayTransform.FIXED): ItemDisplay {
+    configure: ItemDisplay.() -> Unit = {}
+): ItemDisplay {
     val fixedYaw = (location.block.blockData as? Directional)?.facing?.let { facing ->
         when (facing) {
             BlockFace.EAST -> -90f
@@ -56,28 +56,24 @@ fun spawnItemDisplay(
         }
     } ?: 180f
 
-    val itemDisplay = location.world.spawnEntity(
-        location.toCenterLocation().apply {
-            y = location.y
-            this.yaw = fixedYaw },
+    return (location.world.spawnEntity(
+        location.apply { this.yaw = fixedYaw },
         EntityType.ITEM_DISPLAY
-    ) as ItemDisplay
-
-    itemDisplay.itemDisplayTransform = transform
-    itemDisplay.apply {
-        setItemStack(item)
+    ) as ItemDisplay).apply {
+        setItemStack(item.asOne())
+        itemDisplayTransform = ItemDisplay.ItemDisplayTransform.HEAD
         shadowRadius = 0f
         shadowStrength = 0f
         brightness = Brightness(5, 15)
-        transformation =  display ?: Transformation(
-            Vector3f(),
+        transformation = Transformation(
+            Vector3f(0f,0.5f,0f),
             AxisAngle4f(),
-            Vector3f(2.001f, 2.001f, 2.001f),
+            Vector3f(1.001f),
             AxisAngle4f()
         )
-    }
 
-    return itemDisplay
+        configure()
+    }
 }
 
 fun createDisplay(location: Location, id: String, textured: Boolean = false) {
@@ -88,7 +84,7 @@ fun createDisplay(location: Location, id: String, textured: Boolean = false) {
             val name = id.split("_").joinToString(" ") { it.replaceFirstChar { c -> c.titlecase() } }
             customModelData(id)
             itemModel("air")
-            itemName(Text(name).component)
+            itemName(text(name))
         } else {
             val headItem = HeadDatabaseAPI().getItemHead(id)
             if (headItem != null) copyOf(headItem)
