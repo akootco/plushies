@@ -9,7 +9,7 @@ import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.bluefox.extensions.setPDC
-import co.akoot.plugins.bluefox.util.Color
+import co.akoot.plugins.bluefox.util.Color.Green
 import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.text
@@ -19,8 +19,10 @@ import co.akoot.plugins.plushies.Plushies.Companion.plushieConf
 import co.akoot.plugins.plushies.util.ItemCreator.createItem
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.DyedItemColor
 import io.papermc.paper.registry.keys.tags.DamageTypeTagKeys
 import net.kyori.adventure.text.Component
+import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.Inventory
@@ -116,10 +118,23 @@ object Items {
             if (value != null) {
                 editMeta {
                     it.setPDC(key("stored_xp"), value)
-                    it.lore(listOf(Component.text("Stored XP: $value points", Color.Green)))
+                    it.lore(listOf(Component.text("Stored XP: $value points", Green)))
                 }
             }
         }
+
+    fun ItemStack.applyDye(color: Color): Boolean {
+        val current = getData(DataComponentTypes.DYED_COLOR)?.color()
+        val result = current?.mixColors(color) ?: color
+
+        if (result == current) return false
+
+        setData(
+            DataComponentTypes.DYED_COLOR,
+            DyedItemColor.dyedItemColor().color(result).build()
+        )
+        return true
+    }
 
 //    fun updateItem(item: ItemStack?): ItemStack? {
 //        if (item == null) return null
