@@ -66,8 +66,6 @@ class CraftRecipe private constructor(val name: String, private val result: Item
         val recipe = NamespacedKey(plugin, name)
         val shapelessRecipe = ShapelessRecipe(recipe, result)
 
-        Bukkit.removeRecipe(recipe)
-
         // Set the ingredients
         shapelessIngredients.forEach { ingredient ->
             when (ingredient) {
@@ -84,8 +82,6 @@ class CraftRecipe private constructor(val name: String, private val result: Item
     fun shaped(plugin: String = "plushies"): Recipe {
         val recipe = NamespacedKey(plugin, name)
         val shapedRecipe = ShapedRecipe(recipe, result)
-
-        Bukkit.removeRecipe(recipe)
 
         // Set the shape
         shapedRecipe.shape(shape[0], shape[1], shape[2])

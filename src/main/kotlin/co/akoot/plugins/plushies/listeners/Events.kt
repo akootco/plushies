@@ -1,35 +1,26 @@
 package co.akoot.plugins.plushies.listeners
 
+//import co.akoot.plugins.plushies.util.Items.updateItem
 import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.hasMeta
 import co.akoot.plugins.bluefox.extensions.hasPDC
-import co.akoot.plugins.bluefox.util.toBukkitColor
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.listeners.handlers.dropItem
 import co.akoot.plugins.plushies.listeners.handlers.plushieFrame
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.golfKey
 import co.akoot.plugins.plushies.listeners.tasks.Golf.Companion.spawnGolfBall
-//import co.akoot.plugins.plushies.util.Items.updateItem
-import co.akoot.plugins.plushies.util.builders.ItemBuilder
-import co.akoot.plugins.plushies.util.isCustomBlock
-import com.destroystokyo.paper.MaterialTags
+import co.akoot.plugins.plushies.util.Recipes.registerPlushieRecipes
 import com.destroystokyo.paper.event.block.BeaconEffectEvent
-import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.event.player.PlayerItemFrameChangeEvent
 import io.papermc.paper.event.player.PlayerItemFrameChangeEvent.ItemFrameChangeAction
-import org.bukkit.DyeColor
-import org.bukkit.Material
-import org.bukkit.NamespacedKey
-import org.bukkit.entity.ItemDisplay
+import io.papermc.paper.event.server.ServerResourcesReloadedEvent
 import org.bukkit.entity.ItemFrame
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.hanging.HangingBreakEvent
 import org.bukkit.event.hanging.HangingPlaceEvent
-import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent
-import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.potion.PotionEffectType
 
 class Events : Listener {
@@ -83,5 +74,10 @@ class Events : Listener {
     fun BeaconEffectEvent.beaconEffect() {
         isCancelled = effect.type == PotionEffectType.JUMP_BOOST && player.hasPDC(key("plsnojump"))
         effect = effect.withDuration(effect.duration * 2)
+    }
+
+    @EventHandler
+    fun ServerResourcesReloadedEvent.orReload() {
+        registerPlushieRecipes()
     }
 }
