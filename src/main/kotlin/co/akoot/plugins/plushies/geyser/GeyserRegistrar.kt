@@ -1,7 +1,7 @@
 package co.akoot.plugins.plushies.geyser
 
 import co.akoot.plugins.plushies.geyser.GeyserUtil.register
-import co.akoot.plugins.plushies.util.Items
+import co.akoot.plugins.plushies.items.PlushieItems.plushies
 import co.akoot.plugins.plushies.util.Items.customItems
 import org.bukkit.Material
 import org.bukkit.inventory.meta.SkullMeta
@@ -19,10 +19,10 @@ class GeyserRegistrar : EventRegistrar {
 
     fun registerItems(event: GeyserDefineCustomItemsEvent) {
         // register plushies
-        for (key in Items.plushies.sortedBy { it.second }) {
-            val asInt = key.second.toIntOrNull() ?: continue
-            register(event, key.first, asInt, "totem_of_undying")
-            register(event, "${key.first}.st", asInt + 1, "totem_of_undying")
+        for (key in plushies.sortedBy { it.id }) {
+            val asInt = key.id.toIntOrNull() ?: continue
+            register(event, key.id, asInt, "totem_of_undying")
+            register(event, "${key.id}.st", asInt + 1, "totem_of_undying")
         }
 
         // book covers
