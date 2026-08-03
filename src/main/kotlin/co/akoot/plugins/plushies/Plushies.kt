@@ -95,7 +95,6 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(XpBottleCommand(this))
         registerCommand(AutoMendCommand(this))
         registerCommand(RepairCommand(this))
-//        registerCommand(ATMCommand(this))
     }
 
     override fun registerEvents() {
