@@ -77,7 +77,7 @@ class Events : Listener {
     }
 
     @EventHandler
-    fun ServerResourcesReloadedEvent.orReload() {
+    fun ServerResourcesReloadedEvent.onReload() {
         registerPlushieRecipes()
     }
 }
