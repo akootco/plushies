@@ -40,7 +40,6 @@ object Items {
     val hitSoundKey = key("hit.sound")
     val swingSoundKey = key("swing.sound")
 
-    var plushies = plushieConf.getKeys().map { name -> name to (plushieConf.getString(name).takeUnless { it == "0" } ?: name) }
     val customItems = mutableMapOf<String, ItemStack>()
 
     fun registerItem(id: String, item: ItemStack) {

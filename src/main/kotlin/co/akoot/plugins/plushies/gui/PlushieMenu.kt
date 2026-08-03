@@ -2,104 +2,63 @@ package co.akoot.plugins.plushies.gui
 
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.invoke
-import co.akoot.plugins.bluefox.util.ColorUtil.MONTH_COLOR
 import co.akoot.plugins.bluefox.util.ColorUtil.randomColor
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.Text.Companion.asString
-import co.akoot.plugins.plushies.gui.MenuItems.nextPage
-import co.akoot.plugins.plushies.gui.MenuItems.prevPage
-import co.akoot.plugins.plushies.util.Items.plushies
+import co.akoot.plugins.plushies.api.ChestMenu
+import co.akoot.plugins.plushies.items.PlushieItems.plushies
 import co.akoot.plugins.plushies.util.Util.plushMsg
-import co.akoot.plugins.plushies.util.builders.ChestGUI
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
-import io.papermc.paper.registry.keys.tags.DamageTypeTagKeys
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
-import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.InventoryHolder
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
-import kotlin.math.min
 
-class PlushieMenu(private val page: Int = 1) :
-    InventoryHolder {
+class PlushieMenu(page: Int = 1) : ChestMenu(page) {
 
-    companion object {
+    override val title =
+        Text("Plushies")
+            .color(randomColor(brightness = 0.6f))
+            .component
 
-        fun createPlushie(name: String, customModelData: String): ItemStack {
-            return ItemBuilder.builder(ItemStack(Material.TOTEM_OF_UNDYING))
-                .itemName((Text(name).color(MONTH_COLOR)).component)
-                .customModelData(customModelData)
-                .damageResistance(DamageTypeTagKeys.IS_FIRE)
-                .deathProtection(false) // cannot believe i was using a listener for this
-                .build()
+    override val items: List<ItemStack>
+        get() = plushies
+            .sortedBy { it.name.lowercase() }
+            .map { it.item() }
+
+    override fun nextPage() = PlushieMenu(page + 1)
+
+    override fun prevPage() = PlushieMenu(page - 1)
+
+    override fun clickItem(
+        player: Player,
+        item: ItemStack,
+        event: InventoryClickEvent
+    ) {
+        if (item.type != Material.TOTEM_OF_UNDYING) return
+
+        val held = player.inventory.itemInMainHand
+
+        if (held.type != Material.TOTEM_OF_UNDYING) {
+            Kolor.ERROR.accent("You must be holding a totem!").send(player)
+            return
         }
 
-        fun plushMenu(item: ItemStack, p: Player, holder: InventoryHolder, clickType: ClickType) {
+        val builder = ItemBuilder.builder(held)
+            .copyOf(item)
 
-            when (item) {
-                nextPage -> p.openInventory((holder as PlushieMenu).nextPage().inventory)
-                prevPage -> p.openInventory((holder as PlushieMenu).prevPage().inventory)
-            }
+        if (event.click == ClickType.RIGHT) {
+            val cmd = held.itemMeta.customModelDataComponent
 
-            val pItem = p.inventory.itemInMainHand
-
-            if (item.type == Material.TOTEM_OF_UNDYING) { // is it a friend?
-                if (pItem.type != Material.TOTEM_OF_UNDYING) { // HEY! no hacking!
-                    Kolor.ERROR.accent("You must be holding a totem!").send(p)
-                } else {
-                    when (clickType) {
-                        ClickType.RIGHT -> ItemBuilder.builder(pItem).copyOf(item).apply {
-                            val cmd = pItem.itemMeta.customModelDataComponent
-
-                            customModelData(
-                                cmd.floats?.firstOrNull()?.plus(1)?.toInt()
-                                    ?: (cmd.strings?.firstOrNull() + ".st")) // disgtusting
-                        }.build() // statue
-
-                        else -> ItemBuilder.builder(pItem).copyOf(item).build() // normal
-                    }
-
-                    plushMsg(item.effectiveName().asString()).component
-                }
-            }
-        }
-    }
-
-    private val plushMenu: Inventory = ChestGUI.builder(54, this, true).apply {
-        title(Text("Plushies").color(randomColor(brightness = 0.6f)).component)
-        if (page > 1) setItem(45, prevPage)
-        if (plushies.size > page * 45) setItem(53, nextPage)
-        setItems(0..44, setPlushies(page))
-    }.build()
-
-    // create list of plushie items
-    private fun setPlushies(pageNumber: Int): List<ItemStack> {
-        val plushList = mutableListOf<ItemStack>()
-
-        val start = (pageNumber - 1) * 45
-        val end = min(start + 45, plushies.size)
-
-        val sortedPlushies = plushies.sortedBy { it.first.lowercase() }
-        // only get what fits on the page
-        for (index in start until end) {
-            val plushie = sortedPlushies[index]
-            val name = plushie.first.replace("_.*".toRegex(), "")
-            plushList.add(createPlushie(name, plushie.second))
+            builder.customModelData(
+                cmd.floats?.firstOrNull()?.plus(1)?.toInt()
+                    ?: (cmd.strings?.firstOrNull() + ".st")
+            )
         }
 
-        return plushList
-    }
+        builder.build()
 
-    fun nextPage(): PlushieMenu {
-        return PlushieMenu(page + 1)
-    }
-
-    fun prevPage(): PlushieMenu {
-        return PlushieMenu(page - 1)
-    }
-
-    override fun getInventory(): Inventory {
-        return this.plushMenu
+        plushMsg(item.effectiveName().asString()).component
     }
 }
