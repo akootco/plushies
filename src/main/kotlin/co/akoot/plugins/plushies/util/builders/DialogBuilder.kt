@@ -49,8 +49,7 @@ class DialogBuilder {
     }
 
     // 26.2
-    // fun btn(text: Text, hover: Text = Text(), clickEvent: ClickEvent<*>, width: Int = 100): DialogBuilder {
-    fun btn(text: Text, hover: Text = Text(), clickEvent: ClickEvent, width: Int = 100): DialogBuilder {
+    fun btn(text: Text, hover: Text = Text(), clickEvent: ClickEvent<*>, width: Int = 100): DialogBuilder {
         buttons.add(
             ActionButton.create(
                 text.component,
