@@ -36,6 +36,7 @@ class Cushion() : Listener {
 
     @EventHandler
     fun PlayerInteractEvent.place() {
+        if (isCancelled) return
         val support = clickedBlock ?: return
         val item = item ?: return
 

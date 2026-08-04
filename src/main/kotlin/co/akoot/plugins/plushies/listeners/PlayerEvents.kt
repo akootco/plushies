@@ -110,6 +110,7 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
     @EventHandler
     fun playerInteract(event: PlayerInteractEvent) {
+        if (event.isCancelled) return
         if (event.hand != EquipmentSlot.HAND) return // dumb
         val player = event.player
         val item = player.inventory.itemInMainHand
