@@ -6,7 +6,7 @@ import co.akoot.plugins.bluefox.util.*
 import co.akoot.plugins.bluefox.util.Text.Companion.asString
 import co.akoot.plugins.plushies.Plushies
 import co.akoot.plugins.plushies.util.Util.autoMend
-import co.akoot.plugins.plushies.util.builders.dialog
+import co.akoot.plugins.bluefox.api.dialog
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.dialog.Dialog
 import org.bukkit.entity.Player
@@ -34,7 +34,7 @@ class DialogTestCommand(plugin: Plushies) : CatCommand(plugin, "dlt") {
             message("check out these settings!")
 
             // real toggle is a dumb checkbox/ maybe use button(callback) instead
-            callback(
+            button(
                 (Color.Text + "AutoMend: ").append(
                     player.autoMend.get(Color.May + "Enabled", Color.Error + "Disabled")
                 )
@@ -55,14 +55,14 @@ class DialogTestCommand(plugin: Plushies) : CatCommand(plugin, "dlt") {
             message("check out these settings!")
 
             // default max char 256
-            textInput("Name", item.effectiveName().asString())
+            textInput("name","Name".text, item.effectiveName().asString())
 
-            toggle("Glint", item.getData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE) == true)
+            toggle("glint","Glint".text, item.getData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE) == true)
 
-            callback(text("Save Changes")) { p, view ->
+            button(text("Save Changes")) { p, view ->
                 // ts busted lmao you get the idea
-                val itemName = view.getText("name") ?: return@callback
-                val glint = view.getBoolean("glint") ?: return@callback
+                val itemName = view.getText("name") ?: return@button
+                val glint = view.getBoolean("glint") ?: return@button
 
                 item.apply {
                     withDisplayName(itemName.parse())
