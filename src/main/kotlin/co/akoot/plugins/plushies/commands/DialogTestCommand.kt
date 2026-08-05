@@ -1,75 +1,74 @@
 package co.akoot.plugins.plushies.commands
-import co.akoot.plugins.bluefox.api.FoxCommand
-import co.akoot.plugins.bluefox.api.FoxConfig
-import co.akoot.plugins.bluefox.api.FoxPlugin
-import co.akoot.plugins.bluefox.api.Kolor
-import co.akoot.plugins.bluefox.util.Text
-import co.akoot.plugins.plushies.Plushies.Companion.conf
-import co.akoot.plugins.plushies.Plushies.Companion.customDialogConfig
-import co.akoot.plugins.plushies.util.Items.getItem
-import co.akoot.plugins.plushies.util.Recipes.getMaterial
-import co.akoot.plugins.plushies.util.builders.DialogBuilder
-import co.akoot.plugins.plushies.util.builders.ItemBuilder
+
+import co.akoot.plugins.bluefox.api.CatCommand
+import co.akoot.plugins.bluefox.extensions.withDisplayName
+import co.akoot.plugins.bluefox.util.*
+import co.akoot.plugins.bluefox.util.Text.Companion.asString
+import co.akoot.plugins.plushies.Plushies
+import co.akoot.plugins.plushies.util.Util.autoMend
+import co.akoot.plugins.plushies.util.builders.dialog
+import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.dialog.Dialog
-import net.kyori.adventure.text.event.ClickEvent
-import org.bukkit.Material
-import org.bukkit.command.CommandSender
-import org.bukkit.inventory.ItemStack
+import org.bukkit.entity.Player
 
-class DialogTestCommand(plugin: FoxPlugin) : FoxCommand(plugin, "dlt", "dialog builder test") {
-
-
-
-    override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
-        return if (args.size == 1) customDialogConfig.getKeys().toMutableList() else mutableListOf()
-    }
-
-    override fun onCommand(sender: CommandSender, alias: String, args: Array<out String>): Boolean {
-        val p = playerCheck(sender) ?: return false
-
-        if (args.isEmpty()) {
-            p.showDialog(DialogBuilder()
-                .title(Kolor.WARNING("CRESTWEST"))
-                .text(Text("I chugged a cotton candy alani and I am ").plus(Text("fent").obfuscated()).plus(Text(" folding the opposite direction rn, holy im so done for come 5 hours")))
-                .icon(ItemBuilder.builder(ItemStack(Material.PLAYER_HEAD)).playerHead(p).build(), Text("this u?"))
-                .runcmd(Kolor.MONTH("/lays"), Kolor.ERROR("THIS IS A TEST"), "lays")
-                .icon(getItem("party_hat"), Kolor.QUOTE("Happy Birthday ${p.name}!"))
-                .btn(Kolor.ERROR("resource pack"), clickEvent = ClickEvent.openUrl(conf.getString("pack.link") ?: " "))
-                .icon(getItem("1"), Kolor.QUOTE("good plugin"))
-                .icon(ItemStack(Material.STONE, 24), Text("THIS IS 24 STONE"))
-                .icon(getItem("super_burrito"), Text("THIS IS BURRITO (HOPEFULLY)"))
-                .build())
-            return true
+class DialogTestCommand(plugin: Plushies) : CatCommand(plugin, "dlt") {
+    init {
+        noargs {
+            val player = getPlayerSender(it) ?: return@noargs false
+            player.showDialog(settingsMenu(player))
+            true
         }
-
-        p.showDialog(createDialog(customDialogConfig, args[0])?: return sendError(p,"Dialog does not exist!"))
-        return true
+        then {
+            subcommand("item") {
+                val player = getPlayerSender(it) ?: return@subcommand false
+                player.showDialog(itemSettingsMenu(player))
+                true
+            }
+        }
     }
 
-    private fun createDialog(config: FoxConfig, path: String): Dialog? {
-        if (!customDialogConfig.getKeys().toMutableList().contains(path)) return null
-        return DialogBuilder().apply {
-            config.getString("$path.title")?.let {(Text(it))}
+    private fun settingsMenu(player: Player): Dialog {
+        return dialog {
+            title(text("Hello ${player.name}!"))
 
-            for (text in config.getStringList("$path.text")) {
-                text(Text(text)) //lol
+            message("check out these settings!")
+
+            // real toggle is a dumb checkbox/ maybe use button(callback) instead
+            callback(
+                (Color.Text + "AutoMend: ").append(
+                    player.autoMend.get(Color.May + "Enabled", Color.Error + "Disabled")
+                )
+            ) { p, _ ->
+                // toggle the setting and reopen the menu to update button text
+                p.autoMend = !p.autoMend
+                p.showDialog(settingsMenu(p))
             }
 
-            for (icon in config.getStringList("$path.icons")) {
-                val parts = icon.split("/")
-                val desc = if (parts.size > 1) Text(parts[1]) else null
-                icon(getMaterial(parts[0]), desc)
-            }
+        }
+    }
 
-            for (button in config.getStringList("$path.links")) {
-                val parts = button.split("|")
-                btn(Text(parts[0]), Text(parts[1]), clickEvent = ClickEvent.openUrl(parts[1]))
-            }
+    private fun itemSettingsMenu(player: Player): Dialog {
+        val item = player.inventory.itemInMainHand
+        return dialog {
+            title(text("Hello ${player.name}!"))
 
-            for (button in config.getStringList("$path.commands")) {
-                val parts = button.split("|")
-                btn(Text(parts[0]), clickEvent = ClickEvent.runCommand(parts[1]))
+            message("check out these settings!")
+
+            // default max char 256
+            textInput("Name", item.effectiveName().asString())
+
+            toggle("Glint", item.getData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE) == true)
+
+            callback(text("Save Changes")) { p, view ->
+                // ts busted lmao you get the idea
+                val itemName = view.getText("name") ?: return@callback
+                val glint = view.getBoolean("glint") ?: return@callback
+
+                item.apply {
+                    withDisplayName(itemName.parse())
+                    setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, glint)
+                }
             }
-        }.build()
+        }
     }
 }
