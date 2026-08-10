@@ -12,6 +12,7 @@ import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import co.akoot.plugins.plushies.util.builders.SmithRecipe
 import com.destroystokyo.paper.MaterialTags
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.tag.TagKey
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
@@ -34,6 +35,7 @@ object Recipes {
         shulkers() // why is nobody licking my brains?!?
         coloredShulker()
         deepslate()
+        paintings()
 
         CraftRecipe.builder("wrench", getItem("wrench") ?: return)
             .ingredient(Material.LIGHTNING_ROD)
@@ -239,6 +241,16 @@ object Recipes {
                 getInput(addition) ?: return,
                 getMaterial(parts[0], amount) ?: return
             ).add(namespace)
+        }
+    }
+
+    fun paintings() {
+        val paintings = RegistryAccess.registryAccess().getRegistry(RegistryKey.PAINTING_VARIANT)
+            for (painting in paintings) {
+                val paintingKey = paintings.getKey(painting) ?: continue
+                val item = ItemStack.of(Material.PAINTING)
+                item.setData(DataComponentTypes.PAINTING_VARIANT, painting)
+                Bukkit.addRecipe(StonecuttingRecipe(key("painting.${paintingKey.key}"), item, Material.PAINTING))
         }
     }
 
