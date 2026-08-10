@@ -9,21 +9,33 @@ import co.akoot.plugins.plushies.util.Util.getBlockPDC
 import com.destroystokyo.paper.event.block.BlockDestroyEvent
 import io.papermc.paper.event.block.BlockBreakBlockEvent
 import org.bukkit.ExplosionResult
+import org.bukkit.entity.ItemDisplay
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.*
 import org.bukkit.event.entity.EntityExplodeEvent
+import org.bukkit.util.Transformation
+import org.joml.AxisAngle4f
+import org.joml.Vector3f
 
 class BlockEvents : Listener {
 
     @EventHandler
     fun BlockPlaceEvent.onPlace() {
         if (isCancelled) return // this needs to be checked so core protect doesn't break
-        val hand = itemInHand.itemMeta?: return
+        val hand = itemInHand.itemMeta ?: return
         val pdc = hand.getPDC<String>(blockKey) ?: hand.getPDC<String>(texturedkKey) ?: return
         val id = pdc.split("|").getOrNull(1)
 
-        if (id != null) spawnItemDisplay(block.location, itemInHand)
+        if (id != null) spawnItemDisplay(block.location.toCenterLocation(), itemInHand) {
+            itemDisplayTransform = ItemDisplay.ItemDisplayTransform.FIXED
+            transformation = Transformation(
+                Vector3f(),
+                AxisAngle4f(),
+                Vector3f(2.001f),
+                AxisAngle4f()
+            )
+        }
         block.chunk.setPDC(getBlockPDC(block.location), pdc)
         runLater(1) { block.chunk.removePDC(getBlockPDC(block.location, "alces")) }
     }
