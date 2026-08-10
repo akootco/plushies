@@ -16,6 +16,7 @@ import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.Plushies.Companion.customItemConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.plushieConf
+import co.akoot.plugins.plushies.coolstuff.cushionKey
 import co.akoot.plugins.plushies.util.ItemCreator.createItem
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -25,6 +26,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.entity.Item
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import kotlin.collections.listOf
@@ -79,6 +81,15 @@ object Items {
             .customModelData("wrench")
             .itemModel("trial_key")
             .build())
+
+        registerItem("cushion", ItemBuilder.builder(Material.WHITE_CARPET)
+            .itemName("Cushion".text)
+            .pdc(itemKey, "cushion")
+            .pdc(cushionKey)
+            .stackSize(16)
+            .customModelData("cushion")
+            .build()
+        )
     }
 
     val ItemStack.itemId: String?

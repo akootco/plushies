@@ -23,6 +23,9 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.BoundingBox
+import org.bukkit.util.Transformation
+import org.joml.AxisAngle4f
+import org.joml.Vector3f
 
 val cushionKey = key("cushion")
 
@@ -53,7 +56,14 @@ class Cushion() : Listener {
                 0.5
             ),
             item
-        )
+        ) {
+            transformation = Transformation(
+                Vector3f(0f,0.5f,0f),
+                AxisAngle4f(),
+                Vector3f(0.999f),
+                AxisAngle4f()
+            )
+        }
 
         display.addPassenger(
             display.world.spawn(display.location, Interaction::class.java) { seat ->
@@ -119,7 +129,7 @@ class Cushion() : Listener {
         world.playSound(location, Sound.BLOCK_WOOL_BREAK, 1f, 1f)
 
         display?.itemStack?.clone()?.let {
-            world.dropItemNaturally(location.add(0.0, 0.5, 0.0), it)
+            world.dropItemNaturally(location.add(0.0, 0.8, 0.0), it)
             display.remove()
         }
 

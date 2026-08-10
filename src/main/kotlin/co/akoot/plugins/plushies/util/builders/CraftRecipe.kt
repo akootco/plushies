@@ -83,8 +83,7 @@ class CraftRecipe private constructor(val name: String, private val result: Item
         val recipe = NamespacedKey(plugin, name)
         val shapedRecipe = ShapedRecipe(recipe, result)
 
-        // Set the shape
-        shapedRecipe.shape(shape[0], shape[1], shape[2])
+        shapedRecipe.shape(*shape.toTypedArray())
 
         // Set the ingredients
         ingredients.forEach { (key, ingredient) ->
