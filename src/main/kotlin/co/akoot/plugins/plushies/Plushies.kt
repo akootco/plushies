@@ -3,6 +3,7 @@ package co.akoot.plugins.plushies
 import co.akoot.plugins.bluefox.BlueFox.Companion.geyser
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.plushies.api.Interactables
 import co.akoot.plugins.plushies.commands.*
 import co.akoot.plugins.plushies.coolstuff.ArmoredElytra
 import co.akoot.plugins.plushies.coolstuff.Cushion
@@ -60,6 +61,8 @@ class Plushies : FoxPlugin("plushies") {
             downloadBedrockPack()
             GeyserRegistrar()
         }
+
+        Interactables.register(Cushion)
 
         tradeSource.add(merchantConfig)
     }

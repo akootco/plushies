@@ -16,7 +16,7 @@ import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.Plushies.Companion.customItemConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.plushieConf
-import co.akoot.plugins.plushies.coolstuff.cushionKey
+import co.akoot.plugins.plushies.coolstuff.Cushion
 import co.akoot.plugins.plushies.util.ItemCreator.createItem
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -85,7 +85,7 @@ object Items {
         registerItem("cushion", ItemBuilder.builder(Material.WHITE_CARPET)
             .itemName("Cushion".text)
             .pdc(itemKey, "cushion")
-            .pdc(cushionKey)
+            .pdc(Cushion.key)
             .stackSize(16)
             .customModelData("cushion")
             .build()
