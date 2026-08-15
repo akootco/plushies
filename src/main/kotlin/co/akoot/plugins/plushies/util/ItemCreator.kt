@@ -140,7 +140,8 @@ object ItemCreator {
             // i wonder why they split food into two components?
             hunger(
                 config.getInt("$path.food.hunger") ?: 1,
-                config.getDouble("$path.food.saturation")?.toFloat() ?: 2.0f
+                config.getDouble("$path.food.saturation")?.toFloat() ?: 2.0f,
+                config.getInt("$path.food.eatTime")?.toFloat()
             )
 
             // always edible
