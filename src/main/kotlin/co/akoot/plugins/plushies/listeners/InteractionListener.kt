@@ -9,6 +9,7 @@ import org.bukkit.event.block.BlockPistonExtendEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.util.BoundingBox
 
 class InteractionListener : Listener {
@@ -16,6 +17,7 @@ class InteractionListener : Listener {
     @EventHandler
     fun PlayerInteractEvent.place() {
         if (isCancelled) return
+        if (hand != EquipmentSlot.HAND) return // dumb
         if (action != Action.RIGHT_CLICK_BLOCK) return
 
         val interactable = Interactables.find(item ?: return) ?: return
@@ -28,6 +30,7 @@ class InteractionListener : Listener {
     @EventHandler
     fun PlayerInteractAtEntityEvent.interaction() {
         if (isCancelled) return
+        if (hand != EquipmentSlot.HAND) return // dumb
         val interaction = rightClicked as? Interaction ?: return
         val interactable = Interactables.find(interaction) ?: return
 
