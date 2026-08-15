@@ -107,7 +107,7 @@ class Plushies : FoxPlugin("plushies") {
         registerEventListener(MerchantEvents())
         registerEventListener(EverlastRocket())
         registerEventListener(ArmoredElytra())
-        registerEventListener(Cushion())
+        registerEventListener(InteractionListener())
     }
 
     override fun registerConfigs() {

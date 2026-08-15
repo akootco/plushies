@@ -12,6 +12,7 @@ import co.akoot.plugins.plushies.util.Items.getItem
 import co.akoot.plugins.plushies.util.Util.getBlockPDC
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import me.arcaniax.hdb.api.HeadDatabaseAPI
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -21,6 +22,7 @@ import org.bukkit.block.data.Directional
 import org.bukkit.entity.Display.Brightness
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.ItemDisplay
+import org.bukkit.entity.TextDisplay
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Transformation
@@ -41,59 +43,6 @@ val Location.id: String?
     get() = plugins.firstNotNullOfOrNull { ns ->
         chunk.getPDC<String>(getBlockPDC(this, ns))
     }
-
-fun spawnItemDisplay(
-    location: Location,
-    item: ItemStack,
-    configure: ItemDisplay.() -> Unit = {}
-): ItemDisplay {
-    val fixedYaw = (location.block.blockData as? Directional)?.facing?.let { facing ->
-        when (facing) {
-            BlockFace.EAST -> -90f
-            BlockFace.WEST -> 90f
-            BlockFace.SOUTH -> 0f
-            else -> 180f
-        }
-    } ?: 180f
-
-    return (location.world.spawnEntity(
-        location.apply { this.yaw = fixedYaw },
-        EntityType.ITEM_DISPLAY
-    ) as ItemDisplay).apply {
-        setItemStack(item.asOne())
-        itemDisplayTransform = ItemDisplay.ItemDisplayTransform.HEAD
-        shadowRadius = 0f
-        shadowStrength = 0f
-        brightness = Brightness(5, 15)
-        transformation = Transformation(
-            Vector3f(0f,0.5f,0f),
-            AxisAngle4f(),
-            Vector3f(1.001f),
-            AxisAngle4f()
-        )
-
-        configure()
-    }
-}
-
-fun createDisplay(location: Location, id: String, textured: Boolean = false) {
-    val item = ItemBuilder.builder(
-        if (textured) Material.OAK_PRESSURE_PLATE else Material.PLAYER_HEAD
-    ).apply {
-        if (textured) {
-            val name = id.split("_").joinToString(" ") { it.replaceFirstChar { c -> c.titlecase() } }
-            customModelData(id)
-            itemModel("air")
-            itemName(text(name))
-        } else {
-            val headItem = HeadDatabaseAPI().getItemHead(id)
-            if (headItem != null) copyOf(headItem)
-            else headTexture(id)
-        }
-    }.build()
-
-    spawnItemDisplay(location, item)
-}
 
 fun removeCustomBlock(location: Location) {
     RemoveCustomBlockEvent(location.block).call()
