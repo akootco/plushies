@@ -32,6 +32,9 @@ interface Interactable {
 
     val key: NamespacedKey
 
+    val placeable: Boolean
+        get() = true
+
     val cancelPlacement: Boolean
         get() = false
 
@@ -119,8 +122,10 @@ interface Interactable {
         entity.remove()
     }
 
+    fun interact(player: Player) {}
+
     fun interact(
         entity: Interaction,
         player: Player
-    )
+    ) {}
 }

@@ -16,14 +16,20 @@ class InteractionListener : Listener {
 
     @EventHandler
     fun PlayerInteractEvent.place() {
-        if (isCancelled) return
-        if (hand != EquipmentSlot.HAND) return // dumb
-        if (action != Action.RIGHT_CLICK_BLOCK) return
+        if (hand != EquipmentSlot.HAND) return
+        if (!action.isRightClick) return
 
         val interactable = Interactables.find(item ?: return) ?: return
 
-        isCancelled = interactable.cancelPlacement
+        if (!interactable.placeable) {
+            interactable.interact(player)
+            isCancelled = true
+            return
+        }
 
+        if (isCancelled) return
+
+        isCancelled = interactable.cancelPlacement
         interactable.place(this)
     }
 
@@ -53,24 +59,23 @@ class InteractionListener : Listener {
     fun BlockPistonExtendEvent.pistonBreak() {
         if (isCancelled) return
 
-        blocks.forEach { pushedBlock ->
-            val destination = pushedBlock.getRelative(direction)
+        (blocks.map { it.getRelative(direction) } + block.getRelative(direction))
+            .forEach { destination -> // sick of ts
+                destination.world
+                    .getNearbyEntities(BoundingBox.of(destination))
+                    .filterIsInstance<Interaction>()
+                    .forEach { interaction ->
+                        val interactable = Interactables.find(interaction) ?: return@forEach
 
-            destination.world
-                .getNearbyEntities(BoundingBox.of(destination))
-                .filterIsInstance<Interaction>()
-                .forEach { interaction ->
-                    val interactable = Interactables.find(interaction) ?: return@forEach
+                        if (!interactable.pushable) {
+                            isCancelled = true
+                            return@forEach
+                        }
 
-                    if (!interactable.pushable) {
-                        isCancelled = true
-                        return@forEach
+                        if (interactable.removable) {
+                            interactable.remove(interaction)
+                        }
                     }
-
-                    if (interactable.removable) {
-                        interactable.remove(interaction)
-                    }
-                }
-        }
+            }
     }
 }
