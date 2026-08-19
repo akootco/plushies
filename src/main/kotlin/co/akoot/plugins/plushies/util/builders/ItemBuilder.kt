@@ -195,14 +195,14 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * Sets the model for the item.
      *
      * The model is found in the resource pack at:
-     * - `/assets/<namespace>/models/item/<id>`.
+     * - `/assets/<namespace>/items/<id>`.
      *
      * @param namespace The name of the assets sub-folder.
      * @param id The model ID.
      * @return the updated `Item`.
      */
     fun itemModel(model: String): ItemBuilder {
-        NamespacedKey.fromString(model)?.let { itemStack.setData(DataComponentTypes.ITEM_MODEL, it) }
+        itemStack.setData(DataComponentTypes.ITEM_MODEL, Key.key(model))
         return this
     }
 
@@ -515,7 +515,7 @@ class ItemBuilder private constructor(private var itemStack: ItemStack) {
      * @return The updated `Item` with the specified name applied.
      */
     fun itemName(name: Component): ItemBuilder {
-        if (itemStack.type in listOf(Material.PLAYER_HEAD, Material.WRITTEN_BOOK, Material.POTION)) {
+        if (itemStack.type in listOf(Material.PLAYER_HEAD, Material.WRITTEN_BOOK, Material.POTION, Material.COMPASS)) {
             itemStack.setData(DataComponentTypes.CUSTOM_NAME, name.decoration(TextDecoration.ITALIC, false))
         } else {
             itemStack.setData(DataComponentTypes.ITEM_NAME, name)

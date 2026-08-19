@@ -41,6 +41,13 @@ object Recipes {
             .ingredient(Material.LIGHTNING_ROD)
             .ingredient(Material.COPPER_INGOT)
             .shapeless()
+
+        CraftRecipe.builder("biome_finder", getItem("biome_finder") ?: return)
+            .ingredient('S', tag("saplings") ?: return )
+            .ingredient('L', tag("logs") ?: return )
+            .ingredient('C', Material.COMPASS)
+            .shape("SLS", "LCL", "SLS")
+            .shaped()
     }
 
     fun tag(tag: String): RecipeChoice? {

@@ -16,6 +16,7 @@ import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.Plushies.Companion.customItemConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.plushieConf
+import co.akoot.plugins.plushies.coolstuff.BiomeCompass
 import co.akoot.plugins.plushies.coolstuff.Cushion
 import co.akoot.plugins.plushies.util.ItemCreator.createItem
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
@@ -88,6 +89,15 @@ object Items {
             .pdc(Cushion.key)
             .stackSize(16)
             .customModelData("cushion")
+            .build()
+        )
+
+        registerItem("biome_finder", ItemBuilder.builder(Material.KNOWLEDGE_BOOK)
+            .itemName("Nature's Compass".text)
+            .pdc(itemKey, "biome_finder")
+            .pdc(BiomeCompass.key)
+            .stackSize(1)
+            .itemModel(BiomeCompass.key.toString())
             .build()
         )
     }
