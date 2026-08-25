@@ -9,6 +9,7 @@ import co.akoot.plugins.plushies.util.Util.getBlockPDC
 import com.destroystokyo.paper.event.block.BlockDestroyEvent
 import io.papermc.paper.event.block.BlockBreakBlockEvent
 import org.bukkit.ExplosionResult
+import org.bukkit.entity.Display.Brightness
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -29,6 +30,7 @@ class BlockEvents : Listener {
 
         if (id != null) spawnItemDisplay(block.location.toCenterLocation(), itemInHand) {
             itemDisplayTransform = ItemDisplay.ItemDisplayTransform.FIXED
+            brightness = Brightness(5, 15)
             transformation = Transformation(
                 Vector3f(),
                 AxisAngle4f(),
