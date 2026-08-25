@@ -1,9 +1,13 @@
 package co.akoot.plugins.plushies.coolstuff
 
+import co.akoot.plugins.bluefox.extensions.isSurventure
+import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.api.Interactable
 import co.akoot.plugins.plushies.util.Items.applyDye
+import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import org.bukkit.DyeColor
+import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Interaction
@@ -21,6 +25,14 @@ object Cushion : Interactable {
     override val pushable = true
     override val useInteractionPoint = true
 
+    override val item = ItemBuilder.builder(Material.WHITE_CARPET)
+        .itemName("Cushion".text)
+        .stackSize(16)
+        .customModelData("cushion")
+        .pdc(key)
+        .build()
+        .clone()
+
     override val breakSound = "block.wool.break"
 
     override fun interact(entity: Interaction, player: Player) {
@@ -37,7 +49,8 @@ object Cushion : Interactable {
             if (!itemStack.applyDye(color)) return
 
             display.setItemStack(itemStack)
-            item.amount--
+
+            if (player.isSurventure) item.amount--
             return
         }
 
@@ -46,8 +59,8 @@ object Cushion : Interactable {
         }
     }
 
-    override fun place(event: PlayerInteractEvent) {
-        if (event.blockFace != BlockFace.UP) return
-        super.place(event)
+    override fun place(event: PlayerInteractEvent): Boolean {
+        if (event.blockFace != BlockFace.UP) return false
+        return super.place(event)
     }
 }

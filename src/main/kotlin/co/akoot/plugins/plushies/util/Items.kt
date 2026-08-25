@@ -82,24 +82,6 @@ object Items {
             .customModelData("wrench")
             .itemModel("trial_key")
             .build())
-
-        registerItem("cushion", ItemBuilder.builder(Material.WHITE_CARPET)
-            .itemName("Cushion".text)
-            .pdc(itemKey, "cushion")
-            .pdc(Cushion.key)
-            .stackSize(16)
-            .customModelData("cushion")
-            .build()
-        )
-
-        registerItem("biome_finder", ItemBuilder.builder(Material.KNOWLEDGE_BOOK)
-            .itemName("Nature's Compass".text)
-            .pdc(itemKey, "biome_finder")
-            .pdc(BiomeCompass.key)
-            .stackSize(1)
-            .itemModel(BiomeCompass.key.toString())
-            .build()
-        )
     }
 
     val ItemStack.itemId: String?

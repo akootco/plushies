@@ -8,7 +8,7 @@ import co.akoot.plugins.bluefox.util.*
 import co.akoot.plugins.bluefox.util.Text.Companion.plus
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.api.Interactable
-import co.akoot.plugins.plushies.util.Items.getItem
+import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.LodestoneTracker
 import io.papermc.paper.dialog.Dialog
@@ -16,12 +16,21 @@ import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.translation.Translatable
+import org.bukkit.Material
 import org.bukkit.block.Biome
 import org.bukkit.entity.Player
 
 object BiomeCompass : Interactable {
     override val key = key("biomefinder")
     override val placeable = false
+
+    override val item = ItemBuilder.builder(Material.KNOWLEDGE_BOOK)
+        .itemName("Nature's Compass".text)
+        .pdc(key)
+        .stackSize(1)
+        .itemModel(key.toString())
+        .build()
+        .clone()
 
     override fun interact(player: Player) {
         openBiomeFinder(player)
@@ -53,7 +62,7 @@ private fun biomeFinder(): Dialog = dialog {
 
 private fun findBiome(player: Player, biome: Biome) {
     val playerLocation = player.location.clone()
-    val compass = getItem("biome_finder") ?: return
+    val compass = BiomeCompass.item
 
     player.inventory.itemInMainHand.amount--
     player.sendActionBar("Searching for biome...".text)

@@ -1,6 +1,11 @@
 package co.akoot.plugins.plushies.api
 
+import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.hasPDC
+import co.akoot.plugins.bluefox.extensions.isSurventure
+import co.akoot.plugins.bluefox.extensions.setPDC
+import co.akoot.plugins.bluefox.util.text
+import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.util.createHitbox
 import co.akoot.plugins.plushies.util.spawnItemDisplay
 import org.bukkit.NamespacedKey
@@ -13,24 +18,50 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Transformation
 import org.joml.AxisAngle4f
 import org.joml.Vector3f
+import java.util.UUID
+import kotlin.math.roundToInt
+
+fun Player.owns(entity: Entity): Boolean =
+    entity.getPDC<UUID>(key("owner")) == uniqueId
+
+class InteractableItemMenu(page: Int = 1) : ChestMenu(page) {
+
+    override val title = text("Interactables")
+
+    override val items = Interactables.items().toList()
+
+    override fun nextPage() = InteractableItemMenu(page + 1)
+
+    override fun prevPage() = InteractableItemMenu(page - 1)
+}
 
 object Interactables {
-    private val values = mutableListOf<Interactable>()
+    private val values = mutableMapOf<NamespacedKey, Interactable>()
+    private val items = mutableMapOf<NamespacedKey, ItemStack>()
 
     fun register(interactable: Interactable) {
-        values += interactable
+        values[interactable.key] = interactable
+        interactable.item?.let { items[interactable.key] = it }
     }
 
     fun find(item: ItemStack): Interactable? =
-        values.firstOrNull { item.hasPDC(it.key) }
+        values.values.firstOrNull { item.hasPDC(it.key) }
 
     fun find(entity: Interaction): Interactable? =
-        values.firstOrNull { entity.hasPDC(it.key) }
+        values.values.firstOrNull { entity.hasPDC(it.key) }
+
+    fun items(): Collection<ItemStack> = items.values
 }
 
 interface Interactable {
 
     val key: NamespacedKey
+
+    val item: ItemStack?
+        get() = null
+
+    val setOwner: Boolean
+        get() = false
 
     val placeable: Boolean
         get() = true
@@ -65,11 +96,24 @@ interface Interactable {
     val pushable: Boolean
         get() = false
 
-    fun place(event: PlayerInteractEvent) {
-        val support = event.clickedBlock ?: return
-        val item = event.item ?: return
+    val rotatable: Boolean
+        get() = false
 
-        val y = event.interactionPoint?.y?.minus(support.y) ?: 1.0
+    fun place(event: PlayerInteractEvent): Boolean {
+        val support = event.clickedBlock ?: return false
+        val item = event.item ?: return false
+
+        val y = if (useInteractionPoint) {
+            event.interactionPoint?.y?.minus(support.y) ?: 1.0
+        } else {
+            1.0
+        }
+
+        val rotation = if (rotatable)
+            Math.toRadians(
+                -((event.player.yaw / 45f).roundToInt() * 45f + 180f).toDouble()
+            ).toFloat()
+        else 0f
 
         val display = spawnItemDisplay(
             support.location.add(0.5, y, 0.5),
@@ -77,11 +121,15 @@ interface Interactable {
         ) {
             transformation = Transformation(
                 translation,
-                AxisAngle4f(),
+                AxisAngle4f(rotation, 0f, 1f, 0f),
                 Vector3f(scale),
                 AxisAngle4f()
             )
-        }.createHitbox(this)
+        }
+
+        display.createHitbox(this).apply {
+            if (setOwner) setPDC(key("owner"), event.player.uniqueId)
+        }
 
         placeSound?.let {
             display.world.playSound(
@@ -92,34 +140,31 @@ interface Interactable {
             )
         }
 
-        item.amount--
+        if (event.player.isSurventure) item.amount--
+        return true
     }
 
-    fun remove(entity: Entity) {
+    fun remove(entity: Entity, damager: Entity? = null): Boolean {
+        if (setOwner && (damager !is Player || !damager.owns(entity))) return false
+
         val display = entity.vehicle
         val location = entity.location
         val world = entity.world
 
         breakSound?.let {
-            world.playSound(
-                location,
-                it,
-                1f,
-                1f
-            )
+            world.playSound(location, it, 1f, 1f)
         }
 
         if (display is ItemDisplay) {
-            display.itemStack.clone().let {
-                world.dropItemNaturally(
-                    location.add(0.0, 0.8, 0.0),
-                    it
-                )
-            }
+            world.dropItemNaturally(
+                location.add(0.0, 0.8, 0.0),
+                display.itemStack.clone()
+            )
         }
 
         display?.remove()
         entity.remove()
+        return true
     }
 
     fun interact(player: Player) {}

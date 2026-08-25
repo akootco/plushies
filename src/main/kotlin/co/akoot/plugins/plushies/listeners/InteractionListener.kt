@@ -4,7 +4,6 @@ import co.akoot.plugins.plushies.api.Interactables
 import org.bukkit.entity.Interaction
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockPistonExtendEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
@@ -52,7 +51,7 @@ class InteractionListener : Listener {
         val interactable = Interactables.find(interaction) ?: return
         if (!interactable.removable) return
 
-        interactable.remove(interaction)
+        interactable.remove(interaction, damager)
     }
 
     @EventHandler

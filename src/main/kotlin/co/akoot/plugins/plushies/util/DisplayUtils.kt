@@ -8,8 +8,6 @@ import me.arcaniax.hdb.api.HeadDatabaseAPI
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.block.BlockFace
-import org.bukkit.block.data.Directional
 import org.bukkit.entity.Display.Brightness
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
@@ -59,24 +57,11 @@ fun spawnItemDisplay(
     item: ItemStack,
     configure: ItemDisplay.() -> Unit = {}
 ): ItemDisplay {
-    val fixedYaw = (location.block.blockData as? Directional)?.facing?.let { facing ->
-        when (facing) {
-            BlockFace.EAST -> -90f
-            BlockFace.WEST -> 90f
-            BlockFace.SOUTH -> 0f
-            else -> 180f
-        }
-    } ?: 180f
-
-    return (location.world.spawnEntity(
-        location.apply { this.yaw = fixedYaw },
-        EntityType.ITEM_DISPLAY
-    ) as ItemDisplay).apply {
+    return (location.world.spawnEntity(location, EntityType.ITEM_DISPLAY) as ItemDisplay).apply {
         setItemStack(item.asOne())
         itemDisplayTransform = ItemDisplay.ItemDisplayTransform.HEAD
         shadowRadius = 0f
         shadowStrength = 0f
-        brightness = Brightness(5, 15)
         transformation = Transformation(
             Vector3f(0f,0.5f,0f),
             AxisAngle4f(),
