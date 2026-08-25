@@ -4,10 +4,10 @@ import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.extensions.isSurventure
 import co.akoot.plugins.bluefox.extensions.setPDC
-import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.util.createHitbox
 import co.akoot.plugins.plushies.util.spawnItemDisplay
+import net.kyori.adventure.text.Component
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Interaction
@@ -18,21 +18,15 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Transformation
 import org.joml.AxisAngle4f
 import org.joml.Vector3f
-import java.util.UUID
+import java.util.*
 import kotlin.math.roundToInt
 
 fun Player.owns(entity: Entity): Boolean =
     entity.getPDC<UUID>(key("owner")) == uniqueId
 
-class InteractableItemMenu(page: Int = 1) : ChestMenu(page) {
-
-    override val title = text("Interactables")
-
+class InteractableItemMenu() : ChestMenu() {
+    override val title = Component.text("Interactables")
     override val items = Interactables.items().toList()
-
-    override fun nextPage() = InteractableItemMenu(page + 1)
-
-    override fun prevPage() = InteractableItemMenu(page - 1)
 }
 
 object Interactables {

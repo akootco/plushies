@@ -15,7 +15,6 @@ import org.bukkit.inventory.ItemStack
 import kotlin.math.min
 
 abstract class ChestMenu(
-    protected val page: Int = 1,
     protected val size: Int = 54
 ) : InventoryHolder {
 
@@ -37,6 +36,7 @@ abstract class ChestMenu(
     }
 
     abstract val title: Component
+    private var page = 1
     abstract val items: List<ItemStack>
 
     private val itemSlots = size - 9
@@ -78,12 +78,14 @@ abstract class ChestMenu(
             filler -> return
 
             nextPage -> {
-                player.openInventory(nextPage().inventory)
+                page++
+                player.openInventory(inventory)
                 return
             }
 
             prevPage -> {
-                player.openInventory(prevPage().inventory)
+                if (page > 1) page--
+                player.openInventory(inventory)
                 return
             }
         }
@@ -100,7 +102,4 @@ abstract class ChestMenu(
     open fun clickItem(player: Player, item: ItemStack, event: InventoryClickEvent) {
         clickItem(player, item)
     }
-
-    abstract fun nextPage(): ChestMenu
-    abstract fun prevPage(): ChestMenu
 }

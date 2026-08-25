@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.BookMeta
 import java.io.File
 
-class BookArchiveMenu(page: Int = 1) : ChestMenu(page) {
+class BookArchiveMenu() : ChestMenu() {
 
     override val title =
         Text("Book Archive")
@@ -26,10 +26,6 @@ class BookArchiveMenu(page: Int = 1) : ChestMenu(page) {
                 loadBook(file.nameWithoutExtension)
             }
         }
-
-    override fun nextPage(): BookArchiveMenu = BookArchiveMenu(page + 1)
-
-    override fun prevPage(): BookArchiveMenu = BookArchiveMenu(page - 1)
 
     override fun clickItem(player: Player, item: ItemStack) {
         if (item.type != Material.WRITTEN_BOOK) return

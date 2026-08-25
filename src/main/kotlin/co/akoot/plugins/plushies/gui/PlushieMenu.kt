@@ -15,7 +15,7 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 
-class PlushieMenu(page: Int = 1) : ChestMenu(page) {
+class PlushieMenu() : ChestMenu() {
 
     override val title =
         Text("Plushies")
@@ -26,10 +26,6 @@ class PlushieMenu(page: Int = 1) : ChestMenu(page) {
         get() = plushies
             .sortedBy { it.name.lowercase() }
             .map { it.item() }
-
-    override fun nextPage() = PlushieMenu(page + 1)
-
-    override fun prevPage() = PlushieMenu(page - 1)
 
     override fun clickItem(
         player: Player,

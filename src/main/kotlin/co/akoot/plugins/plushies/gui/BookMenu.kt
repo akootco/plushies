@@ -10,7 +10,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class BookMenu(page: Int = 1) : ChestMenu(page, 45) {
+class BookMenu() : ChestMenu(45) {
 
     override val title =
         Text("Books")
@@ -23,10 +23,6 @@ class BookMenu(page: Int = 1) : ChestMenu(page, 45) {
                 .customModelData(book)
                 .build()
         }
-
-    override fun nextPage(): BookMenu = BookMenu(page + 1)
-
-    override fun prevPage(): BookMenu = BookMenu(page - 1)
 
     override fun clickItem(player: Player, item: ItemStack) {
         if (item.type != Material.WRITTEN_BOOK) return
