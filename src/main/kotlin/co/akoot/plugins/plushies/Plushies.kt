@@ -5,6 +5,7 @@ import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.plushies.api.Interactables
 import co.akoot.plugins.plushies.commands.*
+import co.akoot.plugins.plushies.coolstuff.atm.ATM
 import co.akoot.plugins.plushies.coolstuff.ArmoredElytra
 import co.akoot.plugins.plushies.coolstuff.BiomeCompass
 import co.akoot.plugins.plushies.coolstuff.Cushion
@@ -65,6 +66,7 @@ class Plushies : FoxPlugin("plushies") {
 
         Interactables.register(Cushion)
         Interactables.register(BiomeCompass)
+        Interactables.register(ATM)
 
         tradeSource.add(merchantConfig)
     }
