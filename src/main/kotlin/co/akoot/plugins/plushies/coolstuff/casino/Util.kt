@@ -14,18 +14,22 @@ import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import java.math.BigDecimal
 
-object Casino {
-    private val games = mutableMapOf<NamespacedKey, Interactable>()
+interface CasinoGame : Interactable {
+    val displayName: String
+}
 
-    fun register(game: Interactable) {
+object Casino {
+    private val games = mutableMapOf<NamespacedKey, CasinoGame>()
+
+    fun register(game: CasinoGame) {
         games[game.key] = game
         Interactables.register(game)
     }
 
-    fun find(key: NamespacedKey): Interactable? =
+    fun find(key: NamespacedKey): CasinoGame? =
         games[key]
 
-    fun all(): Collection<Interactable> =
+    fun all(): Collection<CasinoGame> =
         games.values
 
     fun takePayment(

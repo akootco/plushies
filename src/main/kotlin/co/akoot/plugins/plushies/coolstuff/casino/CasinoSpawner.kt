@@ -51,12 +51,14 @@ object CasinoSpawner : Interactable {
         }
     }
 
-    private fun spawnDealer(location: Location, yaw: Float, game: Interactable) {
+    private fun spawnDealer(location: Location, yaw: Float, game: CasinoGame) {
         location.world.spawn(location.clone().add(0.5, 0.0, 0.5), Mannequin::class.java) {
             it.setRotation(yaw + 180f, 0f)
             it.isImmovable = true
             it.isInvulnerable = true
             it.setAI(false)
+            it.customName(game.displayName.text)
+            it.description = null
 
             it.profile = ResolvableProfile.resolvableProfile()
                 .skinPatch { skin ->
