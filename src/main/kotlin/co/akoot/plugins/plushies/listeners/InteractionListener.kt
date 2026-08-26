@@ -36,22 +36,20 @@ class InteractionListener : Listener {
     fun PlayerInteractAtEntityEvent.interaction() {
         if (isCancelled) return
         if (hand != EquipmentSlot.HAND) return // dumb
-        val interaction = rightClicked as? Interaction ?: return
-        val interactable = Interactables.find(interaction) ?: return
+        val interactable = Interactables.find(rightClicked) ?: return
 
-        interactable.interact(interaction, player)
+        interactable.interact(rightClicked, player)
     }
 
     @EventHandler
     fun EntityDamageByEntityEvent.remove() {
         if (isCancelled) return
-        val interaction = entity as? Interaction ?: return
-        if (interaction.passengers.isNotEmpty()) return
+        if (entity.passengers.isNotEmpty()) return
 
-        val interactable = Interactables.find(interaction) ?: return
+        val interactable = Interactables.find(entity) ?: return
         if (!interactable.removable) return
 
-        interactable.remove(interaction, damager)
+        interactable.remove(entity, damager)
     }
 
     @EventHandler

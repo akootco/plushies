@@ -10,7 +10,6 @@ import co.akoot.plugins.plushies.util.spawnItemDisplay
 import net.kyori.adventure.text.Component
 import org.bukkit.NamespacedKey
 import org.bukkit.entity.Entity
-import org.bukkit.entity.Interaction
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
@@ -41,7 +40,7 @@ object Interactables {
     fun find(item: ItemStack): Interactable? =
         values.values.firstOrNull { item.hasPDC(it.key) }
 
-    fun find(entity: Interaction): Interactable? =
+    fun find(entity: Entity): Interactable? =
         values.values.firstOrNull { entity.hasPDC(it.key) }
 
     fun items(): Collection<ItemStack> = items.values
@@ -164,7 +163,7 @@ interface Interactable {
     fun interact(player: Player) {}
 
     fun interact(
-        entity: Interaction,
+        entity: Entity,
         player: Player
     ) {}
 }

@@ -10,7 +10,7 @@ import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.BlockFace
-import org.bukkit.entity.Interaction
+import org.bukkit.entity.Entity
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
@@ -35,7 +35,7 @@ object Cushion : Interactable {
 
     override val breakSound = "block.wool.break"
 
-    override fun interact(entity: Interaction, player: Player) {
+    override fun interact(entity: Entity, player: Player) {
         val item = player.inventory.itemInMainHand
 
         if (Tag.ITEMS_DYES.isTagged(item.type)) {
