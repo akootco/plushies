@@ -12,6 +12,7 @@ import co.akoot.plugins.plushies.coolstuff.EverlastRocket
 import co.akoot.plugins.plushies.coolstuff.casino.Casino
 import co.akoot.plugins.plushies.coolstuff.casino.CasinoSpawner
 import co.akoot.plugins.plushies.coolstuff.casino.games.Lottery
+import co.akoot.plugins.plushies.coolstuff.casino.games.MinesDealer
 import co.akoot.plugins.plushies.geyser.GeyserRegistrar
 import co.akoot.plugins.plushies.geyser.GeyserUtil.downloadBedrockPack
 import co.akoot.plugins.plushies.listeners.*
@@ -71,6 +72,7 @@ class Plushies : FoxPlugin("plushies") {
         Interactables.register(CasinoSpawner)
 
         Casino.register(Lottery)
+        Casino.register(MinesDealer)
 
         tradeSource.add(merchantConfig)
     }

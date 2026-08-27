@@ -4,6 +4,7 @@ import co.akoot.plugins.bluefox.api.economy.Coin
 import co.akoot.plugins.bluefox.api.economy.Invoice
 import co.akoot.plugins.bluefox.api.economy.Wallet
 import co.akoot.plugins.bluefox.extensions.buy
+import co.akoot.plugins.bluefox.extensions.playSound
 import co.akoot.plugins.bluefox.extensions.wallet
 import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.bluefox.util.zip
@@ -11,6 +12,7 @@ import co.akoot.plugins.plushies.Plushies
 import co.akoot.plugins.plushies.api.Interactable
 import co.akoot.plugins.plushies.api.Interactables
 import org.bukkit.NamespacedKey
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import java.math.BigDecimal
 
@@ -59,6 +61,7 @@ object Casino {
         player.wallet?.let {
             Wallet.BANK.send(it, Coin.hopcoin, win)
             player.sendActionBar(text("You won ", win, " ",Coin.hopcoin.ticker).zip)
+            player.playSound(Sound.ENTITY_PLAYER_LEVELUP, pitch = 2f)
             Plushies.conf.increment("casino.payout", amount.toDouble())
         }
     }
