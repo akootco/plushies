@@ -1,4 +1,4 @@
-package co.akoot.plugins.plushies.coolstuff.casino
+package co.akoot.plugins.plushies.coolstuff.casino.util
 
 import co.akoot.plugins.bluefox.api.economy.Coin
 import co.akoot.plugins.bluefox.api.economy.Invoice
@@ -56,7 +56,7 @@ object Casino {
 
     fun payout(player: Player, amount: Float) {
         val win = amount.toBigDecimal()
-        if (win <= BigDecimal.ZERO) return
+        if (win == BigDecimal.ZERO) return
         
         player.wallet?.let {
             Wallet.BANK.send(it, Coin.hopcoin, win)

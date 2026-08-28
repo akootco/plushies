@@ -3,7 +3,7 @@ package co.akoot.plugins.plushies.coolstuff.casino.games
 import co.akoot.plugins.bluefox.api.dialog
 import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.Plushies.Companion.key
-import co.akoot.plugins.plushies.coolstuff.casino.CasinoGame
+import co.akoot.plugins.plushies.coolstuff.casino.util.CasinoGame
 import io.papermc.paper.dialog.Dialog
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player

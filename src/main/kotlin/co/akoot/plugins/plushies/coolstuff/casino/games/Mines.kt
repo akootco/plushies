@@ -1,14 +1,16 @@
 package co.akoot.plugins.plushies.coolstuff.casino.games
 
 import co.akoot.plugins.bluefox.api.dialog
-import co.akoot.plugins.bluefox.extensions.getPDCList
+import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.playSound
 import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.*
 import co.akoot.plugins.plushies.Plushies.Companion.key
-import co.akoot.plugins.plushies.coolstuff.casino.Casino
-import co.akoot.plugins.plushies.coolstuff.casino.Casino.payout
-import co.akoot.plugins.plushies.coolstuff.casino.CasinoGame
+import co.akoot.plugins.plushies.coolstuff.casino.util.Casino
+import co.akoot.plugins.plushies.coolstuff.casino.util.Casino.payout
+import co.akoot.plugins.plushies.coolstuff.casino.util.CasinoGame
+import co.akoot.plugins.plushies.coolstuff.casino.util.betSlider
+import co.akoot.plugins.plushies.coolstuff.casino.util.playButton
 import io.papermc.paper.dialog.Dialog
 import net.kyori.adventure.text.Component
 import org.bukkit.Sound
@@ -31,7 +33,7 @@ enum class MinesGamestate {
     LOSE
 }
 
-object MinesDealer : CasinoGame {
+object Mines : CasinoGame {
     override val key = key("casino.mines")
     override val displayName = "Mines"
 
@@ -40,13 +42,13 @@ object MinesDealer : CasinoGame {
         else player.sendActionBar("Please take a seat".error)
     }
 
-    private var Player.mineGameSettings: List<Float>?
-        get() = getPDCList(key)
+    private var Player.mineGameSettings: Float
+        get() = getPDC(key) ?: 1f
         set(value) = setPDC(key, value)
 
     private fun mainMenu(p: Player): Dialog = dialog {
         closeWithEscape(true)
-        title("Mines".text)
+        title(displayName.text)
         columns(2)
 
         message(
@@ -61,42 +63,23 @@ object MinesDealer : CasinoGame {
             ).zip
         )
 
-        val preset = p.mineGameSettings
-        val defaultMines = preset?.getOrNull(1) ?: 1f
-        val defaultBet = preset?.getOrNull(0) ?: 100f
-
-
         slider(
             150,
             "mines",
             "Mines".text,
             1f..24f,
-            defaultMines
+            p.mineGameSettings
         )
 
-        slider(
-            150,
-            "bet",
-            "Bet".text,
-            50f..500f,
-            defaultBet,
-            50f
-        )
+        betSlider(p)
 
-        toggle("save", "save settings".text, preset?.isNotEmpty() == true)
-
-        button(150, "Play!".text) { p, view ->
-            val bet = view.getFloat("bet") ?: 0f
+        playButton("Play!".text) { p, bet, view ->
             val mineCount = (view.getFloat("mines") ?: 1f).toInt()
-            val savePreset = view.getBoolean("save")
-
-            p.mineGameSettings = if (savePreset == true)
-                listOf(bet, mineCount.toFloat()) else null
 
             val mines = (1..25).shuffled().take(mineCount)
             val game = MinesGame(mines, mineCount, bet)
 
-            Casino.takePayment(p, bet, "Mines") {
+            Casino.takePayment(p, bet, displayName) {
                 runLater(10) {
                     p.showDialog(game(game.apply {
                         state = MinesGamestate.FIRST
@@ -109,7 +92,7 @@ object MinesDealer : CasinoGame {
     private fun game(game: MinesGame): Dialog {
         return dialog {
             columns(5)
-            title("Mines".text)
+            title(displayName.text)
 
             val message = when (game.state) {
                 MinesGamestate.LOSE -> "YOU LOSE!"

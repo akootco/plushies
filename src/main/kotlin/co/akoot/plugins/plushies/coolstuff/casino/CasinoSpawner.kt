@@ -5,6 +5,8 @@ import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.api.Interactable
+import co.akoot.plugins.plushies.coolstuff.casino.util.Casino
+import co.akoot.plugins.plushies.coolstuff.casino.util.CasinoGame
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.item.ResolvableProfile
 import io.papermc.paper.dialog.Dialog
@@ -63,7 +65,7 @@ object CasinoSpawner : Interactable {
             it.profile = ResolvableProfile.resolvableProfile()
                 .skinPatch { skin ->
                     skin.body(
-                        Key.key("plushies:entity/casino/dealer_1")
+                        Key.key("casino:entity/dealers/dealer_1")
                     )
                 }
                 .build()
