@@ -9,21 +9,9 @@ import io.papermc.paper.dialog.DialogResponseView
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
-
 private var Player.preferredBet: Float?
     get() = getPDC(key("casino.bet"))
     set(value) = setPDC(key("casino.bet"), value)
-
-fun DialogBuilder.betSlider(player: Player) {
-    slider(
-        150,
-        "bet",
-        "Bet".text,
-        100f..500f,
-        player.preferredBet ?: 100f,
-        50f
-    )
-}
 
 fun DialogBuilder.playButton(
     label: Component,
@@ -33,4 +21,18 @@ fun DialogBuilder.playButton(
 
     player.preferredBet = bet
     action(player, bet, view)
+}
+
+fun DialogBuilder.betScreen(p: Player, title: Component) {
+    closeWithEscape(true)
+    title(title)
+    columns(2)
+    slider(
+        200,
+        "bet",
+        "Bet".text,
+        100f..500f,
+        p.preferredBet ?: 100f,
+        50f
+    )
 }

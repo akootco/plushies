@@ -3,13 +3,14 @@ package co.akoot.plugins.plushies.coolstuff.casino.games
 import co.akoot.plugins.bluefox.api.dialog
 import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.playSound
+import co.akoot.plugins.bluefox.extensions.removePDC
 import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.*
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.coolstuff.casino.util.Casino
 import co.akoot.plugins.plushies.coolstuff.casino.util.Casino.payout
 import co.akoot.plugins.plushies.coolstuff.casino.util.CasinoGame
-import co.akoot.plugins.plushies.coolstuff.casino.util.betSlider
+import co.akoot.plugins.plushies.coolstuff.casino.util.betScreen
 import co.akoot.plugins.plushies.coolstuff.casino.util.playButton
 import io.papermc.paper.dialog.Dialog
 import net.kyori.adventure.text.Component
@@ -42,42 +43,30 @@ object Mines : CasinoGame {
         else player.sendActionBar("Please take a seat".error)
     }
 
-    private var Player.mineGameSettings: Float
-        get() = getPDC(key) ?: 1f
-        set(value) = setPDC(key, value)
+    private var Player.mineGameSettings: Float?
+        get() = getPDC<Float>(key)
+        set(value) = if (value == null) removePDC(key) else setPDC(key, value)
 
     private fun mainMenu(p: Player): Dialog = dialog {
-        closeWithEscape(true)
-        title(displayName.text)
-        columns(2)
-
-        message(
-            text(
-                "How to Play Mines\n\n",
-                "Choose your ", "bet".primary,
-                " and ", "mine count".primary,
-                ".\n",
-                "More mines = ", "higher risk".primary,
-                " and ", "bigger payouts".primary,
-                "."
-            ).zip
-        )
+        betScreen(p, displayName.text)
 
         slider(
             150,
             "mines",
             "Mines".text,
             1f..24f,
-            p.mineGameSettings
+            p.mineGameSettings ?: 1f
         )
 
-        betSlider(p)
+        toggle("save", "save settings".text, p.mineGameSettings != null)
 
         playButton("Play!".text) { p, bet, view ->
-            val mineCount = (view.getFloat("mines") ?: 1f).toInt()
+            val mineCount = view.getFloat("mines") ?: 1f
+            val save = view.getBoolean("save") ?: false
+            val mines = (1..25).shuffled().take(mineCount.toInt())
+            val game = MinesGame(mines, mineCount.toInt(), bet)
 
-            val mines = (1..25).shuffled().take(mineCount)
-            val game = MinesGame(mines, mineCount, bet)
+            p.mineGameSettings = if (save) mineCount else null
 
             Casino.takePayment(p, bet, displayName) {
                 runLater(10) {
