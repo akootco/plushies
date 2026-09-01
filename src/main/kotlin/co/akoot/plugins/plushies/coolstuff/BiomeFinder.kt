@@ -30,7 +30,6 @@ object BiomeCompass : Interactable {
         .stackSize(1)
         .itemModel(key.toString())
         .build()
-        .clone()
 
     override fun interact(player: Player) {
         openBiomeFinder(player)
@@ -49,7 +48,6 @@ val biomes = RegistryAccess.registryAccess()
     .getRegistry(RegistryKey.BIOME)
 
 private fun biomeFinder(): Dialog = dialog {
-    closeWithEscape(true)
     title("Biome Finder".text)
     columns(2)
 
@@ -62,7 +60,7 @@ private fun biomeFinder(): Dialog = dialog {
 
 private fun findBiome(player: Player, biome: Biome) {
     val playerLocation = player.location.clone()
-    val compass = BiomeCompass.item
+    val compass = BiomeCompass.item.clone()
 
     player.inventory.itemInMainHand.amount--
     player.sendActionBar("Searching for biome...".text)

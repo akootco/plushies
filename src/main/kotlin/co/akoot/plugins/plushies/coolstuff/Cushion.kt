@@ -31,7 +31,7 @@ object Cushion : Interactable {
         .customModelData("cushion")
         .pdc(key)
         .build()
-        .clone()
+
 
     override val breakSound = "block.wool.break"
 
