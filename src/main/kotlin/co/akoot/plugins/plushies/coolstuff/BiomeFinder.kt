@@ -24,7 +24,7 @@ object BiomeCompass : Interactable {
     override val key = key("biomefinder")
     override val placeable = false
 
-    override val item = ItemBuilder.builder(Material.KNOWLEDGE_BOOK)
+    override val item = ItemBuilder.builder(Material.COMPASS)
         .itemName("Nature's Compass".text)
         .pdc(key)
         .stackSize(1)
@@ -87,7 +87,7 @@ private fun findBiome(player: Player, biome: Biome) {
         val distance = nearest.location.distance(playerLocation).toInt()
 
         sync {
-            player.compassCooldown = System.currentTimeMillis() + TimeUtil.parseTime("2m")
+            player.compassCooldown = System.currentTimeMillis() + TimeUtil.parseTime("5m")
 
             player.sendActionBar {
                 text(biome.component + " is $distance blocks away.").zip
