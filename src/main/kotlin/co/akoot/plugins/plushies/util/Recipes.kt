@@ -1,6 +1,7 @@
 package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.bluefox.api.FoxConfig
+import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.withAmount
 import co.akoot.plugins.plushies.Plushies.Companion.cookRecipeConf
 import co.akoot.plugins.plushies.Plushies.Companion.key
@@ -50,6 +51,8 @@ object Recipes {
             .shaped()
     }
 
+    val recipePdcKeys = mutableSetOf<NamespacedKey>()
+
     fun tag(tag: String): RecipeChoice? {
         val key = NamespacedKey.minecraft(tag.trim().lowercase())
         val tagKey = TagKey.create(RegistryKey.ITEM, key)
@@ -60,7 +63,17 @@ object Recipes {
 
     fun getInput(input: String): RecipeChoice? {
         if (input.startsWith("tag.")) return tag(input.substring(4))
-        getItem(input.lowercase())?.let { return RecipeChoice.ExactChoice(it) }
+
+        getItem(input.lowercase())?.let { item ->
+            return RecipeChoice.predicateChoice(
+                { stack ->
+                    stack.itemMeta?.let { meta ->
+                        recipePdcKeys.any { key -> meta.getPDC<String>(key) == input.lowercase() }
+                    } ?: false
+                },
+                item
+            )
+        }
 
         return Material.getMaterial(input.uppercase())
             ?.asItemType()
