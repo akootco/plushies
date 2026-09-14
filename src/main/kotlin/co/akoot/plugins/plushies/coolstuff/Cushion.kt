@@ -5,6 +5,8 @@ import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.api.Interactable
 import co.akoot.plugins.plushies.util.Items.applyDye
+import co.akoot.plugins.plushies.util.Recipes.getInput
+import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import org.bukkit.DyeColor
 import org.bukkit.Material
@@ -32,6 +34,14 @@ object Cushion : Interactable {
         .pdc(key)
         .build()
 
+    init {
+        getInput("tag.wool_carpets")?.let { woolCarpets ->
+            CraftRecipe.builder("cushion", item)
+                .ingredient('A', woolCarpets)
+                .shape("AA")
+                .shaped()
+        }
+    }
 
     override val breakSound = "block.wool.break"
 
