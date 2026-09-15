@@ -5,6 +5,7 @@ import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.isSurventure
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.plushies.api.InteractableItemMenu
 import co.akoot.plugins.plushies.gui.CustomItemMenu
 import co.akoot.plugins.plushies.util.DataPack.createDiscItems
 import co.akoot.plugins.plushies.util.Items.customItems
@@ -34,6 +35,12 @@ class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
                 loadItems()
                 createDiscItems()
                 return sendMessage(sender, "Custom items reloaded")
+            }
+
+            "interactables" -> {
+                val p = playerCheck(sender)?: return false
+                p.openInventory(InteractableItemMenu().inventory)
+                return true
             }
 
             "party_hat" -> {

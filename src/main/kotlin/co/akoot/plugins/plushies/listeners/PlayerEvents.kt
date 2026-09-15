@@ -1,5 +1,6 @@
 package co.akoot.plugins.plushies.listeners
 
+//import co.akoot.plugins.plushies.util.Items.updateInventory
 import co.akoot.plugins.bluefox.api.FoxPlugin
 import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.hasPDC
@@ -11,16 +12,16 @@ import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.listeners.handlers.placeItem
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.axeKey
 import co.akoot.plugins.plushies.listeners.tasks.Throwable.Companion.spawnThrowable
-import co.akoot.plugins.plushies.util.Items.customItems
-import co.akoot.plugins.plushies.util.Items.isDyeable
 import co.akoot.plugins.plushies.util.Items.isPlaceable
+import co.akoot.plugins.plushies.util.Items.itemId
 import co.akoot.plugins.plushies.util.Items.swingSound
-//import co.akoot.plugins.plushies.util.Items.updateInventory
+import co.akoot.plugins.plushies.util.Items.xpBottle
 import co.akoot.plugins.plushies.util.Recipes.unlockRecipes
 import co.akoot.plugins.plushies.util.ResourcePack.isPackEnabled
 import co.akoot.plugins.plushies.util.ResourcePack.packDeniers
 import co.akoot.plugins.plushies.util.ResourcePack.sendPackMsg
 import co.akoot.plugins.plushies.util.ResourcePack.setPack
+import co.akoot.plugins.plushies.util.Util.autoMend
 import co.akoot.plugins.plushies.util.Util.inValidWorld
 import co.akoot.plugins.plushies.util.Util.isDefault
 import co.akoot.plugins.plushies.util.Util.setAttributes
@@ -33,24 +34,32 @@ import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.attribute.Attribute
 import org.bukkit.block.BlockFace
-import org.bukkit.block.Container
 import org.bukkit.block.Sign
 import org.bukkit.block.data.Directional
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
+import org.bukkit.event.entity.ExpBottleEvent
 import org.bukkit.event.player.PlayerChangedWorldEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
+import org.bukkit.event.player.PlayerItemDamageEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerResourcePackStatusEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.meta.Damageable
 import java.util.regex.Pattern
 
 class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
     private val msgConf = conf.getStringList("kickMsg").toMutableList()
+
+    @EventHandler
+    fun ExpBottleEvent.xpBottle() {
+        experience = entity.item.xpBottle ?: return
+    }
 
     @EventHandler
     fun itemConsume(event: PlayerItemConsumeEvent) {
@@ -101,6 +110,7 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
 
     @EventHandler
     fun playerInteract(event: PlayerInteractEvent) {
+        if (event.isCancelled) return
         if (event.hand != EquipmentSlot.HAND) return // dumb
         val player = event.player
         val item = player.inventory.itemInMainHand
@@ -118,7 +128,7 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
                     (item.isPlaceable && block.isSolid && player.isSneaking && block.getRelative(face).type == Material.AIR) ->
                         placeItem(face, player)
 
-                    (item.isSimilar(customItems["wrench"]) && MaterialTags.GLAZED_TERRACOTTA.isTagged(block)) -> {
+                    (item.itemId == "wrench" && MaterialTags.GLAZED_TERRACOTTA.isTagged(block)) -> {
                         val data = block.blockData as? Directional ?: return
                         val rotation = listOf(BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST) // idk
                         val current = rotation.indexOf(data.facing)
@@ -127,12 +137,6 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
                             rotation.first() else rotation[current + 1]
 
                         block.blockData = data
-                    }
-
-                    (block.type == Material.WATER_CAULDRON && item.isDyeable) -> {
-                        event.isCancelled = true
-                        ItemBuilder.builder(item).unsetData(DataComponentTypes.DYED_COLOR).build()
-                        event.setUseInteractedBlock(Event.Result.DENY)
                     }
 
 //                    block.state is Container -> {
@@ -154,6 +158,22 @@ class PlayerEvents(private val plugin: FoxPlugin) : Listener {
                 }
             }
             else -> return
+        }
+    }
+
+    @EventHandler
+    fun PlayerItemDamageEvent.autoMend() {
+        if (!player.autoMend) return
+
+        item.editMeta { meta ->
+            val damageable = meta as? Damageable ?: return@editMeta
+            if (Enchantment.MENDING !in item.enchantments) return@editMeta
+
+            val xp = player.calculateTotalExperiencePoints()
+            if (damageable.damage <= 1 || xp <= 0) return@editMeta
+
+            player.setExperienceLevelAndProgress(xp - 1)
+            damageable.damage = (damageable.damage - 2).coerceAtLeast(0)
         }
     }
 }

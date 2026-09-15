@@ -1,6 +1,7 @@
 package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.bluefox.api.FoxConfig
+import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.withAmount
 import co.akoot.plugins.plushies.Plushies.Companion.cookRecipeConf
 import co.akoot.plugins.plushies.Plushies.Companion.key
@@ -9,10 +10,10 @@ import co.akoot.plugins.plushies.Plushies.Companion.smithRecipeConf
 import co.akoot.plugins.plushies.util.Items.getItem
 import co.akoot.plugins.plushies.util.builders.CookRecipe
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
-import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import co.akoot.plugins.plushies.util.builders.SmithRecipe
 import com.destroystokyo.paper.MaterialTags
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.tag.TagKey
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger.logger
@@ -31,16 +32,26 @@ object Recipes {
         configRecipes()
         smeltingRecipes()
         smithingRecipes()
-        wingRecipes()
+//        wingRecipes()
         shulkers() // why is nobody licking my brains?!?
         coloredShulker()
         deepslate()
+        paintings()
 
         CraftRecipe.builder("wrench", getItem("wrench") ?: return)
             .ingredient(Material.LIGHTNING_ROD)
             .ingredient(Material.COPPER_INGOT)
             .shapeless()
+
+        CraftRecipe.builder("biome_finder", getItem("biome_finder") ?: return)
+            .ingredient('S', tag("saplings") ?: return )
+            .ingredient('L', tag("logs") ?: return )
+            .ingredient('C', Material.COMPASS)
+            .shape("SLS", "LCL", "SLS")
+            .shaped()
     }
+
+    val recipePdcKeys = mutableSetOf<NamespacedKey>()
 
     fun tag(tag: String): RecipeChoice? {
         val key = NamespacedKey.minecraft(tag.trim().lowercase())
@@ -52,7 +63,17 @@ object Recipes {
 
     fun getInput(input: String): RecipeChoice? {
         if (input.startsWith("tag.")) return tag(input.substring(4))
-        getItem(input.lowercase())?.let { return RecipeChoice.ExactChoice(it) }
+
+        getItem(input.lowercase())?.let { item ->
+            return RecipeChoice.predicateChoice(
+                { stack ->
+                    stack.itemMeta?.let { meta ->
+                        recipePdcKeys.any { key -> meta.getPDC<String>(key) == input.lowercase() }
+                    } ?: false
+                },
+                item
+            )
+        }
 
         return Material.getMaterial(input.uppercase())
             ?.asItemType()
@@ -95,18 +116,38 @@ object Recipes {
         }
     }
 
-    private fun wingRecipes() {
-        MaterialTags.DYES.values.forEach { dye ->
-            val color = dye.name.removeSuffix("_DYE")
-
-            CraftRecipe.builder(
-                "${color.lowercase()}.elytra",
-                ItemBuilder(Material.ELYTRA).dye(DyeColor.valueOf(color).color).build())
-                .ingredient(Material.ELYTRA)
-                .ingredient(dye)
-                .shapeless()
-        }
-    }
+//    private fun wingRecipes() {
+//        val trimTemplates = Material.entries
+//            .filter { it.name.endsWith("_ARMOR_TRIM_SMITHING_TEMPLATE") }
+//
+//        Tag.ITEMS_TRIM_MATERIALS.values.forEach { material ->
+//            trimTemplates.forEach { template ->
+//
+//                val templateType = template.asItemType() ?: return@forEach
+//                val materialType = material.asItemType() ?: return@forEach
+//
+//                val pattern = template.name
+//                    .lowercase()
+//                    .removeSuffix("_armor_trim_smithing_template")
+//
+//                val material = material.name
+//                    .lowercase()
+//                    .substringBefore("_")
+//
+//                val result = ItemBuilder.builder(Material.ELYTRA)
+//                    .trim(material, pattern)
+//                    .build()
+//
+//                SmithRecipe.builder(
+//                    "elytra.$material.$pattern",
+//                    RecipeChoice.itemType(templateType),
+//                    RecipeChoice.itemType(ItemType.ELYTRA),
+//                    RecipeChoice.itemType(materialType),
+//                    result
+//                ).add()
+//            }
+//        }
+//    }
 
     private fun coloredShulker() {
         MaterialTags.DYES.values.forEach { dye ->
@@ -220,6 +261,16 @@ object Recipes {
                 getInput(addition) ?: return,
                 getMaterial(parts[0], amount) ?: return
             ).add(namespace)
+        }
+    }
+
+    fun paintings() {
+        val paintings = RegistryAccess.registryAccess().getRegistry(RegistryKey.PAINTING_VARIANT)
+            for (painting in paintings) {
+                val paintingKey = paintings.getKey(painting) ?: continue
+                val item = ItemStack.of(Material.PAINTING)
+                item.setData(DataComponentTypes.PAINTING_VARIANT, painting)
+                Bukkit.addRecipe(StonecuttingRecipe(key("painting.${paintingKey.key}"), item, Material.PAINTING))
         }
     }
 

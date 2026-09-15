@@ -3,7 +3,12 @@ package co.akoot.plugins.plushies
 import co.akoot.plugins.bluefox.BlueFox.Companion.geyser
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.api.FoxPlugin
+import co.akoot.plugins.plushies.api.Interactables
 import co.akoot.plugins.plushies.commands.*
+import co.akoot.plugins.plushies.coolstuff.ArmoredElytra
+import co.akoot.plugins.plushies.coolstuff.BiomeCompass
+import co.akoot.plugins.plushies.coolstuff.Cushion
+import co.akoot.plugins.plushies.coolstuff.EverlastRocket
 import co.akoot.plugins.plushies.geyser.GeyserRegistrar
 import co.akoot.plugins.plushies.geyser.GeyserUtil.downloadBedrockPack
 import co.akoot.plugins.plushies.listeners.*
@@ -58,6 +63,9 @@ class Plushies : FoxPlugin("plushies") {
             GeyserRegistrar()
         }
 
+        Interactables.register(Cushion)
+        Interactables.register(BiomeCompass)
+
         tradeSource.add(merchantConfig)
     }
 
@@ -85,12 +93,13 @@ class Plushies : FoxPlugin("plushies") {
         registerCommand(BookArchiveCommand(this))
         registerCommand(CustomItemCommand(this))
         registerCommand(ToggleArmorCommand(this))
-        registerCommand(ReloadRecipesCommand(this))
         registerCommand(IHateJumpBoostCommand(this))
         registerCommand(EditBookCommand(this))
         registerCommand(ChunkPDCCommand(this))
         registerCommand(LocatorCommand(this))
-//        registerCommand(ATMCommand(this))
+        registerCommand(XpBottleCommand(this))
+        registerCommand(AutoMendCommand(this))
+        registerCommand(RepairCommand(this))
     }
 
     override fun registerEvents() {
@@ -101,7 +110,9 @@ class Plushies : FoxPlugin("plushies") {
         registerEventListener(HDB())
         registerEventListener(BlockEvents())
         registerEventListener(MerchantEvents())
-        registerEventListener(Furniture())
+        registerEventListener(EverlastRocket())
+        registerEventListener(ArmoredElytra())
+        registerEventListener(InteractionListener())
     }
 
     override fun registerConfigs() {
