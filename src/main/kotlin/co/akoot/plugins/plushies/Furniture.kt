@@ -27,12 +27,14 @@ class Furniture : Listener {
         if (isCancelled) return
         if (itemInHand.furnitureHitBox.isNullOrEmpty()) return
 
-        spawnItemDisplay(block.location, itemInHand, Transformation(
-            Vector3f(),
-            AxisAngle4f(),
-            Vector3f(1f,1f,1f),
-            AxisAngle4f()
-        ))
+        spawnItemDisplay(block.location, itemInHand) {
+            Transformation(
+                Vector3f(),
+                AxisAngle4f(),
+                Vector3f(1f,1f,1f),
+                AxisAngle4f()
+            )
+        }
 
         block.chunk.setPDC(getBlockPDC(block.location, "furniture"), true)
 
