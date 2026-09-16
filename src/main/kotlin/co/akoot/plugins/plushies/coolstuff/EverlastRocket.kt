@@ -1,6 +1,7 @@
 package co.akoot.plugins.plushies.coolstuff
 
 import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import co.akoot.plugins.plushies.util.fullBoxOf
 import com.destroystokyo.paper.event.player.PlayerElytraBoostEvent
@@ -12,7 +13,6 @@ import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
-import org.bukkit.inventory.RecipeChoice.ExactChoice
 
 class EverlastRocket() : Listener {
 
@@ -22,8 +22,8 @@ class EverlastRocket() : Listener {
                 "everlastingfirework.$dur",
                 ItemStack(Material.FIREWORK_ROCKET).makeEverlastingRocket(dur)
             )
-                .ingredient(ExactChoice(fullBoxOf(Material.GUNPOWDER)), dur)
-                .ingredient(ExactChoice(fullBoxOf(Material.PAPER) + fullBoxOf(Material.SUGAR_CANE)))
+                .ingredient(fullBoxOf(Material.GUNPOWDER), dur)
+                .ingredient(fullBoxOf(Material.PAPER, Material.SUGAR_CANE))
                 .shapeless()
         }
     }
@@ -47,7 +47,7 @@ fun ItemStack.consumeEverLastRocket(): Boolean {
 }
 
 fun ItemStack.makeEverlastingRocket(duration: Int) = apply {
-    setData(DataComponentTypes.ITEM_NAME, Text("Everlasting Rocket").component)
+    setData(DataComponentTypes.ITEM_NAME, text("Everlasting Rocket"))
     setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData().addString("el.rocket.${duration}").build())
     setData(DataComponentTypes.ENCHANTMENT_GLINT_OVERRIDE, true)
     setData(DataComponentTypes.MAX_STACK_SIZE, 1)

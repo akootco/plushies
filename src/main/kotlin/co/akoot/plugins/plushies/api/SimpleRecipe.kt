@@ -8,7 +8,7 @@ import org.bukkit.inventory.RecipeChoice
 
 data class SimpleRecipe(
     val tool: RecipeChoice?,
-    val input: RecipeChoice,
+    val inputs: List<RecipeChoice>,
     val results: Set<ItemStack>
 )
 
@@ -22,14 +22,14 @@ fun loadSimpleRecipes(
             getInput(it)
         }
 
-        val inputItem = getInput(config.getString("$r.input") ?: continue)
-            ?: continue
+        val inputs = config.getStringList("$r.input")
+            .mapNotNull(::getInput)
 
         val results = parseResults(config.getStringList("$r.result"))
 
         if (results.isEmpty()) continue
 
-        recipes.add(SimpleRecipe(toolInput, inputItem, results))
+        recipes.add(SimpleRecipe(toolInput, inputs, results))
     }
 
     return recipes
