@@ -13,6 +13,11 @@ private var Player.preferredBet: Float?
     get() = getPDC(key("casino.bet"))
     set(value) = setPDC(key("casino.bet"), value)
 
+
+fun DialogBuilder.spacer(lines: Int) {
+    message("\n".repeat(lines))
+}
+
 fun DialogBuilder.playButton(
     label: Component,
     action: (Player, Float, DialogResponseView) -> Unit

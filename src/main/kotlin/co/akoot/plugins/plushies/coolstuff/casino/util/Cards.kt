@@ -31,3 +31,12 @@ fun fresh52CardDeck(): MutableList<Card> {
        repeat(4) { shuffle() }
     }
 }
+
+fun List<Card>.value(ace: Int, face: Int): Int =
+    sumOf { card ->
+        when (card.char) {
+            'A' -> ace
+            'X', 'J', 'Q', 'K' -> face
+            else -> card.char.digitToInt()
+        }
+    }
