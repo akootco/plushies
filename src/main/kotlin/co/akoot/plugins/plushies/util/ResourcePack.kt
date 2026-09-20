@@ -4,8 +4,10 @@ import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.isBedrock
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.WebUtil
+import co.akoot.plugins.bluefox.util.runLater
 import co.akoot.plugins.plushies.Plushies.Companion.conf
 import com.google.gson.JsonParser
+import com.viaversion.viaversion.api.Via
 import net.kyori.adventure.resource.ResourcePackInfo
 import net.kyori.adventure.resource.ResourcePackRequest
 import net.kyori.adventure.text.format.TextDecoration
@@ -64,17 +66,34 @@ object ResourcePack {
 
     fun setPack(player: Player, force: Boolean = false): Boolean {
         if (player.isBedrock || !isPackEnabled) return false
-
-        player.sendResourcePacks(
-            ResourcePackRequest.resourcePackRequest()
-                .required(force)
-                .packs(
-                    ResourcePackInfo.resourcePackInfo()
-                        .uri(URI.create(javaPackLink))
-                        .hash(javaPackHash)
+        runLater(2){
+            val protocolVersion = Via.getAPI().getPlayerVersion(player)
+            if (protocolVersion == 777) {
+                player.sendResourcePacks(
+                    ResourcePackRequest.resourcePackRequest()
+                        .required(force)
+                        .packs(
+                            ResourcePackInfo.resourcePackInfo()
+                                .uri(URI.create("https://maltsburg.com/packs/AKC_26.3.zip"))
+                                .hash("01855501323ca081d71f2833aeb0c0ca65c51ce8")
+                        )
+                        .build()
                 )
-                .build()
-        )
+
+            } else {
+                player.sendResourcePacks(
+                    ResourcePackRequest.resourcePackRequest()
+                        .required(force)
+                        .packs(
+                            ResourcePackInfo.resourcePackInfo()
+                                .uri(URI.create(javaPackLink))
+                                .hash(javaPackHash)
+                        )
+                        .build()
+                )
+            }
+
+        }
         return true
     }
 }
