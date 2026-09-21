@@ -33,6 +33,7 @@ import org.bukkit.event.entity.EntityTargetEvent
 import org.bukkit.event.entity.ProjectileHitEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemStack
 import kotlin.random.Random
 
 class EntityEvents(private val plugin: FoxPlugin) : Listener {
@@ -85,6 +86,10 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
 
     @EventHandler
     fun EntityDeathEvent.onEntityDeath() {
+
+        // removing ts if i hear another person cry about tnt duping
+        if (entity is Husk || entity is Parched) drops.add(ItemStack(Material.SAND))
+
         val damageEvent = entity.lastDamageCause as? EntityDamageByEntityEvent ?: return
         val killer = damageEvent.damager
 

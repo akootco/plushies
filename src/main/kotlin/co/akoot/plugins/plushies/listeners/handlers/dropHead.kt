@@ -42,6 +42,8 @@ val headTexture: (Entity) -> String = { victim ->
         is Chicken -> "chicken.${victim.variant.key.key}"
         is Cow -> "cow.${victim.variant.key.key}"
         is Pig -> "pig.${victim.variant.key.key}"
+        is Snowman -> "snow_golem.${if (victim.isDerp) "headless" else "default"}"
+        is ZombieNautilus -> "zombie_nautilus.${victim.variant.key.key}"
 
         else -> victim.type.name
     }
