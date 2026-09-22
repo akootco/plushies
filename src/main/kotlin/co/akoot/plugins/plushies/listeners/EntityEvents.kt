@@ -83,12 +83,11 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
         }
     }
 
-
     @EventHandler
     fun EntityDeathEvent.onEntityDeath() {
-
         // removing ts if i hear another person cry about tnt duping
-        if (entity is Husk || entity is Parched) drops.add(ItemStack(Material.SAND))
+        if (entity is Parched || entity is Husk)
+            drops.add(ItemStack(Material.SAND, Random.nextInt(3)))
 
         val damageEvent = entity.lastDamageCause as? EntityDamageByEntityEvent ?: return
         val killer = damageEvent.damager

@@ -8,6 +8,8 @@ import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.recipeConf
 import co.akoot.plugins.plushies.Plushies.Companion.smithRecipeConf
 import co.akoot.plugins.plushies.util.Items.getItem
+import co.akoot.plugins.plushies.util.Items.getItems
+import co.akoot.plugins.plushies.util.Items.itemId
 import co.akoot.plugins.plushies.util.builders.CookRecipe
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import co.akoot.plugins.plushies.util.builders.SmithRecipe
@@ -38,17 +40,31 @@ object Recipes {
         deepslate()
         paintings()
 
-        CraftRecipe.builder("wrench", getItem("wrench") ?: return)
+        getItem("wrench")?.let {
+            CraftRecipe.builder("wrench", it)
             .ingredient(Material.LIGHTNING_ROD)
             .ingredient(Material.COPPER_INGOT)
             .shapeless()
+        }
 
-        CraftRecipe.builder("biome_finder", getItem("biome_finder") ?: return)
-            .ingredient('S', tag("saplings") ?: return )
-            .ingredient('L', tag("logs") ?: return )
-            .ingredient('C', Material.COMPASS)
-            .shape("SLS", "LCL", "SLS")
-            .shaped()
+        getItem("biome_finder")?.let {
+            CraftRecipe.builder("biome_finder", it)
+                .ingredient('S', tag("saplings")!!)
+                .ingredient('L', tag("logs")!!)
+                .ingredient('C', Material.COMPASS)
+                .shape("SLS", "LCL", "SLS")
+                .shaped()
+        }
+
+        for (stack in getItems { it.type == Material.LEATHER_HELMET }) {
+            val id = stack.itemId ?: continue
+            Bukkit.addRecipe(StonecuttingRecipe(
+                key("$id.stonecutter"),
+                stack,
+                Material.LEATHER_HELMET
+            ))
+        }
+
     }
 
     val recipePdcKeys = mutableSetOf<NamespacedKey>()
