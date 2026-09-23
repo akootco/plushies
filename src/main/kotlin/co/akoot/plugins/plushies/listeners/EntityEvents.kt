@@ -25,13 +25,9 @@ import org.bukkit.Material
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.entity.EntityDamageByEntityEvent
-import org.bukkit.event.entity.EntityDeathEvent
-import org.bukkit.event.entity.EntityDropItemEvent
-import org.bukkit.event.entity.EntitySpawnEvent
-import org.bukkit.event.entity.EntityTargetEvent
-import org.bukkit.event.entity.ProjectileHitEvent
+import org.bukkit.event.entity.*
 import org.bukkit.event.player.PlayerInteractEntityEvent
+import org.bukkit.generator.structure.Structure
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import kotlin.random.Random
@@ -86,8 +82,9 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
     @EventHandler
     fun EntityDeathEvent.onEntityDeath() {
         // removing ts if i hear another person cry about tnt duping
-        if (entity is Parched || entity is Husk)
-            drops.add(ItemStack(Material.SAND, Random.nextInt(3)))
+        if ((entity is Parched || entity is Husk) && Random.nextBoolean()) {
+            drops.add(ItemStack(Material.SAND, Random.nextInt(1,3)))
+        }
 
         val damageEvent = entity.lastDamageCause as? EntityDamageByEntityEvent ?: return
         val killer = damageEvent.damager
@@ -177,5 +174,16 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
                 ?.let { itemDrop.itemStack = it }
             return
         }
+    }
+
+    @EventHandler
+    fun CreatureSpawnEvent.mobSpawn() {
+        if (isCancelled) return
+        if (entity !is Monster) return
+        if (spawnReason != CreatureSpawnEvent.SpawnReason.NATURAL) return
+        if (!entity.world.hasStructureAt(entity.location, Structure.DESERT_PYRAMID)) return
+
+        isCancelled = true
+        entity.world.spawnEntity(location, EntityType.HUSK)
     }
 }
