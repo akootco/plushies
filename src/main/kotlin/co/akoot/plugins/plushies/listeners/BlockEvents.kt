@@ -8,8 +8,15 @@ import co.akoot.plugins.plushies.util.*
 import co.akoot.plugins.plushies.util.Util.getBlockPDC
 import com.destroystokyo.paper.event.block.BlockDestroyEvent
 import io.papermc.paper.event.block.BlockBreakBlockEvent
+import io.papermc.paper.event.entity.EntityInsideBlockEvent
+import org.bukkit.Effect
 import org.bukkit.ExplosionResult
+import org.bukkit.Material
+import org.bukkit.Particle
+import org.bukkit.Tag
+import org.bukkit.block.data.Levelled
 import org.bukkit.entity.Display.Brightness
+import org.bukkit.entity.Item
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -118,5 +125,36 @@ class BlockEvents : Listener {
         if (isCancelled) return
         blocks.filter { it.isCustomBlock }
             .forEach { runLater(1) { handlePiston(it.location, direction) } }
+    }
+
+    @EventHandler
+    fun EntityInsideBlockEvent.cauldronConcrete() {
+        if (block.type != Material.WATER_CAULDRON) return
+
+        val item = entity as? Item ?: return
+        val type = item.itemStack.type
+        val cauldron = block.blockData as? Levelled ?: return
+
+        val result = when {
+            Tag.ITEMS_CONCRETE_POWDERS.isTagged(type) ->
+                Material.matchMaterial(type.name.substringBeforeLast("_")) ?: return
+
+            Tag.ITEMS_DIRT.isTagged(type) -> Material.MUD
+
+            else -> return
+        }
+
+        if (cauldron.level > 1) {
+            cauldron.level -= 1
+            block.blockData = cauldron
+        } else block.type = Material.CAULDRON
+
+        item.itemStack = item.itemStack.withType(result)
+
+        item.world.apply {
+            playEffect(block.location, Effect.EXTINGUISH, 0 )
+            spawnParticle(Particle.POOF, block.location.toCenterLocation(),
+                5, 0.2, 0.2, 0.2, 0.02) // ong?
+        }
     }
 }
