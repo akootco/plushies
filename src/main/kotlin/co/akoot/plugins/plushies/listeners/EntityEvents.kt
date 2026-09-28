@@ -86,6 +86,8 @@ class EntityEvents(private val plugin: FoxPlugin) : Listener {
             drops.add(ItemStack(Material.SAND, Random.nextInt(1,3)))
         }
 
+        if (entity is Shulker) drops.add(ItemStack.of(Material.SHULKER_SHELL))
+
         val damageEvent = entity.lastDamageCause as? EntityDamageByEntityEvent ?: return
         val killer = damageEvent.damager
 
