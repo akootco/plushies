@@ -24,7 +24,7 @@ object BiomeCompass : Interactable {
     override val key = key("biomefinder")
     override val placeable = false
 
-    override val item = ItemBuilder.builder(Material.COMPASS)
+    override fun item() = ItemBuilder.builder(Material.COMPASS)
         .itemName("Nature's Compass".text)
         .pdc(key)
         .stackSize(1)
@@ -60,7 +60,7 @@ private fun biomeFinder(): Dialog = dialog {
 
 private fun findBiome(player: Player, biome: Biome) {
     val playerLocation = player.location.clone()
-    val compass = BiomeCompass.item.clone()
+    val compass = BiomeCompass.item().clone()
 
     player.inventory.itemInMainHand.amount--
     player.sendActionBar("Searching for biome...".text)
