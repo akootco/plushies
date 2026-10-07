@@ -89,7 +89,7 @@ class EnchantPreset private constructor(private val itemStack: ItemStack) {
                 mutableMapOf(
                     Enchantment.PROTECTION to 4,
                     Enchantment.RESPIRATION to 3,
-                    Enchantment.AQUA_AFFINITY to 3
+                    Enchantment.AQUA_AFFINITY to 1
                 )
             )
         }.build()

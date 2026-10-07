@@ -34,7 +34,7 @@ object Interactables {
 
     fun register(interactable: Interactable) {
         values[interactable.key] = interactable
-        interactable.item?.let { items[interactable.key] = it }
+        interactable.item()?.let { items[interactable.key] = it }
     }
 
     fun find(item: ItemStack): Interactable? =
@@ -50,8 +50,7 @@ interface Interactable {
 
     val key: NamespacedKey
 
-    val item: ItemStack?
-        get() = null
+    fun item(): ItemStack? = null
 
     val setOwner: Boolean
         get() = false
@@ -68,20 +67,18 @@ interface Interactable {
     val breakSound: String?
         get() = null
 
-    val scale: Float
-        get() = 1f
+    fun scale(): Float = 1f
 
-    val width: Float
-        get() = 1f
+    fun width(): Float = 1.001f
 
-    val height: Float
-        get() = 1f
+    fun height(): Float = 1.001f
 
-    val translation: Vector3f
-        get() = Vector3f(0f)
+    fun translation(): Vector3f = Vector3f(0f)
 
     val useInteractionPoint: Boolean
         get() = false
+
+    fun y(): Double = 1.0
 
     val removable: Boolean
         get() = false
@@ -96,11 +93,7 @@ interface Interactable {
         val support = event.clickedBlock ?: return false
         val item = event.item ?: return false
 
-        val y = if (useInteractionPoint) {
-            event.interactionPoint?.y?.minus(support.y) ?: 1.0
-        } else {
-            1.0
-        }
+        val y = if (useInteractionPoint) { event.interactionPoint?.y?.minus(support.y) ?: y() } else { y() }
 
         val rotation = if (rotatable)
             Math.toRadians(
@@ -113,9 +106,9 @@ interface Interactable {
             item
         ) {
             transformation = Transformation(
-                translation,
+                translation(),
                 AxisAngle4f(rotation, 0f, 1f, 0f),
-                Vector3f(scale),
+                Vector3f(scale()),
                 AxisAngle4f()
             )
         }
@@ -133,6 +126,7 @@ interface Interactable {
             )
         }
 
+        event.player.swingMainHand()
         if (event.player.isSurventure) item.amount--
         return true
     }

@@ -10,13 +10,10 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import kotlin.math.min
 
-abstract class ChestMenu(
-    protected val size: Int = 54
-) : InventoryHolder {
+abstract class ChestMenu(protected val size: Int = 54) : Menu {
 
     companion object {
         val nextPage = ItemBuilder.builder(ItemStack(Material.PAPER))
@@ -70,9 +67,11 @@ abstract class ChestMenu(
         return items.subList(start, end)
     }
 
-    open fun onClick(event: InventoryClickEvent) {
+    override fun onClick(event: InventoryClickEvent) {
         val player = event.whoClicked as? Player ?: return
         val item = event.currentItem ?: return
+
+        event.isCancelled = true
 
         when (item) {
             filler -> return

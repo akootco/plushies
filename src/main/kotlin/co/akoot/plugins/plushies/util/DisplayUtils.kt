@@ -21,8 +21,8 @@ import org.joml.Vector3f
 
 fun Entity.createHitbox(interactable: Interactable): Interaction {
     return world.spawn(location, Interaction::class.java) {
-        it.interactionWidth = interactable.width
-        it.interactionHeight = interactable.height
+        it.interactionWidth = interactable.width()
+        it.interactionHeight = interactable.height()
         it.setPDC(interactable.key, true)
     }.also { addPassenger(it) }
 }

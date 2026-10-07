@@ -20,14 +20,14 @@ import org.joml.Vector3f
 
 object Cushion : Interactable {
     override val key = key("cushion")
-    override val height = 0.25f
-    override val translation = Vector3f(0f, 0.5f, 0f)
+    override fun height() = 0.25f
+    override fun translation() = Vector3f(0f, 0.5f, 0f)
     override val cancelPlacement = true
     override val removable = true
     override val pushable = true
     override val useInteractionPoint = true
 
-    override val item = ItemBuilder.builder(Material.WHITE_CARPET)
+    override fun item() = ItemBuilder.builder(Material.WHITE_CARPET)
         .itemName("Cushion".text)
         .stackSize(16)
         .customModelData("cushion")
@@ -36,7 +36,7 @@ object Cushion : Interactable {
 
     init {
         getInput("tag.wool_carpets")?.let { woolCarpets ->
-            CraftRecipe.builder("cushion", item)
+            CraftRecipe.builder("cushion", item())
                 .ingredient('A', woolCarpets)
                 .shape("AA")
                 .shaped()

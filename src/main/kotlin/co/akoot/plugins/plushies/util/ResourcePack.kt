@@ -75,6 +75,7 @@ object ResourcePack {
                 )
                 .build()
         )
+
         return true
     }
 }

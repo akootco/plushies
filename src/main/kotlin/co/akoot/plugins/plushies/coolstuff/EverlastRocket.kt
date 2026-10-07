@@ -1,6 +1,5 @@
 package co.akoot.plugins.plushies.coolstuff
 
-import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
 import co.akoot.plugins.plushies.util.fullBoxOf
@@ -13,6 +12,7 @@ import org.bukkit.Material
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.RecipeChoice
 
 class EverlastRocket() : Listener {
 
@@ -22,8 +22,8 @@ class EverlastRocket() : Listener {
                 "everlastingfirework.$dur",
                 ItemStack(Material.FIREWORK_ROCKET).makeEverlastingRocket(dur)
             )
-                .ingredient(fullBoxOf(Material.GUNPOWDER), dur)
-                .ingredient(fullBoxOf(Material.PAPER, Material.SUGAR_CANE))
+                .ingredient(RecipeChoice.ExactChoice(fullBoxOf(Material.GUNPOWDER)), dur)
+                .ingredient(RecipeChoice.ExactChoice(fullBoxOf(Material.PAPER) + fullBoxOf(Material.SUGAR_CANE)))
                 .shapeless()
         }
     }
