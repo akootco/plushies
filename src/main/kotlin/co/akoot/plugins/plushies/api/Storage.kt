@@ -2,6 +2,7 @@ package co.akoot.plugins.plushies.api
 
 import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.setPDC
+import co.akoot.plugins.bluefox.util.runLater
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import net.kyori.adventure.text.Component
@@ -44,12 +45,14 @@ abstract class Storage(
 
 
     override fun onClose(event: InventoryCloseEvent) {
-        if (inventory.viewers.isNotEmpty()) return
+        runLater {
+            if (inventory.viewers.isNotEmpty()) return@runLater
 
-        entity.setPDC(
-            key(key),
-            ItemStack.serializeItemsAsBytes(inventory.contents)
-        )
+            entity.setPDC(
+                key(key),
+                ItemStack.serializeItemsAsBytes(inventory.contents)
+            )
+        }
     }
 
     fun loadContents() {
