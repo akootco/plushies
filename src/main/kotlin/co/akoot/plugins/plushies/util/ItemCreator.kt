@@ -1,7 +1,8 @@
 package co.akoot.plugins.plushies.util
 
 import co.akoot.plugins.bluefox.api.FoxConfig
-import co.akoot.plugins.bluefox.util.parse
+import co.akoot.plugins.bluefox.util.Text
+import co.akoot.plugins.plushies.FurnitureUtil.furnHitbox
 import co.akoot.plugins.plushies.Plushies.Companion.customMusicDiscConfig
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.Plushies.Companion.pluginEnabled
@@ -28,11 +29,10 @@ object ItemCreator {
             customMusicDiscConfig -> Material.MUSIC_DISC_11
             else -> config.getString("$path.material")
                 ?.let(Material::getMaterial)
-                ?: return null
+                ?: if ("furniture" in config.getKeys(path)) Material.PLAYER_HEAD else return null
         }
 
-        return ItemStack(material)
-            .let { itemData(config, path, it, namespacedKey) }
+        return itemData(config, path, ItemStack(material), namespacedKey)
             ?.let { equippable(config, path, it) }
             ?.let { food(config, path, it) }
     }
@@ -85,7 +85,7 @@ object ItemCreator {
                 ?.let { pdc(key("attributes"), it) }
 
             // name
-            config.getString("$path.itemName")?.let { name -> itemName( name.parse() ) }
+            config.getString("$path.itemName")?.let { name -> itemName(Text(name).component) }
 
             // set amount
             config.getInt("$path.amount").takeIf { it != 1 }?.let { itemStack.amount = it }
@@ -116,7 +116,7 @@ object ItemCreator {
             config.getString("$path.customModelData")?.let { customModelData(if (it == "0") path else it) }
 
             //set lore
-            lore(config.getStringList("$path.lore").map { it.parse() })
+            lore(config.getStringList("$path.lore").map { Text(it).component })
 
             // stackSize needs to be 1-99 or else the server will explode (real)
             config.getInt("$path.stackSize").takeIf { it in 1..99 }?.let { stackSize(it) }
@@ -125,11 +125,18 @@ object ItemCreator {
 
             config.getString("$path.swingSound")?.let { id -> itemStack.swingSound = id }
 
-            config.getString("$path.instrument.sound")?.let { sound ->
-                val desc = config.getString("$path.instrument.desc") ?: path
-                val dur = config.getDouble("$path.instrument.dur") ?: 5.0
-                instrument(sound, desc, dur.toFloat())
+            if (config.getKeys(path).contains("furniture")) {
+                itemModel("structure_void")
+                val hitbox = config.getString("$path.furniture.hitbox") ?: "none"
+                pdc(furnHitbox, hitbox)
+                pdc(blockKey, path)
             }
+
+            if (config.getBoolean("$path.dyeable") == true) {
+                stackSize(1) // dumb but idk how else to fix crafting dupe
+                pdc(key("dyeable"), true)
+            }
+
         }.build()
     }
 
