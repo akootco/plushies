@@ -23,12 +23,12 @@ import org.bukkit.inventory.ItemStack
 
 object ItemCreator {
 
-    fun createItem(config: FoxConfig, path: String, namespacedKey: NamespacedKey): ItemStack? {
+    fun createItem(config: FoxConfig, path: String, namespacedKey: NamespacedKey, material: () -> Material? = { null }): ItemStack? {
         val material = when (config) {
             customMusicDiscConfig -> Material.MUSIC_DISC_11
             else -> config.getString("$path.material")
                 ?.let(Material::getMaterial)
-                ?: return null
+                ?: material() ?: return null
         }
 
         return ItemStack(material)
@@ -134,7 +134,15 @@ object ItemCreator {
     }
 
     private fun food(config: FoxConfig, path: String, itemStack: ItemStack): ItemStack {
-        if (!config.getKeys(path).contains("food")) return itemStack
+        if (!config.getKeys(path).contains("food")) {
+            if (itemStack.type == Material.POISONOUS_POTATO) {
+                itemStack.apply {
+                    unsetData(DataComponentTypes.FOOD)
+                    unsetData(DataComponentTypes.CONSUMABLE)
+                }
+            }
+            return itemStack
+        }
 
         return FoodBuilder.builder(itemStack).apply {
             // i wonder why they split food into two components?

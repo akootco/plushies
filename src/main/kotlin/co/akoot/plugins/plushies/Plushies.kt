@@ -25,6 +25,7 @@ import org.bukkit.plugin.Plugin
 class Plushies : FoxPlugin("plushies") {
 
     companion object {
+        lateinit var instance: Plushies
         lateinit var plushieConf: FoxConfig
         lateinit var conf: FoxConfig
         lateinit var headConf: FoxConfig
@@ -49,6 +50,7 @@ class Plushies : FoxPlugin("plushies") {
     }
 
     override fun load() {
+        instance = this
         logger.info("welcome back!")
         getJavaPack()
 
