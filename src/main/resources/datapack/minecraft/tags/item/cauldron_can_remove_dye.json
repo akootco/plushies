@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "minecraft:elytra",
-    "minecraft:written_book"
+    "minecraft:written_book",
+    "minecraft:poisonous_potato"
   ]
 }

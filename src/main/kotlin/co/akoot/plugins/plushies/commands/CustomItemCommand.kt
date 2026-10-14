@@ -6,6 +6,7 @@ import co.akoot.plugins.bluefox.api.Kolor
 import co.akoot.plugins.bluefox.extensions.isSurventure
 import co.akoot.plugins.bluefox.util.Text
 import co.akoot.plugins.plushies.api.InteractableItemMenu
+import co.akoot.plugins.plushies.coolstuff.ConfigFurniture
 import co.akoot.plugins.plushies.gui.CustomItemMenu
 import co.akoot.plugins.plushies.util.DataPack.createDiscItems
 import co.akoot.plugins.plushies.util.Items.customItems
@@ -20,7 +21,7 @@ class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
     override fun onTabComplete(sender: CommandSender, alias: String, args: Array<out String>): MutableList<String> {
 
         if (args.size == 1) {
-            return customItems.filter { it.value.isCustomItem }.keys.toMutableList()
+            return customItems.filter { it.value.isCustomItem }.keys.plus("interactables").toMutableList()
         } else if (args.size == 2 && args[0] == "party_hat") {
             return getOnlinePlayerSuggestions()
         }
@@ -34,6 +35,7 @@ class CustomItemCommand(plugin: FoxPlugin) : FoxCommand(plugin, "customitem") {
                 customItems.entries.removeIf { it.value.isCustomItem }
                 loadItems()
                 createDiscItems()
+                ConfigFurniture.loadFurniture()
                 return sendMessage(sender, "Custom items reloaded")
             }
 
