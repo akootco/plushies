@@ -17,6 +17,7 @@ import org.bukkit.NamespacedKey
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.BoundingBox
@@ -48,13 +49,19 @@ class ConfigFurniture(val id: String) : Interactable {
 
     private val isContainer = config.getKeys(path).contains("container")
     private val rows = config.getInt("$path.container.rows") ?: 1
+
+    private val inventoryType =
+        config.getEnum<InventoryType>("$path.container.type")
+            ?.takeIf { it.isCreatable }
+            ?: InventoryType.CHEST
+
     private val title = Component.text(config.getString("$path.container.title") ?: config.getString("$id.itemName") ?: id)
 
     private val isSeat = config.getBoolean("$path.seat") ?: false
 
     private fun storageOf(entity: Entity): FurnitureStorage =
         entity.getMeta<FurnitureStorage>("furniture.storage")
-            ?: FurnitureStorage(entity, title, rows).also {
+            ?: FurnitureStorage(entity, title, rows, inventoryType).also {
                 entity.setMeta("furniture.storage", it)
                 it.loadContents()
             }
@@ -110,5 +117,7 @@ class ConfigFurniture(val id: String) : Interactable {
 private class FurnitureStorage(
     override val entity: Entity,
     title: Component,
-    rows: Int
-) : Storage(title, "storage", rows)
+    rows: Int,
+    inventoryType: InventoryType
+) : Storage(title, "storage", StorageConfig(inventoryType, rows))
+
