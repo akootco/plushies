@@ -10,8 +10,7 @@ class GUI : Listener {
     @EventHandler
     fun onInvClick(event: InventoryClickEvent) {
         val menu = event.view.topInventory.holder as? Menu ?: return
-
-        if (menu.ignoreBottom && event.clickedInventory != event.view.topInventory) return
+        if (event.clickedInventory != event.view.topInventory) return
 
         menu.onClick(event)
     }
