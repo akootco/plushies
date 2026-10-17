@@ -113,7 +113,9 @@ abstract class Storage(
     }
 
     fun remove() {
-        inventory.viewers.forEach { it.closeInventory() }
+        inventory.viewers.toList().forEach { player ->
+            player.closeInventory()
+        }
 
         inventory.contents
             .filterNotNull()
