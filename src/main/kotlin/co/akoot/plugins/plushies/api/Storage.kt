@@ -51,16 +51,13 @@ abstract class Storage(
     open val closeSound: StorageSound?
         get() = null
 
-    private val inventory = if (config.inventoryType == InventoryType.CHEST) {
-        Bukkit.createInventory(
+    private val inventory = when {
+        config.inventoryType.isCreatable && config.inventoryType != InventoryType.CHEST ->
+            Bukkit.createInventory(this, config.inventoryType, title)
+
+        else -> Bukkit.createInventory(
             this,
             config.rows.coerceIn(1, 6) * 9,
-            title
-        )
-    } else {
-        Bukkit.createInventory(
-            this,
-            config.inventoryType,
             title
         )
     }

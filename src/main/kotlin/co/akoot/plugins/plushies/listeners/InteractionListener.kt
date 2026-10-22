@@ -1,7 +1,6 @@
 package co.akoot.plugins.plushies.listeners
 
 import co.akoot.plugins.plushies.api.Interactables
-import org.bukkit.entity.Interaction
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPistonExtendEvent
@@ -60,7 +59,6 @@ class InteractionListener : Listener {
             .forEach { destination -> // sick of ts
                 destination.world
                     .getNearbyEntities(BoundingBox.of(destination))
-                    .filterIsInstance<Interaction>()
                     .forEach { interaction ->
                         val interactable = Interactables.find(interaction) ?: return@forEach
 

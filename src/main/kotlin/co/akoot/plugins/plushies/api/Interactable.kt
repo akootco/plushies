@@ -14,6 +14,7 @@ import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.util.BoundingBox
 import org.bukkit.util.Transformation
 import org.joml.AxisAngle4f
 import org.joml.Vector3f
@@ -92,6 +93,8 @@ interface Interactable {
     fun place(event: PlayerInteractEvent): Boolean {
         val support = event.clickedBlock ?: return false
         val item = event.item ?: return false
+
+        if (support.world.getNearbyEntities(BoundingBox.of(support.getRelative(event.blockFace))).any { it.hasPDC(key) }) return false
 
         val y = if (useInteractionPoint) { event.interactionPoint?.y?.minus(support.y) ?: y() } else { y() }
 
