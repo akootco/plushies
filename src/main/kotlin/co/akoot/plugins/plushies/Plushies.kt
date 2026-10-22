@@ -10,6 +10,7 @@ import co.akoot.plugins.plushies.coolstuff.BiomeCompass
 import co.akoot.plugins.plushies.coolstuff.ConfigFurniture
 import co.akoot.plugins.plushies.coolstuff.Cushion
 import co.akoot.plugins.plushies.coolstuff.EverlastRocket
+import co.akoot.plugins.plushies.coolstuff.RubbishBin
 import co.akoot.plugins.plushies.geyser.GeyserRegistrar
 import co.akoot.plugins.plushies.geyser.GeyserUtil.downloadBedrockPack
 import co.akoot.plugins.plushies.listeners.*
@@ -68,6 +69,7 @@ class Plushies : FoxPlugin("plushies") {
 
         Interactables.register(Cushion)
         Interactables.register(BiomeCompass)
+        Interactables.register(RubbishBin)
         ConfigFurniture.loadFurniture()
 
         tradeSource.add(merchantConfig)
