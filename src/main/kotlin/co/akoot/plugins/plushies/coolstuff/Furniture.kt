@@ -130,6 +130,6 @@ private class FurnitureStorage(
 
     override val closeSound: StorageSound?
         get() = ConfigFurniture.config
-            .getString("$path.furniture.container.sound.close")
+            .getString("$path.container.sound.close")
             ?.let { StorageSound(it) }
 }
