@@ -3,6 +3,7 @@ package co.akoot.plugins.plushies.coolstuff
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.extensions.getMeta
 import co.akoot.plugins.bluefox.extensions.getPDC
+import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.extensions.setMeta
 import co.akoot.plugins.plushies.Plushies
 import co.akoot.plugins.plushies.Plushies.Companion.key
