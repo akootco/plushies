@@ -62,17 +62,17 @@ class Plushies : FoxPlugin("plushies") {
 
         registerPlushieRecipes()
 
-        geyser?.let {
-            downloadBedrockPack()
-            GeyserRegistrar()
-        }
-
         Interactables.register(Cushion)
         Interactables.register(BiomeCompass)
         Interactables.register(RubbishBin)
         ConfigFurniture.loadFurniture()
 
         tradeSource.add(merchantConfig)
+
+        geyser?.let {
+            downloadBedrockPack()
+            GeyserRegistrar()
+        }
     }
 
     override fun unload() {

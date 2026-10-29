@@ -3,6 +3,7 @@ package co.akoot.plugins.plushies.geyser
 import co.akoot.plugins.plushies.geyser.GeyserUtil.register
 import co.akoot.plugins.plushies.items.PlushieItems.plushies
 import co.akoot.plugins.plushies.util.Items.customItems
+import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import org.bukkit.Material
 import org.bukkit.inventory.meta.SkullMeta
 import org.geysermc.geyser.api.GeyserApi
@@ -19,25 +20,19 @@ class GeyserRegistrar : EventRegistrar {
 
     fun registerItems(event: GeyserDefineCustomItemsEvent) {
         // register plushies
-        for (key in plushies.sortedBy { it.id }) {
-            val asInt = key.id.toIntOrNull() ?: continue
-            register(event, key.id, asInt, "totem_of_undying")
-            register(event, "${key.id}.st", asInt + 1, "totem_of_undying")
-        }
+
+        for (item in plushies) register(event, item.item(), item.id.lowercase())
 
         // book covers
-        (1..72).forEach { cmd ->
-            register(event, "book.$cmd", cmd, "written_book")
-        }
+        for (int in 1..72) register(
+            event, ItemBuilder.builder(Material.WRITTEN_BOOK)
+                .customModelData(int).build(), "book.$int"
+        )
 
         // everything else
-        for ((material, keys) in customItems.entries.groupBy { it.value.type }) {
-            val sortedItems = keys.filter { it.value.itemMeta?.hasCustomModelData() == true }
-                .sortedBy { it.value.itemMeta.customModelData }
-
-            for (key in sortedItems) {
-                val cmd = key.value.itemMeta.customModelData
-                register(event, key.key, cmd, material.name.lowercase())
+        for ((_, items) in customItems.entries.groupBy { it.value.type }) {
+            for ((key, itemStack) in items) {
+                register(event, itemStack, key)
             }
         }
     }
