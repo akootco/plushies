@@ -3,8 +3,8 @@ package co.akoot.plugins.plushies.coolstuff
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.extensions.getMeta
 import co.akoot.plugins.bluefox.extensions.getPDC
-import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.extensions.setMeta
+import co.akoot.plugins.bluefox.util.parse
 import co.akoot.plugins.plushies.Plushies
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.api.Interactable
@@ -12,29 +12,35 @@ import co.akoot.plugins.plushies.api.Interactables
 import co.akoot.plugins.plushies.api.Storage
 import co.akoot.plugins.plushies.api.openMenu
 import co.akoot.plugins.plushies.util.ItemCreator.createItem
+import io.papermc.paper.datacomponent.DataComponentTypes
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.Sound
+import org.bukkit.Tag
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
-import org.bukkit.util.BoundingBox
 import org.joml.Vector3f
 
-class ConfigFurniture(val id: String) : Interactable {
+class ConfigFurniture(val id: String, private val variant: String? = null) : Interactable {
 
     private val path = "$id.furniture"
 
-    override val key: NamespacedKey = key(id)
+    override val key: NamespacedKey = key(variant?.let { "${it}_$id" } ?: id)
     override val removable = true
     override val pushable = true
 
     override fun item(): ItemStack? =
-        createItem(config, id, key(id)) { Material.POISONOUS_POTATO }?.clone()
+        createItem(config, id, key) { Material.POISONOUS_POTATO }?.apply {
+            variant?.let {
+                setData(
+                    DataComponentTypes.ITEM_MODEL,
+                    key("${it}_$id")
+                )
+            } }?.clone()
 
     override val rotatable = config.getBoolean("$path.rotatable") ?: super.rotatable
     override val placeSound = config.getString("$path.sound.place") ?: super.placeSound
@@ -56,7 +62,7 @@ class ConfigFurniture(val id: String) : Interactable {
             ?.takeIf { it.isCreatable }
             ?: InventoryType.CHEST
 
-    private val title = Component.text(config.getString("$path.container.title") ?: config.getString("$id.itemName") ?: id)
+    private val title = (config.getString("$path.container.title") ?: config.getString("$id.itemName") ?: id).parse()
 
     private val isSeat = config.getBoolean("$path.seat") ?: false
 
@@ -73,7 +79,6 @@ class ConfigFurniture(val id: String) : Interactable {
         val above = clicked.getRelative(BlockFace.UP)
 
         if (event.blockFace != BlockFace.UP || above.type != Material.AIR) return false
-        if (clicked.world.getNearbyEntities(BoundingBox.of(above)).any { it.hasPDC(key) }) return false
 
         when (collision) {
             "half" -> {}
@@ -106,11 +111,35 @@ class ConfigFurniture(val id: String) : Interactable {
         internal val config: FoxConfig =
             Plushies.instance.registerConfig("furniture")
 
+
+        // hate ts but it works
         fun loadFurniture() {
             for (id in config.getKeys()) {
-                val furniture = ConfigFurniture(id)
-                if (furniture.item() == null) continue
-                Interactables.register(furniture)
+                val variants = config.getStringList("$id.variants")
+
+                if (variants.isEmpty()) {
+                    val furniture = ConfigFurniture(id)
+                    if (furniture.item() != null) {
+                        Interactables.register(furniture)
+                    }
+                    continue
+                }
+
+                val types = when {
+                    variants.contains("wood") -> Tag.PLANKS.values.map {
+                        it.name.removeSuffix("_PLANKS").lowercase()
+                    }
+                    variants.contains("stone") -> emptyList()
+                    else -> emptyList()
+                }
+
+                for (variant in types) {
+                    val furnitureVariant = ConfigFurniture(id, variant)
+
+                    if (furnitureVariant.item() != null) {
+                        Interactables.register(furnitureVariant)
+                    }
+                }
             }
         }
     }
