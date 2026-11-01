@@ -3,7 +3,6 @@ package co.akoot.plugins.plushies.geyser
 import co.akoot.plugins.bluefox.util.Text.Companion.asString
 import co.akoot.plugins.bluefox.util.WebUtil
 import co.akoot.plugins.plushies.util.Util.pl
-import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.inventory.ItemStack
 import org.geysermc.geyser.api.GeyserApi
@@ -21,17 +20,21 @@ import java.nio.file.StandardCopyOption
 object GeyserUtil {
 
     fun register(event: GeyserDefineCustomItemsEvent, itemStack: ItemStack, id: String) {
-        if (!itemStack.itemMeta.hasCustomModelDataComponent()) return
+        val meta = itemStack.itemMeta
+        val cmd = meta.customModelDataComponent
+        val itemModel = meta.itemModel
+
+        if (itemModel == null && !meta.hasCustomModelDataComponent()) return
+
         val brOptions = CustomItemBedrockOptions.builder()
             .displayHandheld(Tag.ITEMS_BREAKS_DECORATED_POTS.isTagged(itemStack.type))
             .creativeCategory(CreativeCategory.ITEMS)
             .creativeGroup("custom items")
             .icon(id)
 
-        val cmd = itemStack.itemMeta.customModelDataComponent
         val data = CustomItemDefinition.builder(
             Identifier.of("plushies",id),
-            Identifier.of(itemStack.type.name.lowercase()))
+            Identifier.of(itemModel?.toString() ?: itemStack.type.name.lowercase()))
             .displayName(itemStack.effectiveName().asString())
             .bedrockOptions(brOptions)
             .predicateStrategy(PredicateStrategy.AND)
