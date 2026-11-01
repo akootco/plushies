@@ -31,7 +31,7 @@ class InteractableItemMenu() : ChestMenu() {
 
 object Interactables {
     private val values = mutableMapOf<NamespacedKey, Interactable>()
-    private val items = mutableMapOf<NamespacedKey, ItemStack>()
+    val items = mutableMapOf<NamespacedKey, ItemStack>()
 
     fun register(interactable: Interactable) {
         values[interactable.key] = interactable

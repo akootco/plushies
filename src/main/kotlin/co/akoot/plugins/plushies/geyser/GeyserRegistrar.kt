@@ -1,5 +1,6 @@
 package co.akoot.plugins.plushies.geyser
 
+import co.akoot.plugins.plushies.api.Interactables
 import co.akoot.plugins.plushies.geyser.GeyserUtil.register
 import co.akoot.plugins.plushies.items.PlushieItems.plushies
 import co.akoot.plugins.plushies.util.Items.customItems
@@ -34,6 +35,10 @@ class GeyserRegistrar : EventRegistrar {
             for ((key, itemStack) in items) {
                 register(event, itemStack, key)
             }
+        }
+
+        for (item in Interactables.items) {
+            register(event, item.value, item.key.value())
         }
     }
 

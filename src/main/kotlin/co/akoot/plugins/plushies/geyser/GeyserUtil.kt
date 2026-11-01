@@ -2,6 +2,7 @@ package co.akoot.plugins.plushies.geyser
 
 import co.akoot.plugins.bluefox.util.Text.Companion.asString
 import co.akoot.plugins.bluefox.util.WebUtil
+import co.akoot.plugins.plushies.Plushies
 import co.akoot.plugins.plushies.util.Util.pl
 import org.bukkit.Tag
 import org.bukkit.inventory.ItemStack
@@ -9,6 +10,7 @@ import org.geysermc.geyser.api.GeyserApi
 import org.geysermc.geyser.api.event.lifecycle.GeyserDefineCustomItemsEvent
 import org.geysermc.geyser.api.item.custom.v2.CustomItemBedrockOptions
 import org.geysermc.geyser.api.item.custom.v2.CustomItemDefinition
+import org.geysermc.geyser.api.item.custom.v2.CustomItemDefinitionRegisterException
 import org.geysermc.geyser.api.predicate.PredicateStrategy
 import org.geysermc.geyser.api.predicate.item.ItemMatchPredicate
 import org.geysermc.geyser.api.predicate.item.ItemRangeDispatchPredicate
@@ -52,7 +54,11 @@ object GeyserUtil {
             }
             .build()
 
-        event.register(Identifier.of(itemStack.type.name.lowercase()), data)
+        try {
+            event.register(Identifier.of(itemStack.type.name.lowercase()), data)
+        } catch (e: CustomItemDefinitionRegisterException) {
+            Plushies.instance.logger.warning(e.message)
+        }
     }
 
     fun downloadBedrockPack() {
