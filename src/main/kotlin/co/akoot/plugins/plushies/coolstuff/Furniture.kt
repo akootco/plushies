@@ -15,7 +15,6 @@ import co.akoot.plugins.plushies.util.ItemCreator.createItem
 import io.papermc.paper.datacomponent.DataComponentTypes
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.Tag
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Entity
@@ -25,22 +24,14 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.joml.Vector3f
 
-class ConfigFurniture(val id: String, private val variant: String? = null) : Interactable {
+class ConfigFurniture(val id: String) : Interactable {
 
     private val path = "$id.furniture"
-
-    override val key: NamespacedKey = key(variant?.let { "${it}_$id" } ?: id)
+    override val key = key(id)
     override val removable = true
     override val pushable = true
 
-    override fun item(): ItemStack? =
-        createItem(config, id, key) { Material.POISONOUS_POTATO }?.apply {
-            variant?.let {
-                setData(
-                    DataComponentTypes.ITEM_MODEL,
-                    key("${it}_$id")
-                )
-            } }?.clone()
+    override fun item(): ItemStack? = createItem(config, id, key) { Material.POISONOUS_POTATO }?.clone()
 
     override val rotatable = config.getBoolean("$path.rotatable") ?: super.rotatable
     override val placeSound = config.getString("$path.sound.place") ?: super.placeSound
@@ -111,35 +102,28 @@ class ConfigFurniture(val id: String, private val variant: String? = null) : Int
         internal val config: FoxConfig =
             Plushies.instance.registerConfig("furniture")
 
-
-        // hate ts but it works
         fun loadFurniture() {
             for (id in config.getKeys()) {
                 val variants = config.getStringList("$id.variants")
 
-                if (variants.isEmpty()) {
-                    val furniture = ConfigFurniture(id)
-                    if (furniture.item() != null) {
-                        Interactables.register(furniture)
-                    }
-                    continue
-                }
-
                 val types = when {
-                    variants.contains("wood") -> Tag.PLANKS.values.map {
-                        it.name.removeSuffix("_PLANKS").lowercase()
-                    }
-                    variants.contains("stone") -> emptyList()
+                    variants.contains("wood") -> Tag.PLANKS.values.map { it.name.removeSuffix("_PLANKS").lowercase() }
+                    variants.contains("stone") -> Tag.BASE_STONE_OVERWORLD.values.map { it.name.lowercase() }
                     else -> emptyList()
                 }
 
-                for (variant in types) {
-                    val furnitureVariant = ConfigFurniture(id, variant)
+                val furniture = ConfigFurniture(id)
+                val item = furniture.item() ?: continue
+                Interactables.register(furniture)
 
-                    if (furnitureVariant.item() != null) {
-                        Interactables.register(furnitureVariant)
+                for (variant in types) {
+                    val name = key("${variant}_$id")
+                    Interactables.items[name] = item.clone().apply {
+                        setData(DataComponentTypes.ITEM_MODEL, name)
                     }
                 }
+                //delete base
+                if (types.isNotEmpty()) Interactables.items.remove(furniture.key)
             }
         }
     }
