@@ -9,6 +9,7 @@ import co.akoot.plugins.plushies.Plushies
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.api.Interactable
 import co.akoot.plugins.plushies.api.Interactables
+import co.akoot.plugins.plushies.api.Sound
 import co.akoot.plugins.plushies.api.Storage
 import co.akoot.plugins.plushies.api.openMenu
 import co.akoot.plugins.plushies.util.ItemCreator.createItem
@@ -34,8 +35,9 @@ class ConfigFurniture(val id: String) : Interactable {
     override fun item(): ItemStack? = createItem(config, id, key) { Material.POISONOUS_POTATO }?.clone()
 
     override val rotatable = config.getBoolean("$path.rotatable") ?: super.rotatable
-    override val placeSound = config.getString("$path.sound.place") ?: super.placeSound
-    override val breakSound = config.getString("$path.sound.break") ?: super.breakSound
+
+    override val placeSound = sound("$path.sound.place") ?: super.placeSound
+    override val breakSound = sound("$path.sound.break") ?: super.breakSound
 
     private val width = config.getDouble("$path.width")?.toFloat() ?: super.width()
     private val height = config.getDouble("$path.height")?.toFloat() ?: super.height()
@@ -137,15 +139,14 @@ private class FurnitureStorage(
     inventoryType: InventoryType
 ) : Storage(title, "storage", StorageConfig(inventoryType, rows)) {
 
-    override val openSound get() = sound("open")
-    override val closeSound get() = sound("close")
+    override val openSound get() = sound("$path.container.sound.open")
+    override val closeSound get() = sound("$path.container.sound.close")
+}
 
-    private fun sound(name: String): StorageSound? = with(ConfigFurniture.config) {
-        val soundPath = "$path.container.sound.$name"
-        StorageSound(
-            getString("$soundPath.sound") ?: return null,
-            getDouble("$soundPath.pitch")?.toFloat() ?: 1f,
-            getDouble("$soundPath.volume")?.toFloat() ?: 1f
-        )
-    }
+private fun sound(path: String): Sound? = with(ConfigFurniture.config) {
+    Sound(
+        getString("$path.sound") ?: return null,
+        getDouble("$path.pitch")?.toFloat() ?: 1f,
+        getDouble("$path.volume")?.toFloat() ?: 1f
+    )
 }

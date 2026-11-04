@@ -29,6 +29,12 @@ import kotlin.math.roundToInt
 fun Player.owns(entity: Entity): Boolean =
     entity.getPDC<UUID>(key("owner")) == uniqueId
 
+data class Sound(
+    val sound: String,
+    val pitch: Float = 1f,
+    val volume: Float = 1f,
+)
+
 class InteractableItemMenu() : ChestMenu() {
     override val title = Component.text("Interactables")
     override val items = Interactables.items().toList()
@@ -70,10 +76,10 @@ interface Interactable {
     val cancelPlacement: Boolean
         get() = false
 
-    val placeSound: String?
+    val placeSound: Sound?
         get() = null
 
-    val breakSound: String?
+    val breakSound: Sound?
         get() = null
 
     fun scale(): Float = 1f
@@ -136,9 +142,9 @@ interface Interactable {
         placeSound?.let {
             display.world.playSound(
                 display.location,
-                it,
-                1f,
-                1f
+                it.sound,
+                it.volume,
+                it.pitch
             )
         }
 
@@ -148,15 +154,13 @@ interface Interactable {
     }
 
     fun remove(entity: Entity, damager: Entity? = null): Boolean {
-        if (setOwner && (damager !is Player || !damager.owns(entity))) return false
+        if (setOwner && (damager !is Player || (!damager.isOp && !damager.owns(entity)))) return false
 
         val display = entity.vehicle
         val location = entity.location
         val world = entity.world
 
-        breakSound?.let {
-            world.playSound(location, it, 1f, 1f)
-        }
+        breakSound?.let { world.playSound(location, it.sound, it.volume, it.pitch) }
 
         if (display is ItemDisplay) {
             world.dropItemNaturally(
@@ -172,7 +176,7 @@ interface Interactable {
         return true
     }
 
-    fun interact(player: Player) {}
+    fun interact(player: Player) { player.swingMainHand() }
 
     fun interact(
         entity: Entity,

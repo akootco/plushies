@@ -4,6 +4,7 @@ import co.akoot.plugins.bluefox.extensions.isSurventure
 import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.api.Interactable
+import co.akoot.plugins.plushies.api.Sound
 import co.akoot.plugins.plushies.util.Items.applyDye
 import co.akoot.plugins.plushies.util.Recipes.getInput
 import co.akoot.plugins.plushies.util.builders.CraftRecipe
@@ -43,7 +44,7 @@ object Cushion : Interactable {
         }
     }
 
-    override val breakSound = "block.wool.break"
+    override val breakSound = Sound("block.wool.break")
 
     override fun interact(entity: Entity, player: Player) {
         val item = player.inventory.itemInMainHand

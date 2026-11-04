@@ -36,18 +36,12 @@ abstract class Storage(
         val openSlots: Set<Int>? = null
     )
 
-    data class StorageSound(
-        val sound: String,
-        val pitch: Float = 1f,
-        val volume: Float = 1f,
-    )
-
     protected abstract val entity: Entity
 
-    open val openSound: StorageSound?
+    open val openSound: Sound?
         get() = null
 
-    open val closeSound: StorageSound?
+    open val closeSound: Sound?
         get() = null
 
     open val static: Boolean

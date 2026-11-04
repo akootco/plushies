@@ -5,6 +5,7 @@ import co.akoot.plugins.bluefox.extensions.setMeta
 import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.api.Interactable
+import co.akoot.plugins.plushies.api.Sound
 import co.akoot.plugins.plushies.api.Storage
 import co.akoot.plugins.plushies.api.openMenu
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
@@ -25,12 +26,12 @@ object RubbishBin : Interactable {
     override val rotatable = true
     override fun width() = 0.8f
     override fun height() = 1f
-    override val placeSound = "block.decorated_pot.place"
-    override val breakSound = "block.decorated_pot.break"
+    override val placeSound = Sound("block.decorated_pot.place")
+    override val breakSound = Sound("block.decorated_pot.break")
     override fun item() = ItemBuilder.builder(Material.POISONOUS_POTATO)
         .itemName("Rubbish Bin".text)
         .stackSize(1)
-        .itemModel("plushies:rubbish_bin")
+        .itemModel(key.toString())
         .unsetData(DataComponentTypes.CONSUMABLE)
         .unsetData(DataComponentTypes.FOOD)
         .pdc(key)
@@ -61,12 +62,12 @@ private class RubbishBinGUI(override val entity: Entity) : Storage(
     save = false
 ) {
 
-    override val openSound = StorageSound(
+    override val openSound = Sound(
         "block.copper_chest.open",
         2f
     )
 
-    override val closeSound = StorageSound(
+    override val closeSound = Sound(
         "block.copper_chest.close",
         2f
     )
