@@ -13,6 +13,7 @@ import co.akoot.plugins.bluefox.util.zip
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.api.Interactable
 import co.akoot.plugins.plushies.api.Sound
+import co.akoot.plugins.plushies.util.Util.isDefault
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.dialog.Dialog
@@ -46,7 +47,10 @@ object ATM : Interactable {
     override val placeSound = Sound("block.iron.place")
 
     override fun interact(entity: Entity, player: Player) {
-        player.showDialog(mainMenu())
+
+        if (player.world.isDefault) player.showDialog(mainMenu())
+        else player.sendActionBar("ATM not allowed in this world!".error)
+
         super.interact(player)
     }
 
