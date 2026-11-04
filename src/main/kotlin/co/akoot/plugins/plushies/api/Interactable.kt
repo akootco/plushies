@@ -5,14 +5,19 @@ import co.akoot.plugins.bluefox.extensions.hasPDC
 import co.akoot.plugins.bluefox.extensions.isSurventure
 import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.plushies.Plushies.Companion.key
+import co.akoot.plugins.plushies.api.Interactables.hasInteractable
 import co.akoot.plugins.plushies.util.createHitbox
 import co.akoot.plugins.plushies.util.spawnItemDisplay
+import io.papermc.paper.datacomponent.DataComponentTypes
 import net.kyori.adventure.text.Component
 import org.bukkit.NamespacedKey
+import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.Player
+import org.bukkit.event.Event
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Transformation
@@ -44,6 +49,9 @@ object Interactables {
     fun find(entity: Entity): Interactable? =
         values.values.firstOrNull { entity.hasPDC(it.key) }
 
+    fun Block.hasInteractable(): Boolean =
+        world.getNearbyEntities(BoundingBox.of(this)) { find(it) != null }.isNotEmpty()
+
     fun items(): Collection<ItemStack> = items.values
 }
 
@@ -70,9 +78,9 @@ interface Interactable {
 
     fun scale(): Float = 1f
 
-    fun width(): Float = 1.001f
+    fun width(): Float = 1f
 
-    fun height(): Float = 1.001f
+    fun height(): Float = 1f
 
     fun translation(): Vector3f = Vector3f(0f)
 
@@ -91,10 +99,14 @@ interface Interactable {
         get() = false
 
     fun place(event: PlayerInteractEvent): Boolean {
+        if (event.hand != EquipmentSlot.HAND) return false
         val support = event.clickedBlock ?: return false
         val item = event.item ?: return false
 
-        if (support.world.getNearbyEntities(BoundingBox.of(support.getRelative(event.blockFace))).any { it.hasPDC(key) }) return false
+        if (support.getRelative(event.blockFace).hasInteractable()) return false
+
+        event.setUseInteractedBlock(Event.Result.DENY)
+        event.setUseItemInHand(Event.Result.DENY)
 
         val y = if (useInteractionPoint) { event.interactionPoint?.y?.minus(support.y) ?: y() } else { y() }
 
@@ -149,7 +161,9 @@ interface Interactable {
         if (display is ItemDisplay) {
             world.dropItemNaturally(
                 location.add(0.0, 0.8, 0.0),
-                display.itemStack.clone()
+                display.itemStack.clone().apply {
+                    unsetData(DataComponentTypes.CUSTOM_MODEL_DATA)
+                }
             )
         }
 

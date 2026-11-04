@@ -1,9 +1,11 @@
 package co.akoot.plugins.plushies.listeners
 
 import co.akoot.plugins.plushies.api.Interactables
+import co.akoot.plugins.plushies.api.Interactables.hasInteractable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPistonExtendEvent
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -38,6 +40,11 @@ class InteractionListener : Listener {
         val interactable = Interactables.find(rightClicked) ?: return
 
         interactable.interact(rightClicked, player)
+    }
+
+    @EventHandler
+    fun BlockPlaceEvent.blockPlace() {
+        if (blockPlaced.hasInteractable()) isCancelled = true
     }
 
     @EventHandler

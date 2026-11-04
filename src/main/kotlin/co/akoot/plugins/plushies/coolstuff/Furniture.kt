@@ -137,13 +137,15 @@ private class FurnitureStorage(
     inventoryType: InventoryType
 ) : Storage(title, "storage", StorageConfig(inventoryType, rows)) {
 
-    override val openSound: StorageSound?
-        get() = ConfigFurniture.config
-            .getString("$path.container.sound.open")
-            ?.let { StorageSound(it) }
+    override val openSound get() = sound("open")
+    override val closeSound get() = sound("close")
 
-    override val closeSound: StorageSound?
-        get() = ConfigFurniture.config
-            .getString("$path.container.sound.close")
-            ?.let { StorageSound(it) }
+    private fun sound(name: String): StorageSound? = with(ConfigFurniture.config) {
+        val soundPath = "$path.container.sound.$name"
+        StorageSound(
+            getString("$soundPath.sound") ?: return null,
+            getDouble("$soundPath.pitch")?.toFloat() ?: 1f,
+            getDouble("$soundPath.volume")?.toFloat() ?: 1f
+        )
+    }
 }

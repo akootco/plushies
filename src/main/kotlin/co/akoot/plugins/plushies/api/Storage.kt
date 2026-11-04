@@ -5,10 +5,12 @@ import co.akoot.plugins.bluefox.extensions.setPDC
 import co.akoot.plugins.bluefox.util.runLater
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
+import io.papermc.paper.datacomponent.DataComponentTypes
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Entity
+import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
@@ -18,10 +20,7 @@ import org.bukkit.inventory.ItemStack
 
 fun Player.openMenu(menu: Storage) {
     openInventory(menu.getInventory())
-
-    menu.openSound?.let {
-        playSound(location, it.sound, it.volume,it.pitch)
-    }
+    menu.onOpen(this)
 }
 
 abstract class Storage(
@@ -51,6 +50,9 @@ abstract class Storage(
     open val closeSound: StorageSound?
         get() = null
 
+    open val static: Boolean
+        get() = false
+
     private val inventory = when {
         config.inventoryType.isCreatable && config.inventoryType != InventoryType.CHEST ->
             Bukkit.createInventory(this, config.inventoryType, title)
@@ -79,13 +81,19 @@ abstract class Storage(
         event.isCancelled = config.openSlots?.let { event.rawSlot !in it } ?: false
     }
 
+    open fun onOpen(player: Player) {
+        openSound?.let { player.playSound(player.location, it.sound, it.volume, it.pitch) }
+        if (!static) setState("open")
+    }
+
     override fun onClose(event: InventoryCloseEvent) {
         closeSound?.let {
-            event.player.world.playSound(event.player.location, it.sound, it.volume,it.pitch)
+            event.player.world.playSound(event.player.location, it.sound, it.volume, it.pitch)
         }
         if (save) {
             runLater {
                 if (inventory.viewers.isNotEmpty()) return@runLater
+                if (!static) setState(if (inventory.contents.any { it != null && !it.isEmpty }) "full" else null)
 
                 entity.setPDC(
                     key(key),
@@ -123,5 +131,18 @@ abstract class Storage(
                     item
                 )
             }
+    }
+
+    private fun setState(state: String?) {
+        val display = entity.vehicle as? ItemDisplay ?: return
+
+        val item = ItemBuilder.builder(display.itemStack)
+            .apply {
+                if (state == null) unsetData(DataComponentTypes.CUSTOM_MODEL_DATA)
+                else customModelData(state)
+            }
+            .build()
+
+        display.setItemStack(item)
     }
 }
