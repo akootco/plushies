@@ -34,7 +34,7 @@ class ConfigFurniture(val id: String) : Interactable {
 
     override fun item(): ItemStack? = createItem(config, id, key) { Material.POISONOUS_POTATO }?.clone()
 
-    override val rotatable = config.getBoolean("$path.rotatable") ?: super.rotatable
+    override fun rotation() = config.getDouble("$path.rotation")?.toFloat() ?: super.rotation()
 
     override val placeSound = sound("$path.sound.place") ?: super.placeSound
     override val breakSound = sound("$path.sound.break") ?: super.breakSound

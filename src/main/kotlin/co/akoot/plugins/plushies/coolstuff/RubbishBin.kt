@@ -23,7 +23,7 @@ object RubbishBin : Interactable {
     override val key = key("rubbish_bin")
     override fun translation() = Vector3f(0f, 0.5f, 0f)
     override val removable = true
-    override val rotatable = true
+    override fun rotation() = 45f
     override fun width() = 0.8f
     override fun height() = 1f
     override val placeSound = Sound("block.decorated_pot.place")

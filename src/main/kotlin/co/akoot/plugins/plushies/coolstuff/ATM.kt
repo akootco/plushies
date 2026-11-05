@@ -31,7 +31,7 @@ object ATM : Interactable {
     override fun translation() = Vector3f(0f, 0.5f, 0f)
     override val cancelPlacement = true
     override val removable = true
-    override val rotatable = true
+    override fun rotation() = 90f
     override val setOwner = true
 
     override fun item() = ItemBuilder.builder(Material.POISONOUS_POTATO)

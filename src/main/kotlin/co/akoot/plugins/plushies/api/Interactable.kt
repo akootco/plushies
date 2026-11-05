@@ -101,8 +101,7 @@ interface Interactable {
     val pushable: Boolean
         get() = false
 
-    val rotatable: Boolean
-        get() = false
+    fun rotation(): Float = 0f
 
     fun place(event: PlayerInteractEvent): Boolean {
         if (event.hand != EquipmentSlot.HAND) return false
@@ -116,11 +115,9 @@ interface Interactable {
 
         val y = if (useInteractionPoint) { event.interactionPoint?.y?.minus(support.y) ?: y() } else { y() }
 
-        val rotation = if (rotatable)
-            Math.toRadians(
-                -((event.player.yaw / 45f).roundToInt() * 45f + 180f).toDouble()
-            ).toFloat()
-        else 0f
+        val rotation = Math.toRadians(
+            -((event.player.yaw / rotation()).roundToInt() * rotation() + 180f).toDouble()
+        ).toFloat()
 
         val display = spawnItemDisplay(
             support.location.add(0.5, y, 0.5),
