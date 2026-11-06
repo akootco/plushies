@@ -67,18 +67,19 @@ class ConfigFurniture(val id: String) : Interactable {
             }
 
 
-    override fun place(event: PlayerInteractEvent): Boolean {
-        val clicked = event.clickedBlock ?: return false
+    override fun placeEntity(event: PlayerInteractEvent): Entity? {
+        val clicked = event.clickedBlock ?: return null
         val above = clicked.getRelative(BlockFace.UP)
 
-        if (event.blockFace != BlockFace.UP || above.type != Material.AIR) return false
+        if (event.blockFace != BlockFace.UP || above.type != Material.AIR) return null
 
         when (collision) {
             "half" -> {}
             "full" -> {}
         }
 
-        return super.place(event)
+        val hitbox = super.placeEntity(event) ?: return null
+        return hitbox
     }
 
     override fun interact(entity: Entity, player: Player) {
@@ -89,7 +90,7 @@ class ConfigFurniture(val id: String) : Interactable {
             isSeat && entity.passengers.isEmpty() -> {
                 entity.addPassenger(player)
                 val rotation = entity.getPDC<Float>(key("rotation")) ?: 0f
-                player.setRotation(Math.toDegrees(-rotation.toDouble()).toFloat(), 1f)
+                player.setRotation(rotation, 1f)
             }
         }
     }

@@ -103,36 +103,37 @@ interface Interactable {
 
     fun rotation(): Float = 0f
 
-    fun place(event: PlayerInteractEvent): Boolean {
-        if (event.hand != EquipmentSlot.HAND) return false
-        val support = event.clickedBlock ?: return false
-        val item = event.item ?: return false
+    fun place(event: PlayerInteractEvent): Boolean = placeEntity(event) != null
 
-        if (support.getRelative(event.blockFace).hasInteractable()) return false
+    fun placeEntity(event: PlayerInteractEvent): Entity? {
+        if (event.hand != EquipmentSlot.HAND) return null
+        val support = event.clickedBlock ?: return null
+        val item = event.item ?: return null
+
+        if (support.getRelative(event.blockFace).hasInteractable()) return null
 
         event.setUseInteractedBlock(Event.Result.DENY)
         event.setUseItemInHand(Event.Result.DENY)
 
         val y = if (useInteractionPoint) { event.interactionPoint?.y?.minus(support.y) ?: y() } else { y() }
-
-        val rotation = Math.toRadians(
-            -((event.player.yaw / rotation()).roundToInt() * rotation() + 180f).toDouble()
-        ).toFloat()
+        val rotation = (event.player.yaw / rotation()).roundToInt() * rotation() + 180f
 
         val display = spawnItemDisplay(
             support.location.add(0.5, y, 0.5),
             item
         ) {
+            setRotation(rotation, 0f)
             transformation = Transformation(
                 translation(),
-                AxisAngle4f(rotation, 0f, 1f, 0f),
+                AxisAngle4f(),
                 Vector3f(scale()),
                 AxisAngle4f()
             )
         }
 
-        display.createHitbox(this).apply {
+        val hitbox = display.createHitbox(this).apply {
             setPDC(key("rotation"), rotation)
+            setRotation(rotation, 0f)
             if (setOwner) setPDC(key("owner"), event.player.uniqueId)
         }
 
@@ -147,7 +148,7 @@ interface Interactable {
 
         event.player.swingMainHand()
         if (event.player.isSurventure) item.amount--
-        return true
+        return hitbox
     }
 
     fun remove(entity: Entity, damager: Entity? = null): Boolean {
