@@ -7,17 +7,18 @@ import co.akoot.plugins.bluefox.extensions.setMeta
 import co.akoot.plugins.bluefox.util.parse
 import co.akoot.plugins.plushies.Plushies
 import co.akoot.plugins.plushies.Plushies.Companion.key
-import co.akoot.plugins.plushies.api.Interactable
-import co.akoot.plugins.plushies.api.Interactables
-import co.akoot.plugins.plushies.api.Sound
-import co.akoot.plugins.plushies.api.Storage
-import co.akoot.plugins.plushies.api.openMenu
+import co.akoot.plugins.plushies.api.*
 import co.akoot.plugins.plushies.util.ItemCreator.createItem
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.ResolvableProfile
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Tag
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Skull
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
@@ -66,17 +67,13 @@ class ConfigFurniture(val id: String) : Interactable {
                 it.loadContents()
             }
 
-
     override fun placeEntity(event: PlayerInteractEvent): Entity? {
         val clicked = event.clickedBlock ?: return null
         val above = clicked.getRelative(BlockFace.UP)
 
         if (event.blockFace != BlockFace.UP || above.type != Material.AIR) return null
 
-        when (collision) {
-            "half" -> {}
-            "full" -> {}
-        }
+        collision?.let { above.location.addCollision(it) }
 
         val hitbox = super.placeEntity(event) ?: return null
         return hitbox
@@ -109,11 +106,9 @@ class ConfigFurniture(val id: String) : Interactable {
             for (id in config.getKeys()) {
                 val variants = config.getStringList("$id.variants")
 
-                val types = when {
-                    variants.contains("wood") -> Tag.PLANKS.values.map { it.name.removeSuffix("_PLANKS").lowercase() }
-                    variants.contains("stone") -> Tag.BASE_STONE_OVERWORLD.values.map { it.name.lowercase() }
-                    else -> emptyList()
-                }
+                val types = mutableListOf<String>()
+                if ("wood" in variants) types += Tag.PLANKS.values.map { it.name.removeSuffix("_PLANKS").lowercase() }
+                if ("stone" in variants) types += Tag.BASE_STONE_OVERWORLD.values.map { it.name.lowercase() }
 
                 val furniture = ConfigFurniture(id)
                 val item = furniture.item() ?: continue
@@ -150,4 +145,27 @@ private fun sound(path: String): Sound? = with(ConfigFurniture.config) {
         getDouble("$path.pitch")?.toFloat() ?: 1f,
         getDouble("$path.volume")?.toFloat() ?: 1f
     )
+}
+
+private fun Location.addCollision(type: String) {
+    when (type) {
+        "half" -> halfBlock()
+        "full" -> {}
+    }
+}
+
+private fun Location.halfBlock() {
+    val state = Bukkit.createBlockData(Material.PLAYER_HEAD)
+        .createBlockState()
+        .copy(this) as Skull
+
+    state.profile = ResolvableProfile.resolvableProfile()
+        .skinPatch(
+            ResolvableProfile.SkinPatch.skinPatch()
+                .body(Key.key("block/beetroots_stage0"))
+                .build()
+        )
+        .build()
+
+    state.update(true, false)
 }

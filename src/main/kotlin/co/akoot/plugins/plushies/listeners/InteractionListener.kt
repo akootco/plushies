@@ -4,6 +4,7 @@ import co.akoot.plugins.plushies.api.Interactables
 import co.akoot.plugins.plushies.api.Interactables.hasInteractable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPistonExtendEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageByEntityEvent
@@ -44,7 +45,12 @@ class InteractionListener : Listener {
 
     @EventHandler
     fun BlockPlaceEvent.blockPlace() {
-        if (blockPlaced.hasInteractable()) isCancelled = true
+        isCancelled = blockPlaced.hasInteractable()
+    }
+
+    @EventHandler
+    fun BlockBreakEvent.blockBreak() {
+        isCancelled = block.hasInteractable()
     }
 
     @EventHandler

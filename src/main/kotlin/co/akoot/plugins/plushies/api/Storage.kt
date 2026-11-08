@@ -121,7 +121,7 @@ abstract class Storage(
             .filterNot { it.isSimilar(FILLER) }
             .forEach { item ->
                 entity.world.dropItemNaturally(
-                    entity.location.clone().add(0.0, 0.5, 0.0),
+                    entity.location.apply { y = entity.boundingBox.maxY },
                     item
                 )
             }
