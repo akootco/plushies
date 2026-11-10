@@ -132,7 +132,6 @@ interface Interactable {
         }
 
         val hitbox = display.createHitbox(this).apply {
-            setPDC(key("rotation"), rotation)
             setRotation(rotation, 0f)
             if (setOwner) setPDC(key("owner"), event.player.uniqueId)
         }

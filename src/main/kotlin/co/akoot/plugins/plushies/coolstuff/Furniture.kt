@@ -2,7 +2,6 @@ package co.akoot.plugins.plushies.coolstuff
 
 import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.extensions.getMeta
-import co.akoot.plugins.bluefox.extensions.getPDC
 import co.akoot.plugins.bluefox.extensions.setMeta
 import co.akoot.plugins.bluefox.util.parse
 import co.akoot.plugins.plushies.Plushies
@@ -86,8 +85,7 @@ class ConfigFurniture(val id: String) : Interactable {
 
             isSeat && entity.passengers.isEmpty() -> {
                 entity.addPassenger(player)
-                val rotation = entity.getPDC<Float>(key("rotation")) ?: 0f
-                player.setRotation(rotation, 1f)
+                player.setRotation(entity.yaw, 1f)
             }
         }
     }
