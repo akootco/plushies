@@ -181,7 +181,9 @@ interface Interactable {
             world.dropItemNaturally(
                 location.add(0.0, 0.8, 0.0),
                 display.itemStack.clone().apply {
-                    unsetData(DataComponentTypes.CUSTOM_MODEL_DATA)
+                    itemMeta.itemModel?.let {
+                        unsetData(DataComponentTypes.CUSTOM_MODEL_DATA)
+                    }
                 }
             )
         }
