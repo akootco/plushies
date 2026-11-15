@@ -2,6 +2,7 @@ package co.akoot.plugins.plushies.listeners
 
 import co.akoot.plugins.plushies.api.Interactables
 import co.akoot.plugins.plushies.api.Interactables.hasInteractable
+import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
@@ -22,15 +23,14 @@ class InteractionListener : Listener {
 
         val interactable = Interactables.find(item ?: return) ?: return
 
-        if (!interactable.placeable) {
+        if (blockFace !in interactable.placeable.faces) {
             interactable.interact(player)
-            isCancelled = true
             return
         }
 
-        if (isCancelled) return
+        setUseInteractedBlock(Event.Result.DENY)
+        setUseItemInHand(Event.Result.DENY)
 
-        isCancelled = interactable.cancelPlacement
         interactable.place(this)
     }
 

@@ -4,6 +4,7 @@ import co.akoot.plugins.bluefox.api.FoxConfig
 import co.akoot.plugins.bluefox.extensions.getMeta
 import co.akoot.plugins.bluefox.extensions.setMeta
 import co.akoot.plugins.bluefox.util.parse
+import co.akoot.plugins.bluefox.util.runLater
 import co.akoot.plugins.plushies.Plushies
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.api.*
@@ -16,7 +17,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Tag
-import org.bukkit.block.BlockFace
 import org.bukkit.block.Skull
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
@@ -31,6 +31,7 @@ class ConfigFurniture(val id: String) : Interactable {
     override val key = key(id)
     override val removable = true
     override val pushable = true
+    override val placeable: Placement = config.getEnum<Placement>("$path.placement") ?: Placement.ALL
 
     override fun item(): ItemStack? = createItem(config, id, key) { Material.POISONOUS_POTATO }?.clone()
 
@@ -67,21 +68,17 @@ class ConfigFurniture(val id: String) : Interactable {
             }
 
     override fun placeEntity(event: PlayerInteractEvent): Entity? {
-        val clicked = event.clickedBlock ?: return null
-        val above = clicked.getRelative(BlockFace.UP)
-
-        if (event.blockFace != BlockFace.UP || above.type != Material.AIR) return null
-
-        collision?.let { above.location.addCollision(it) }
-
         val hitbox = super.placeEntity(event) ?: return null
+        collision?.let { runLater {hitbox.location.addCollision(it) } }
         return hitbox
     }
 
     override fun interact(entity: Entity, player: Player) {
         when {
-            isContainer && (!isSeat || player.isSneaking) ->
+            isContainer && (!isSeat || player.isSneaking) -> {
+                player.swingMainHand()
                 player.openMenu(storageOf(entity))
+            }
 
             isSeat && entity.passengers.isEmpty() -> {
                 entity.addPassenger(player)

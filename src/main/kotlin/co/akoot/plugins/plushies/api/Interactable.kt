@@ -11,7 +11,9 @@ import co.akoot.plugins.plushies.util.spawnItemDisplay
 import io.papermc.paper.datacomponent.DataComponentTypes
 import net.kyori.adventure.text.Component
 import org.bukkit.NamespacedKey
+import org.bukkit.Tag
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.entity.Entity
 import org.bukkit.entity.ItemDisplay
 import org.bukkit.entity.Player
@@ -34,6 +36,22 @@ data class Sound(
     val pitch: Float = 1f,
     val volume: Float = 1f,
 )
+
+enum class Placement(val faces: Set<BlockFace>) {
+    NONE(emptySet()),
+
+    FLOOR(setOf(BlockFace.UP)),
+    CEILING(setOf(BlockFace.DOWN)),
+
+    WALLS(setOf(
+        BlockFace.NORTH,
+        BlockFace.SOUTH,
+        BlockFace.EAST,
+        BlockFace.WEST
+    )),
+
+    ALL(FLOOR.faces + CEILING.faces + WALLS.faces)
+}
 
 class InteractableItemMenu() : ChestMenu() {
     override val title = Component.text("Interactables")
@@ -70,8 +88,8 @@ interface Interactable {
     val setOwner: Boolean
         get() = false
 
-    val placeable: Boolean
-        get() = true
+    val placeable: Placement
+        get() = Placement.ALL
 
     val cancelPlacement: Boolean
         get() = false
@@ -93,7 +111,7 @@ interface Interactable {
     val useInteractionPoint: Boolean
         get() = false
 
-    fun y(): Double = 1.0
+    fun y(): Double = 0.0
 
     val removable: Boolean
         get() = false
@@ -107,10 +125,10 @@ interface Interactable {
 
     fun placeEntity(event: PlayerInteractEvent): Entity? {
         if (event.hand != EquipmentSlot.HAND) return null
-        val support = event.clickedBlock ?: return null
+        val support = event.clickedBlock?.getRelative(event.blockFace) ?: return null
         val item = event.item ?: return null
 
-        if (support.getRelative(event.blockFace).hasInteractable()) return null
+        if (support.getRelative(event.blockFace).hasInteractable() || !Tag.REPLACEABLE.isTagged(support.type)) return null
 
         event.setUseInteractedBlock(Event.Result.DENY)
         event.setUseItemInHand(Event.Result.DENY)
@@ -173,7 +191,7 @@ interface Interactable {
         return true
     }
 
-    fun interact(player: Player) { player.swingMainHand() }
+    fun interact(player: Player) { }
 
     fun interact(
         entity: Entity,

@@ -8,6 +8,7 @@ import co.akoot.plugins.bluefox.util.*
 import co.akoot.plugins.bluefox.util.Text.Companion.plus
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.api.Interactable
+import co.akoot.plugins.plushies.api.Placement
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.LodestoneTracker
@@ -22,7 +23,7 @@ import org.bukkit.entity.Player
 
 object BiomeCompass : Interactable {
     override val key = key("biomefinder")
-    override val placeable = false
+    override val placeable = Placement.NONE
 
     override fun item() = ItemBuilder.builder(Material.COMPASS)
         .itemName("Nature's Compass".text)
