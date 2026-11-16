@@ -40,9 +40,9 @@ class ConfigFurniture(val id: String) : Interactable {
     override val placeSound = sound("$path.sound.place") ?: super.placeSound
     override val breakSound = sound("$path.sound.break") ?: super.breakSound
 
-    private val width = config.getDouble("$path.width")?.toFloat() ?: super.width()
-    private val height = config.getDouble("$path.height")?.toFloat() ?: super.height()
     private val collision = config.getString("$path.collision")
+    private val width = if (collision == "full") 0.99f else config.getDouble("$path.width")?.toFloat() ?: super.width()
+    private val height = if (collision == "full") 0.99f else config.getDouble("$path.height")?.toFloat() ?: super.height()
 
     override fun translation() = Vector3f(0f,0.5f,0f)
     override fun width() = width
@@ -145,7 +145,7 @@ private fun sound(path: String): Sound? = with(ConfigFurniture.config) {
 private fun Location.addCollision(type: String) {
     when (type) {
         "half" -> halfBlock()
-        "full" -> {}
+        "full" -> block.type = Material.BARRIER
     }
 }
 

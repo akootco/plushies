@@ -2,6 +2,7 @@ package co.akoot.plugins.plushies.listeners
 
 import co.akoot.plugins.plushies.api.Interactables
 import co.akoot.plugins.plushies.api.Interactables.hasInteractable
+import co.akoot.plugins.plushies.api.Placement
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -19,19 +20,42 @@ class InteractionListener : Listener {
     @EventHandler
     fun PlayerInteractEvent.place() {
         if (hand != EquipmentSlot.HAND) return
-        if (!action.isRightClick) return
 
-        val interactable = Interactables.find(item ?: return) ?: return
-
-        if (blockFace !in interactable.placeable.faces) {
-            interactable.interact(player)
-            return
+        val entity = clickedBlock?.let { block ->
+            block.world.getNearbyEntities(BoundingBox.of(block))
+                .firstOrNull { Interactables.find(it) != null }
         }
 
-        setUseInteractedBlock(Event.Result.DENY)
-        setUseItemInHand(Event.Result.DENY)
+        val entityInteractable = entity?.let(Interactables::find)
+        val itemInteractable = item?.let(Interactables::find)
 
-        interactable.place(this)
+        if (entityInteractable == null && itemInteractable == null) return
+
+        if (action.isRightClick) {
+            if (entityInteractable != null) {
+                if (player.isSneaking && itemInteractable != null && itemInteractable.placeable != Placement.NONE) {
+                    itemInteractable.place(this)
+                } else if (!player.isSneaking) {
+                    setUseInteractedBlock(Event.Result.DENY)
+                    setUseItemInHand(Event.Result.DENY)
+                    entityInteractable.interact(entity, player)
+                }
+                return
+            }
+
+            if (itemInteractable != null) {
+                if (itemInteractable.placeable == Placement.NONE) {
+                    setUseInteractedBlock(Event.Result.DENY)
+                    setUseItemInHand(Event.Result.DENY)
+                    itemInteractable.interact(player)
+                } else {
+                    itemInteractable.place(this)
+                }
+            }
+        } else if (player.isSneaking && entityInteractable != null) {
+            setUseInteractedBlock(Event.Result.DENY)
+            entityInteractable.remove(entity, player)
+        }
     }
 
     @EventHandler
