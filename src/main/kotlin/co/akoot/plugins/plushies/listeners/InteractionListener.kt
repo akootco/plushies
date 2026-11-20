@@ -18,7 +18,7 @@ import org.bukkit.util.BoundingBox
 class InteractionListener : Listener {
 
     @EventHandler
-    fun PlayerInteractEvent.place() {
+    fun PlayerInteractEvent.interact() {
         if (hand != EquipmentSlot.HAND) return
 
         val entity = clickedBlock?.let { block ->
@@ -52,10 +52,7 @@ class InteractionListener : Listener {
                     itemInteractable.place(this)
                 }
             }
-        } else if (player.isSneaking && entityInteractable != null) {
-            setUseInteractedBlock(Event.Result.DENY)
-            entityInteractable.remove(entity, player)
-        }
+        } else entityInteractable?.remove(entity, player)
     }
 
     @EventHandler

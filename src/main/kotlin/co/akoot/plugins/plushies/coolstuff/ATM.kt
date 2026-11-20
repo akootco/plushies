@@ -12,6 +12,7 @@ import co.akoot.plugins.bluefox.util.text
 import co.akoot.plugins.bluefox.util.zip
 import co.akoot.plugins.plushies.Plushies.Companion.key
 import co.akoot.plugins.plushies.api.Interactable
+import co.akoot.plugins.plushies.api.Placement
 import co.akoot.plugins.plushies.api.Sound
 import co.akoot.plugins.plushies.util.Util.isDefault
 import co.akoot.plugins.plushies.util.builders.ItemBuilder
@@ -33,6 +34,7 @@ object ATM : Interactable {
     override val removable = true
     override fun rotation() = 90f
     override val setOwner = true
+    override val placeable = Placement.FLOOR
 
     override fun item() = ItemBuilder.builder(Material.POISONOUS_POTATO)
         .itemName("ATM".text)
@@ -55,8 +57,14 @@ object ATM : Interactable {
     }
 
     override fun place(event: PlayerInteractEvent): Boolean {
-        if (event.blockFace != BlockFace.UP) return false
-        return super.place(event)
+        if (!super.place(event)) return false
+
+        val block = event.clickedBlock ?: return false
+
+        block.getRelative(BlockFace.UP).type = Material.BARRIER
+        block.getRelative(BlockFace.UP, 2).type = Material.BARRIER
+
+        return true
     }
 
     private fun coinScreen(coin: Coin, player: Player): Dialog {

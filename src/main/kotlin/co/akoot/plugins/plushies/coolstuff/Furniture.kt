@@ -17,7 +17,9 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Tag
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Skull
+import org.bukkit.block.data.Directional
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryType
@@ -43,6 +45,9 @@ class ConfigFurniture(val id: String) : Interactable {
     private val collision = config.getString("$path.collision")
     private val width = if (collision == "full") 0.99f else config.getDouble("$path.width")?.toFloat() ?: super.width()
     private val height = if (collision == "full") 0.99f else config.getDouble("$path.height")?.toFloat() ?: super.height()
+
+    private val isLight = config.getKeys(path).contains("light")
+    private val lightPosition = config.getInt("$path.light.placement") ?: 0
 
     override fun translation() = Vector3f(0f,0.5f,0f)
     override fun width() = width
@@ -84,12 +89,27 @@ class ConfigFurniture(val id: String) : Interactable {
                 entity.addPassenger(player)
                 player.setRotation(entity.yaw, 1f)
             }
+
+            isLight -> {
+                val block = entity.location.block.getRelative(BlockFace.UP, lightPosition)
+                when (block.type) {
+                    Material.END_ROD -> block.type = Material.CANDLE
+                    else -> {
+                        block.type = Material.END_ROD
+                        (block.blockData as Directional).apply {
+                            facing = BlockFace.DOWN
+                            block.blockData = this
+                        }
+                    }
+                }
+
+                block.world.playSound(block.location, org.bukkit.Sound.BLOCK_LEVER_CLICK, 1f, 2f)
+            }
         }
     }
 
     override fun remove(entity: Entity, damager: Entity?): Boolean {
         if (isContainer) storageOf(entity).remove()
-        collision.let { entity.location.block.type = Material.AIR }
         return super.remove(entity, damager)
     }
 
@@ -146,6 +166,7 @@ private fun Location.addCollision(type: String) {
     when (type) {
         "half" -> halfBlock()
         "full" -> block.type = Material.BARRIER
+        "pole" -> block.type = Material.IRON_CHAIN
     }
 }
 

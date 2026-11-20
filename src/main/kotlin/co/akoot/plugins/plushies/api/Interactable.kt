@@ -10,6 +10,7 @@ import co.akoot.plugins.plushies.util.createHitbox
 import co.akoot.plugins.plushies.util.spawnItemDisplay
 import io.papermc.paper.datacomponent.DataComponentTypes
 import net.kyori.adventure.text.Component
+import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.Tag
 import org.bukkit.block.Block
@@ -186,6 +187,13 @@ interface Interactable {
                     }
                 }
             )
+        }
+
+        entity.location.block.apply {
+            type = Material.AIR
+            if (height() > 1f) {
+                getRelative(BlockFace.UP).type = Material.AIR
+            }
         }
 
         display?.remove()
